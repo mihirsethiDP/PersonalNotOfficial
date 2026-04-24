@@ -1,0 +1,398 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.page{padding:1.5rem 0;font-family:var(--font-sans);min-height:700px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);margin-bottom:1.25rem}
+.breadcrumb a{color:var(--color-text-secondary);text-decoration:none;cursor:pointer}
+.breadcrumb a:hover{color:var(--color-text-primary)}
+.breadcrumb-sep{color:var(--color-text-tertiary)}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:12px}
+.insight-title{font-size:19px;font-weight:500;color:var(--color-text-primary);line-height:1.3}
+.insight-meta{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:500}
+.b-inc{background:#EEEDFE;color:#3C3489}
+.b-active{background:#EAF3DE;color:#3B6D11}
+.b-plant{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary)}
+.b-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn{height:32px;padding:0 12px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary)}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-danger{border-color:#F09595;color:#A32D2D;background:transparent}
+.btn-primary{border-color:#97C459;color:#3B6D11;background:#EAF3DE}
+.toggle-row{display:flex;align-items:center;gap:8px}
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{display:none}
+.slider{position:absolute;inset:0;border-radius:20px;background:#B4B2A9;cursor:pointer;transition:background .2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform .2s}
+input:checked+.slider{background:#639922}
+input:checked+.slider:before{transform:translateX(16px)}
+
+/* two-col layout */
+.layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+
+/* cards */
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:14px}
+.card-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.card-title-link{font-size:11px;color:var(--color-text-secondary);text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400}
+.card-title-link:hover{color:var(--color-text-primary)}
+
+/* description */
+.desc-text{font-size:13px;color:var(--color-text-secondary);line-height:1.7}
+
+/* condition blocks */
+.condition-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cond-block{padding:12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)}
+.cond-open{background:#FAEEDA;border-color:#FAC775}
+.cond-close{background:#EAF3DE;border-color:#97C459}
+.cond-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.cond-open .cond-label{color:#633806}
+.cond-close .cond-label{color:#3B6D11}
+.cond-rule{font-size:12px;font-weight:500;margin-bottom:3px}
+.cond-open .cond-rule{color:#854F0B}
+.cond-close .cond-rule{color:#3B6D11}
+.cond-note{font-size:11px;color:var(--color-text-secondary)}
+.cond-note b{font-weight:500}
+
+/* state timeline */
+.state-timeline{display:flex;align-items:center;gap:0;margin-bottom:4px}
+.state-node{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.state-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;border:1.5px solid transparent}
+.sc-warn{background:#FAEEDA;border-color:#FAC775;color:#633806}
+.sc-issue{background:#FCEBEB;border-color:#F09595;color:#A32D2D}
+.sc-inc{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;box-shadow:0 0 0 3px #EEEDFE}
+.sc-ok{background:#EAF3DE;border-color:#97C459;color:#3B6D11}
+.sc-off{background:var(--color-background-secondary);border-color:var(--color-border-secondary);color:var(--color-text-tertiary)}
+.state-label{font-size:10px;color:var(--color-text-tertiary);font-weight:500}
+.state-label.current{color:var(--color-text-primary)}
+.state-connector{height:1.5px;flex:1;background:var(--color-border-secondary);margin-top:-18px;position:relative;z-index:0}
+.state-connector.done{background:#AFA9EC}
+.state-nodes-wrap{display:flex;align-items:flex-start;gap:0;position:relative}
+.state-line{position:absolute;top:14px;left:14px;right:14px;height:1.5px;background:var(--color-border-secondary);z-index:0}
+.state-line-fill{position:absolute;top:14px;left:14px;height:1.5px;background:#AFA9EC;z-index:1;width:66%}
+
+.detail-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.detail-row:last-child{border-bottom:none}
+.detail-key{color:var(--color-text-secondary)}
+.detail-val{color:var(--color-text-primary);font-weight:500}
+.detail-val.red{color:#A32D2D}
+.detail-val.green{color:#3B6D11}
+
+/* escalation */
+.esc-level-block{margin-bottom:14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden}
+.esc-level-block:last-child{margin-bottom:0}
+.esc-level-head{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.lbadge{font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500}
+.lb1{background:#E6F1FB;color:#0C447C}
+.lb2{background:#FAEEDA;color:#633806}
+.lb3{background:#FCEBEB;color:#791F1F}
+.esc-delay{font-size:11px;color:var(--color-text-tertiary);margin-left:auto}
+.esc-edit-link{font-size:11px;color:var(--color-text-secondary);cursor:pointer;padding:2px 6px;border-radius:4px}
+.esc-edit-link:hover{background:var(--color-background-primary)}
+.esc-users{padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+.user-item{display:flex;align-items:center;gap:8px}
+.avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.uname{font-size:12px;color:var(--color-text-primary);flex:1}
+.comm-icons{display:flex;gap:3px}
+.ci{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;border:0.5px solid transparent;transition:opacity .15s}
+.ci-on{background:#EAF3DE;border-color:#97C459;color:#3B6D11}
+.ci-off{background:var(--color-background-secondary);border-color:var(--color-border-tertiary);color:var(--color-text-tertiary)}
+.ci:hover{opacity:.7}
+.remove-user{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:transparent;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:13px}
+.remove-user:hover{background:#FCEBEB;color:#A32D2D}
+.hooter-row{display:flex;align-items:center;gap:8px;padding:6px 12px 8px;font-size:12px;color:var(--color-text-secondary);border-top:0.5px dashed var(--color-border-tertiary)}
+.add-user-row{padding:6px 12px 8px;display:flex;gap:6px}
+.add-user-input{flex:1;height:28px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0 8px;font-size:12px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.add-user-btn{height:28px;padding:0 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;font-size:12px;color:var(--color-text-secondary);cursor:pointer}
+.add-user-btn:hover{background:var(--color-background-secondary)}
+.add-level-btn{width:100%;padding:8px;border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;font-size:12px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:10px}
+.add-level-btn:hover{background:var(--color-background-secondary)}
+
+/* custom group */
+.custom-group-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:8px;background:#EEEDFE;color:#3C3489;margin-left:6px}
+
+/* resolve panel */
+.resolve-card{background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:14px}
+.resolve-title{font-size:13px;font-weight:500;color:#A32D2D;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.resolve-note{font-size:12px;color:#791F1F;line-height:1.6;margin-bottom:10px}
+.resolve-actions{display:flex;gap:8px}
+.rbtn{height:30px;padding:0 12px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid}
+.rbtn-data{border-color:#F09595;background:#FCEBEB;color:#A32D2D}
+.rbtn-data:hover{background:#F7C1C1}
+.rbtn-ack{border-color:#97C459;background:#EAF3DE;color:#3B6D11}
+.rbtn-ack:hover{background:#C0DD97}
+</style>
+
+<div class="page">
+  <div class="breadcrumb">
+    <a onclick="sendPrompt('Go back to Layer 1 — the plant list for Insights')">Insights</a>
+    <span class="breadcrumb-sep">›</span>
+    <a onclick="sendPrompt('Show me Layer 2 — the insights list for plant: Alpha Manufacturing Unit')">Alpha Manufacturing Unit</a>
+    <span class="breadcrumb-sep">›</span>
+    <span style="color:var(--color-text-primary);font-weight:500">Boiler pressure threshold exceeded</span>
+  </div>
+
+  <div class="top-bar">
+    <div>
+      <div class="insight-title">Boiler pressure threshold exceeded</div>
+      <div class="insight-meta">
+        <span class="badge b-inc"><span class="b-dot"></span>Incident</span>
+        <span class="badge b-active"><span class="b-dot"></span>Active · 2h 14m</span>
+        <span class="badge b-plant">Alpha Manufacturing Unit</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" checked id="mainToggle"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Enabled</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolve banner -->
+  <div class="resolve-card">
+    <div class="resolve-title">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#A32D2D" stroke-width="1.2"/><path d="M7 4v3.5M7 9.5v.5" stroke="#A32D2D" stroke-width="1.3" stroke-linecap="round"/></svg>
+      This insight is currently active
+    </div>
+    <div class="resolve-note">Resolution cannot be time-based. It must be triggered by a sensor value crossing the closing threshold, or manually acknowledged via a data input from an authorised user.</div>
+    <div class="resolve-actions">
+      <button class="rbtn rbtn-data">Input sensor data</button>
+      <button class="rbtn rbtn-ack">Acknowledge &amp; resolve</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT column -->
+    <div>
+      <!-- Description -->
+      <div class="card">
+        <div class="card-title">Description</div>
+        <div class="desc-text">Monitors the primary boiler steam pressure and triggers when pressure exceeds the safe operating range. This insight evaluates readings from pressure transducer PT-101 on a 30-second rolling average. Sustained high pressure can indicate a faulty safety valve, blocked steam line, or excessive heat input and must be resolved before returning the boiler to normal operation.</div>
+      </div>
+
+      <!-- Conditions -->
+      <div class="card">
+        <div class="card-title">Opening &amp; closing conditions</div>
+        <div class="condition-grid">
+          <div class="cond-block cond-open">
+            <div class="cond-label">Opening condition</div>
+            <div class="cond-rule">PT-101 ≥ 12.5 bar</div>
+            <div class="cond-note">Sustained for <b>60 seconds</b> · rolling avg</div>
+          </div>
+          <div class="cond-block cond-close">
+            <div class="cond-label">Closing condition</div>
+            <div class="cond-rule">PT-101 &lt; 11.0 bar</div>
+            <div class="cond-note">Sustained for <b>120 seconds</b> · cannot be time-based</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status transition -->
+      <div class="card">
+        <div class="card-title">Status progression</div>
+        <div style="position:relative;padding:0 6px">
+          <div style="position:absolute;top:14px;left:20px;right:20px;height:1.5px;background:var(--color-border-secondary);z-index:0"></div>
+          <div style="position:absolute;top:14px;left:20px;height:1.5px;width:66%;background:#AFA9EC;z-index:1"></div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:2">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="state-circle sc-warn">WARN</div>
+              <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Warning</span>
+              <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 12.5 bar</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="state-circle sc-issue">ISSUE</div>
+              <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Issue</span>
+              <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 14.0 bar</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="state-circle sc-inc">INC</div>
+              <span style="font-size:10px;color:var(--color-text-primary);font-weight:500">Incident ←</span>
+              <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 16.0 bar</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="state-circle sc-ok">OK</div>
+              <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Resolved</span>
+              <span style="font-size:10px;color:var(--color-text-tertiary)">&lt; 11.0 bar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="card">
+        <div class="card-title">Details</div>
+        <div class="detail-row"><span class="detail-key">Sensor</span><span class="detail-val">PT-101 · Pressure transducer</span></div>
+        <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
+        <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
+        <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM</span></div>
+        <div class="detail-row"><span class="detail-key">Task linked</span><span class="detail-val green">TASK-4821 · Inspect safety valve</span></div>
+        <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT column — escalation -->
+    <div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:12px 16px 10px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em">Escalation</span>
+          <span style="font-size:11px;color:var(--color-text-tertiary)">Inherits from plant · overrides below</span>
+        </div>
+        <div style="padding:12px 14px">
+
+          <!-- Level 1 -->
+          <div class="esc-level-block">
+            <div class="esc-level-head">
+              <span class="lbadge lb1">Level 1</span>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Immediate</span>
+              <span class="esc-delay">0 min</span>
+              <span class="esc-edit-link">Edit</span>
+            </div>
+            <div class="esc-users" id="l1users">
+              <div class="user-item">
+                <div class="avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
+                <span class="uname">Rahul Sharma</span>
+                <div class="comm-icons">
+                  <div class="ci ci-on" title="Email">✉</div>
+                  <div class="ci ci-on" title="SMS">✆</div>
+                  <div class="ci ci-off" title="WhatsApp">W</div>
+                  <div class="ci ci-off" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+              <div class="user-item">
+                <div class="avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
+                <span class="uname">Priya Kumar</span>
+                <div class="comm-icons">
+                  <div class="ci ci-on" title="Email">✉</div>
+                  <div class="ci ci-off" title="SMS">✆</div>
+                  <div class="ci ci-on" title="WhatsApp">W</div>
+                  <div class="ci ci-off" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+            </div>
+            <div class="add-user-row">
+              <input class="add-user-input" placeholder="Add user…" type="text"/>
+              <button class="add-user-btn">Add</button>
+            </div>
+          </div>
+
+          <!-- Level 2 -->
+          <div class="esc-level-block">
+            <div class="esc-level-head">
+              <span class="lbadge lb2">Level 2</span>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Supervisor</span>
+              <span class="esc-delay">+15 min</span>
+              <span class="esc-edit-link">Edit</span>
+            </div>
+            <div class="esc-users">
+              <div class="user-item">
+                <div class="avatar" style="background:#FAEEDA;color:#633806">AM</div>
+                <span class="uname">Amit Mehta</span>
+                <div class="comm-icons">
+                  <div class="ci ci-on" title="Email">✉</div>
+                  <div class="ci ci-on" title="SMS">✆</div>
+                  <div class="ci ci-on" title="WhatsApp">W</div>
+                  <div class="ci ci-off" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+              <div class="user-item">
+                <div class="avatar" style="background:#FAEEDA;color:#633806">RS</div>
+                <span class="uname">Rahul Sharma</span>
+                <div class="comm-icons">
+                  <div class="ci ci-off" title="Email">✉</div>
+                  <div class="ci ci-off" title="SMS">✆</div>
+                  <div class="ci ci-off" title="WhatsApp">W</div>
+                  <div class="ci ci-on" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+            </div>
+            <div class="hooter-row">
+              <span style="font-size:14px">🔔</span>
+              <span style="flex:1">Hooter alarm at this level</span>
+              <label class="toggle" style="width:30px;height:16px"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="add-user-row">
+              <input class="add-user-input" placeholder="Add user…" type="text"/>
+              <button class="add-user-btn">Add</button>
+            </div>
+          </div>
+
+          <!-- Level 3 -->
+          <div class="esc-level-block">
+            <div class="esc-level-head">
+              <span class="lbadge lb3">Level 3</span>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Management</span>
+              <span class="esc-delay">+30 min</span>
+              <span class="esc-edit-link">Edit</span>
+            </div>
+            <div class="esc-users">
+              <div class="user-item">
+                <div class="avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
+                <span class="uname">Sunita Gupta</span>
+                <div class="comm-icons">
+                  <div class="ci ci-on" title="Email">✉</div>
+                  <div class="ci ci-on" title="SMS">✆</div>
+                  <div class="ci ci-on" title="WhatsApp">W</div>
+                  <div class="ci ci-on" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+            </div>
+            <div class="add-user-row">
+              <input class="add-user-input" placeholder="Add user…" type="text"/>
+              <button class="add-user-btn">Add</button>
+            </div>
+          </div>
+
+          <!-- Custom group -->
+          <div class="esc-level-block" style="border-style:dashed">
+            <div class="esc-level-head" style="background:var(--color-background-primary)">
+              <span class="lbadge" style="background:#EEEDFE;color:#3C3489">Custom</span>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Insight-only group</span>
+              <span class="esc-delay" style="font-size:10px;font-style:italic">not inherited</span>
+            </div>
+            <div class="esc-users">
+              <div class="user-item">
+                <div class="avatar" style="background:#EEEDFE;color:#3C3489">NK</div>
+                <span class="uname">Nikhil Kapoor</span>
+                <div class="comm-icons">
+                  <div class="ci ci-on" title="Email">✉</div>
+                  <div class="ci ci-on" title="SMS">✆</div>
+                  <div class="ci ci-off" title="WhatsApp">W</div>
+                  <div class="ci ci-off" title="Call">☏</div>
+                </div>
+                <button class="remove-user" title="Remove">×</button>
+              </div>
+            </div>
+            <div class="add-user-row">
+              <input class="add-user-input" placeholder="Add user to custom group…" type="text"/>
+              <button class="add-user-btn">Add</button>
+            </div>
+          </div>
+
+          <button class="add-level-btn">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Add escalation level
+          </button>
+          <button class="add-level-btn" style="margin-top:6px;border-color:#AFA9EC;color:#534AB7">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Create custom escalation group
+          </button>
+
+          <div style="margin-top:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-tertiary);line-height:1.6">
+            Changes to escalation levels here apply only to this insight. To change plant-wide escalation, go to the plant settings.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('mainToggle').addEventListener('change',function(){
+  document.getElementById('toggleLbl').textContent=this.checked?'Enabled':'Disabled';
+});
+</script>

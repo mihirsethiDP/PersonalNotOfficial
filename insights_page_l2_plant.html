@@ -1,0 +1,293 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.page{padding:1.5rem 0;min-height:600px;font-family:var(--font-sans)}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);margin-bottom:1.25rem}
+.breadcrumb a{color:var(--color-text-secondary);text-decoration:none;cursor:pointer}
+.breadcrumb a:hover{color:var(--color-text-primary)}
+.breadcrumb-sep{color:var(--color-text-tertiary)}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.plant-title{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.top-actions{display:flex;align-items:center;gap:8px}
+.stat-pills{display:flex;gap:6px}
+.pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.pill-warn{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775}
+.pill-issue{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+.pill-inc{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.pill-ok{background:#EAF3DE;color:#3B6D11;border:0.5px solid #97C459}
+.search-row{display:flex;gap:8px;margin-bottom:1rem;align-items:center}
+.search-input{flex:1;height:34px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0 12px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.filter-btn{height:34px;padding:0 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.filter-btn:hover{background:var(--color-background-secondary)}
+.filter-btn.active{background:#E6F1FB;color:#185FA5;border-color:#85B7EB}
+.bulk-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:10px;font-size:12px;color:var(--color-text-secondary)}
+.bulk-bar.hidden{display:none}
+.btn-sm{font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.btn-sm:hover{background:var(--color-background-secondary)}
+.btn-sm-danger{border-color:#F09595;color:#A32D2D;background:transparent}
+.btn-sm-success{border-color:#97C459;color:#3B6D11;background:transparent}
+.table-wrap{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)}
+.table-head{display:grid;grid-template-columns:28px 2.2fr 1fr 1fr 90px 60px 60px;gap:0;background:var(--color-background-secondary);padding:9px 14px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center}
+.th{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em}
+.insight-row{display:grid;grid-template-columns:28px 2.2fr 1fr 1fr 90px 60px 60px;gap:0;padding:11px 14px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center;position:relative;transition:background 0.1s;cursor:pointer}
+.insight-row:last-child{border-bottom:none}
+.insight-row:hover{background:var(--color-background-secondary)}
+.insight-row.selected{background:#E6F1FB}
+.iname{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;position:relative}
+.iname-text{flex:1}
+.cell{font-size:12px;color:var(--color-text-secondary)}
+/* Status badges */
+.status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:10px;font-weight:500}
+.s-warning{background:#FAEEDA;color:#633806}
+.s-issue{background:#FCEBEB;color:#A32D2D}
+.s-incident{background:#EEEDFE;color:#3C3489}
+.s-ok{background:#EAF3DE;color:#3B6D11}
+.s-off{background:var(--color-background-secondary);color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary)}
+.s-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+/* State info */
+.state-info{font-size:11px;color:var(--color-text-tertiary)}
+/* Toggle */
+.toggle{position:relative;display:inline-block;width:32px;height:18px;flex-shrink:0}
+.toggle input{display:none}
+.slider{position:absolute;inset:0;border-radius:20px;background:#B4B2A9;cursor:pointer;transition:background 0.2s}
+.slider:before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform 0.2s}
+input:checked+.slider{background:#639922}
+input:checked+.slider:before{transform:translateX(14px)}
+/* Icons */
+.icon-task{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:11px;cursor:default}
+.icon-task-on{background:#EAF3DE;color:#3B6D11}
+.icon-task-off{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+/* Escalation hover tooltip */
+.esc-trigger{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:transparent;position:relative;cursor:pointer;flex-shrink:0}
+.esc-trigger:hover{background:var(--color-background-secondary)}
+.esc-trigger svg{opacity:0.45}
+.esc-trigger:hover svg{opacity:1}
+.esc-tooltip{display:none;position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:8px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:12px;width:260px;z-index:50;box-shadow:none}
+.esc-trigger:hover .esc-tooltip{display:block}
+.esc-tooltip-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+.esc-level-row{margin-bottom:8px}
+.esc-level-row:last-child{margin-bottom:0}
+.esc-lhead{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.lbadge{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.lb1{background:#E6F1FB;color:#0C447C}
+.lb2{background:#FAEEDA;color:#633806}
+.lb3{background:#FCEBEB;color:#791F1F}
+.esc-users{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.esc-user-row{display:flex;align-items:center;gap:6px}
+.esc-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.esc-uname{font-size:11px;color:var(--color-text-secondary);flex:1}
+.esc-comm{display:flex;gap:2px}
+.ec{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px}
+.ec-on{background:#EAF3DE;color:#3B6D11}
+.ec-off{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.hooter-hint{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-tertiary);margin-top:4px;padding-top:4px;border-top:0.5px solid var(--color-border-tertiary)}
+/* last triggered */
+.last-trig{font-size:11px;color:var(--color-text-tertiary)}
+.last-trig.active{color:#639922}
+/* chevron */
+.row-chevron{color:var(--color-text-tertiary);font-size:12px;display:flex;align-items:center;justify-content:center}
+</style>
+
+<div class="page">
+  <div class="breadcrumb">
+    <a onclick="sendPrompt('Go back to Layer 1 — the plant list for Insights')">Insights</a>
+    <span class="breadcrumb-sep">›</span>
+    <span style="color:var(--color-text-primary);font-weight:500">Alpha Manufacturing Unit</span>
+  </div>
+
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="plant-title">Alpha Manufacturing Unit</span>
+      <div class="stat-pills">
+        <span class="pill pill-inc">2 incident</span>
+        <span class="pill pill-issue">4 issue</span>
+        <span class="pill pill-warn">6 warning</span>
+        <span class="pill pill-ok">12 normal</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="filter-btn">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Add insight
+      </button>
+    </div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" placeholder="Search insights..." type="text" id="searchInput" oninput="filterRows()"/>
+    <button class="filter-btn" id="filterAll" onclick="setFilter('all')" style="background:var(--color-background-secondary)">All</button>
+    <button class="filter-btn" id="filterIncident" onclick="setFilter('incident')">Incident</button>
+    <button class="filter-btn" id="filterIssue" onclick="setFilter('issue')">Issue</button>
+    <button class="filter-btn" id="filterWarning" onclick="setFilter('warning')">Warning</button>
+    <button class="filter-btn" id="filterOff" onclick="setFilter('off')">Off</button>
+  </div>
+
+  <div class="bulk-bar hidden" id="bulkBar">
+    <span id="bulkCount">0 selected</span>
+    <div style="flex:1"></div>
+    <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable selected</button>
+    <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable selected</button>
+    <button class="btn-sm" onclick="clearSelection()">Clear</button>
+  </div>
+
+  <div class="table-wrap" id="tableWrap">
+    <div class="table-head">
+      <div><input type="checkbox" id="selectAll" onchange="toggleAll(this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+      <span class="th">Insight</span>
+      <span class="th">Live status</span>
+      <span class="th">Last triggered</span>
+      <span class="th">State</span>
+      <span class="th" style="text-align:center">Task</span>
+      <span class="th"></span>
+    </div>
+
+    <!-- rows injected by JS -->
+    <div id="rowsContainer"></div>
+  </div>
+  <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open the insight detail</div>
+</div>
+
+<script>
+const insights=[
+  {id:1,name:'Boiler pressure threshold exceeded',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 2h 14m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,1,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,0]}],hooter:true},{label:'Level 3',cls:'lb3',users:[{init:'SG',bg:'#FCEBEB',tc:'#791F1F',name:'Sunita Gupta',comm:[1,1,1,1]}],hooter:false}]},
+  {id:2,name:'Cooling tower water level critical',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 47m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,1,1]}],hooter:true}]},
+  {id:3,name:'Compressor vibration anomaly',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 18m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[0,1,1,0]}],hooter:false}]},
+  {id:4,name:'Steam leak detection triggered',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Active since 5m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,1,0]}],hooter:true}]},
+  {id:5,name:'Conveyor belt speed deviation',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Resolved 1h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+  {id:6,name:'Motor temperature high',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 3m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,1]}],hooter:false}]},
+  {id:7,name:'Feed water pH out of range',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 22m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
+  {id:8,name:'Turbine RPM fluctuation',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Resolved 3h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false}]},
+  {id:9,name:'Ambient temperature rising',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 8m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
+  {id:10,name:'Hydraulic fluid pressure low',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:true,lastTrig:'Resolved 30m ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false}]},
+  {id:11,name:'Exhaust gas CO₂ elevated',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 1m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,1,0]}],hooter:false}]},
+  {id:12,name:'Lube oil level low warning',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+  {id:13,name:'Chiller unit efficiency drop',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 6h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,0,0]}],hooter:false}]},
+  {id:14,name:'Pump discharge pressure variance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 2d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
+  {id:15,name:'Panel board voltage imbalance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:true,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,1,0]}],hooter:false}]},
+  {id:16,name:'Dust collector filter clog',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+  {id:17,name:'Emergency stop circuit fault',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]}],hooter:false}]},
+  {id:18,name:'Nitrogen purge cycle missed',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:true,lastTrig:'Resolved 5d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
+];
+
+const commLabels=['✉','✆','W','☏'];
+let selected=new Set();
+let currentFilter='all';
+
+function buildEscTooltip(levels){
+  let html='<div class="esc-tooltip"><div class="esc-tooltip-title">Escalation levels</div>';
+  levels.forEach(lv=>{
+    html+=`<div class="esc-level-row"><div class="esc-lhead"><span class="lbadge ${lv.cls}">${lv.label}</span></div><div class="esc-users">`;
+    lv.users.forEach(u=>{
+      html+=`<div class="esc-user-row"><div class="esc-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div><span class="esc-uname">${u.name}</span><div class="esc-comm">`;
+      u.comm.forEach((on,i)=>{html+=`<div class="ec ${on?'ec-on':'ec-off'}">${commLabels[i]}</div>`;});
+      html+='</div></div>';
+    });
+    html+='</div>';
+    if(lv.hooter) html+='<div class="hooter-hint">🔔 Hooter alarm at this level</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderRows(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const container=document.getElementById('rowsContainer');
+  let rows=insights.filter(r=>{
+    if(q && !r.name.toLowerCase().includes(q)) return false;
+    if(currentFilter==='all') return true;
+    if(currentFilter==='off') return !r.enabled;
+    return r.status===currentFilter;
+  });
+  if(rows.length===0){
+    container.innerHTML='<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match this filter</div>';
+    return;
+  }
+  container.innerHTML=rows.map(r=>{
+    const isSel=selected.has(r.id);
+    return `<div class="insight-row ${isSel?'selected':''}" id="row-${r.id}" onclick="handleRowClick(event,${r.id})">
+      <div onclick="event.stopPropagation()"><input type="checkbox" ${isSel?'checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+      <div class="iname">
+        <div class="esc-trigger" onclick="event.stopPropagation()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h7M2 10.5h5" stroke="var(--color-text-secondary)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          ${buildEscTooltip(r.escLevels)}
+        </div>
+        <span class="iname-text">${r.name}</span>
+      </div>
+      <div><span class="status-badge ${r.stateClass}"><span class="s-dot"></span>${r.statusLabel}</span></div>
+      <div class="last-trig ${r.lastTrigActive?'active':''}">${r.lastTrig}</div>
+      <div onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" ${r.enabled?'checked':''} onchange="toggleInsight(${r.id},this)"><span class="slider"></span></label>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div class="icon-task ${r.task?'icon-task-on':'icon-task-off'}" title="${r.task?'Task linked':'No task'}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 6l1.5 1.5 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="row-chevron">›</div>
+    </div>`;
+  }).join('');
+}
+
+function handleRowClick(e,id){
+  const r=insights.find(x=>x.id===id);
+  sendPrompt('Show me Layer 3 — insight detail for: '+r.name+' (Plant: Alpha Manufacturing Unit)');
+}
+
+function toggleSelect(id,cb){
+  if(cb.checked) selected.add(id); else selected.delete(id);
+  updateBulkBar();
+  renderRows();
+}
+
+function toggleAll(cb){
+  const visible=getVisibleIds();
+  if(cb.checked) visible.forEach(id=>selected.add(id));
+  else visible.forEach(id=>selected.delete(id));
+  updateBulkBar();
+  renderRows();
+}
+
+function getVisibleIds(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  return insights.filter(r=>{
+    if(q && !r.name.toLowerCase().includes(q)) return false;
+    if(currentFilter==='all') return true;
+    if(currentFilter==='off') return !r.enabled;
+    return r.status===currentFilter;
+  }).map(r=>r.id);
+}
+
+function updateBulkBar(){
+  const bar=document.getElementById('bulkBar');
+  const cnt=document.getElementById('bulkCount');
+  if(selected.size>0){bar.classList.remove('hidden');cnt.textContent=selected.size+' selected';}
+  else bar.classList.add('hidden');
+}
+
+function clearSelection(){selected.clear();updateBulkBar();renderRows();}
+function bulkEnable(){selected.forEach(id=>{const r=insights.find(x=>x.id===id);if(r){r.enabled=true;if(r.status==='off')r.status='ok',r.statusLabel='Normal',r.stateClass='s-ok';}});renderRows();}
+function bulkDisable(){selected.forEach(id=>{const r=insights.find(x=>x.id===id);if(r){r.enabled=false;r.status='off',r.statusLabel='Disabled',r.stateClass='s-off';}});renderRows();}
+
+function toggleInsight(id,cb){
+  const r=insights.find(x=>x.id===id);
+  if(!r) return;
+  r.enabled=cb.checked;
+  if(!cb.checked){r.status='off';r.statusLabel='Disabled';r.stateClass='s-off';}
+  else{r.status='ok';r.statusLabel='Normal';r.stateClass='s-ok';}
+  renderRows();
+}
+
+function setFilter(f){
+  currentFilter=f;
+  ['all','incident','issue','warning','off'].forEach(x=>{
+    const el=document.getElementById('filter'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(el) el.style.background=x===f?'var(--color-background-secondary)':'';
+  });
+  renderRows();
+}
+
+function filterRows(){renderRows();}
+
+renderRows();
+</script>

@@ -1,0 +1,349 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.page{padding:1.5rem 0;min-height:600px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.page-title{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stat-pills{display:flex;gap:8px}
+.pill{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:500}
+.pill-total{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary)}
+.pill-active{background:#EAF3DE;color:#3B6D11;border:0.5px solid #97C459}
+.pill-inactive{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+.search-row{display:flex;gap:8px;margin-bottom:1.25rem;align-items:center}
+.search-input{flex:1;height:36px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0 12px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.filter-btn{height:36px;padding:0 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.filter-btn:hover{background:var(--color-background-secondary)}
+.table-wrap{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)}
+.table-head{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.1fr 1.1fr 80px;gap:0;background:var(--color-background-secondary);padding:10px 16px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.th{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em}
+.plant-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.1fr 1.1fr 80px;gap:0;padding:13px 16px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center;cursor:pointer;transition:background 0.1s}
+.plant-row:last-child{border-bottom:none}
+.plant-row:hover{background:var(--color-background-secondary)}
+.plant-name{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:8px}
+.plant-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#639922}
+.dot-red{background:#E24B4A}
+.cell{font-size:13px;color:var(--color-text-secondary)}
+.badge-wrap{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500}
+.badge-a{background:#EAF3DE;color:#3B6D11}
+.badge-i{background:#FCEBEB;color:#A32D2D}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.toggle input{display:none}
+.slider{position:absolute;inset:0;border-radius:20px;background:#B4B2A9;cursor:pointer;transition:background 0.2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform 0.2s}
+input:checked+.slider{background:#639922}
+input:checked+.slider:before{transform:translateX(16px)}
+.esc-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-secondary);padding:4px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;transition:background 0.1s}
+.esc-btn:hover{background:var(--color-background-secondary)}
+.esc-icon{width:14px;height:14px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.esc-icon span{display:block;height:1.5px;background:currentColor;border-radius:1px}
+.esc-icon span:nth-child(2){width:75%}
+.esc-icon span:nth-child(3){width:50%}
+.action-cell{display:flex;align-items:center;gap:6px}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);width:520px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.modal-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.modal-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--border-radius-md);border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--color-text-secondary)}
+.modal-close:hover{background:var(--color-background-secondary)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.esc-level{margin-bottom:16px}
+.esc-level-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.level-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px}
+.l1{background:#E6F1FB;color:#0C447C}
+.l2{background:#FAEEDA;color:#633806}
+.l3{background:#FCEBEB;color:#791F1F}
+.hooter-badge{background:#EEEDFE;color:#3C3489;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500}
+.level-delay{font-size:11px;color:var(--color-text-tertiary);margin-left:auto}
+.user-list{display:flex;flex-direction:column;gap:6px}
+.user-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md)}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--color-text-info);flex-shrink:0}
+.user-name{font-size:12px;font-weight:500;color:var(--color-text-primary);flex:1}
+.comm-icons{display:flex;gap:4px}
+.comm-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;border:0.5px solid var(--color-border-secondary)}
+.comm-on{background:#EAF3DE;border-color:#97C459;color:#3B6D11}
+.comm-off{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.edit-btn-sm{font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.edit-btn-sm:hover{background:var(--color-background-secondary)}
+.modal-footer{padding:12px 20px;border-top:0.5px solid var(--color-border-tertiary);display:flex;justify-content:flex-end;gap:8px}
+.btn-ghost{font-size:13px;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.btn-primary{font-size:13px;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid #639922;background:#EAF3DE;color:#3B6D11;cursor:pointer;font-weight:500}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:12px 0}
+.hooter-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);margin-top:8px}
+.hooter-icon{font-size:16px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+</style>
+
+<div class="page">
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="page-title">Insights</span>
+      <div class="stat-pills">
+        <span class="pill pill-total">100 Total</span>
+        <span class="pill pill-active">70 Active</span>
+        <span class="pill pill-inactive">30 Inactive</span>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--color-text-secondary)">Plant-level configuration</div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" placeholder="Search plants..." type="text" />
+    <button class="filter-btn">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2h11M3 6.5h7M5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Filter
+    </button>
+    <button class="filter-btn">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Add plant
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <span class="th">Plant</span>
+      <span class="th">Location</span>
+      <span class="th">Insights</span>
+      <span class="th">Status</span>
+      <span class="th">All Insights</span>
+      <span class="th">Escalation</span>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="plant-row" onclick="openPlant('Alpha Manufacturing Unit')">
+      <div class="plant-name"><span class="plant-dot dot-green"></span>Alpha Manufacturing Unit</div>
+      <div class="cell">Mumbai, MH</div>
+      <div class="cell" style="font-weight:500;color:var(--color-text-primary)">24</div>
+      <div class="badge-wrap"><span class="badge badge-a">18 active</span><span class="badge badge-i">6 off</span></div>
+      <div class="toggle-wrap" onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'Alpha Manufacturing Unit')"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-alpha">On</span>
+      </div>
+      <div onclick="event.stopPropagation()">
+        <button class="esc-btn" onclick="openEscModal('Alpha Manufacturing Unit')">
+          <div class="esc-icon"><span></span><span></span><span></span></div>
+          Levels
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="plant-row" onclick="openPlant('Beta Refinery Complex')">
+      <div class="plant-name"><span class="plant-dot dot-green"></span>Beta Refinery Complex</div>
+      <div class="cell">Surat, GJ</div>
+      <div class="cell" style="font-weight:500;color:var(--color-text-primary)">31</div>
+      <div class="badge-wrap"><span class="badge badge-a">25 active</span><span class="badge badge-i">6 off</span></div>
+      <div class="toggle-wrap" onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'Beta Refinery Complex')"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-beta">On</span>
+      </div>
+      <div onclick="event.stopPropagation()">
+        <button class="esc-btn" onclick="openEscModal('Beta Refinery Complex')">
+          <div class="esc-icon"><span></span><span></span><span></span></div>
+          Levels
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="plant-row" onclick="openPlant('Gamma Cold Storage')">
+      <div class="plant-name"><span class="plant-dot dot-red"></span>Gamma Cold Storage</div>
+      <div class="cell">Pune, MH</div>
+      <div class="cell" style="font-weight:500;color:var(--color-text-primary)">12</div>
+      <div class="badge-wrap"><span class="badge badge-i">All off</span></div>
+      <div class="toggle-wrap" onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" onchange="handleToggle(this,'Gamma Cold Storage')"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-gamma">Off</span>
+      </div>
+      <div onclick="event.stopPropagation()">
+        <button class="esc-btn" onclick="openEscModal('Gamma Cold Storage')">
+          <div class="esc-icon"><span></span><span></span><span></span></div>
+          Levels
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="plant-row" onclick="openPlant('Delta Processing Plant')">
+      <div class="plant-name"><span class="plant-dot dot-green"></span>Delta Processing Plant</div>
+      <div class="cell">Nagpur, MH</div>
+      <div class="cell" style="font-weight:500;color:var(--color-text-primary)">19</div>
+      <div class="badge-wrap"><span class="badge badge-a">14 active</span><span class="badge badge-i">5 off</span></div>
+      <div class="toggle-wrap" onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'Delta Processing Plant')"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-delta">On</span>
+      </div>
+      <div onclick="event.stopPropagation()">
+        <button class="esc-btn" onclick="openEscModal('Delta Processing Plant')">
+          <div class="esc-icon"><span></span><span></span><span></span></div>
+          Levels
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="plant-row" onclick="openPlant('Epsilon Packaging Hub')">
+      <div class="plant-name"><span class="plant-dot dot-green"></span>Epsilon Packaging Hub</div>
+      <div class="cell">Chennai, TN</div>
+      <div class="cell" style="font-weight:500;color:var(--color-text-primary)">14</div>
+      <div class="badge-wrap"><span class="badge badge-a">13 active</span><span class="badge badge-i">1 off</span></div>
+      <div class="toggle-wrap" onclick="event.stopPropagation()">
+        <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'Epsilon Packaging Hub')"><span class="slider"></span></label>
+        <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-epsilon">On</span>
+      </div>
+      <div onclick="event.stopPropagation()">
+        <button class="esc-btn" onclick="openEscModal('Epsilon Packaging Hub')">
+          <div class="esc-icon"><span></span><span></span><span></span></div>
+          Levels
+        </button>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;font-size:12px;color:var(--color-text-tertiary)">Showing 5 of 100 plants · Click a row to view insights for that plant</div>
+</div>
+
+<!-- Escalation Modal -->
+<div class="modal-bg" id="escModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalPlantName">Alpha Manufacturing Unit</div>
+        <div class="modal-sub">Escalation configuration · applies to all insights in this plant</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="esc-level">
+        <div class="esc-level-head">
+          <span class="level-badge l1">Level 1</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Immediate alert</span>
+          <span class="level-delay">Trigger: 0 min</span>
+        </div>
+        <div class="user-list">
+          <div class="user-item">
+            <div class="user-avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
+            <span class="user-name">Rahul Sharma</span>
+            <div class="comm-icons">
+              <div class="comm-icon comm-on" title="Email">✉</div>
+              <div class="comm-icon comm-on" title="SMS">✆</div>
+              <div class="comm-icon comm-off" title="WhatsApp">W</div>
+              <div class="comm-icon comm-off" title="Call">☏</div>
+            </div>
+            <button class="edit-btn-sm">Edit</button>
+          </div>
+          <div class="user-item">
+            <div class="user-avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
+            <span class="user-name">Priya Kumar</span>
+            <div class="comm-icons">
+              <div class="comm-icon comm-on" title="Email">✉</div>
+              <div class="comm-icon comm-off" title="SMS">✆</div>
+              <div class="comm-icon comm-on" title="WhatsApp">W</div>
+              <div class="comm-icon comm-off" title="Call">☏</div>
+            </div>
+            <button class="edit-btn-sm">Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="esc-level">
+        <div class="esc-level-head">
+          <span class="level-badge l2">Level 2</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Supervisor escalation</span>
+          <span class="level-delay">Trigger: +15 min</span>
+        </div>
+        <div class="user-list">
+          <div class="user-item">
+            <div class="user-avatar" style="background:#FAEEDA;color:#633806">AM</div>
+            <span class="user-name">Amit Mehta</span>
+            <div class="comm-icons">
+              <div class="comm-icon comm-on" title="Email">✉</div>
+              <div class="comm-icon comm-on" title="SMS">✆</div>
+              <div class="comm-icon comm-on" title="WhatsApp">W</div>
+              <div class="comm-icon comm-off" title="Call">☏</div>
+            </div>
+            <button class="edit-btn-sm">Edit</button>
+          </div>
+          <div class="user-item">
+            <div class="user-avatar" style="background:#FAEEDA;color:#633806">RS</div>
+            <span class="user-name">Rahul Sharma</span>
+            <div class="comm-icons">
+              <div class="comm-icon comm-off" title="Email">✉</div>
+              <div class="comm-icon comm-off" title="SMS">✆</div>
+              <div class="comm-icon comm-off" title="WhatsApp">W</div>
+              <div class="comm-icon comm-on" title="Call">☏</div>
+            </div>
+            <button class="edit-btn-sm">Edit</button>
+          </div>
+        </div>
+        <div class="hooter-row">
+          <div class="hooter-icon">🔔</div>
+          <span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm triggered at this level</span>
+          <span class="hooter-badge">Hooter On</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="esc-level">
+        <div class="esc-level-head">
+          <span class="level-badge l3">Level 3</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Management escalation</span>
+          <span class="level-delay">Trigger: +30 min</span>
+        </div>
+        <div class="user-list">
+          <div class="user-item">
+            <div class="user-avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
+            <span class="user-name">Sunita Gupta</span>
+            <div class="comm-icons">
+              <div class="comm-icon comm-on" title="Email">✉</div>
+              <div class="comm-icon comm-on" title="SMS">✆</div>
+              <div class="comm-icon comm-on" title="WhatsApp">W</div>
+              <div class="comm-icon comm-on" title="Call">☏</div>
+            </div>
+            <button class="edit-btn-sm">Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button class="filter-btn" style="font-size:12px;width:100%;justify-content:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Add escalation level
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openEscModal(name){
+  document.getElementById('modalPlantName').textContent=name;
+  document.getElementById('escModal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('escModal').classList.remove('open');
+}
+function openPlant(name){
+  sendPrompt('Show me Layer 2 — the insights list for plant: '+name);
+}
+function handleToggle(el,name){
+  const map={'Alpha Manufacturing Unit':'lbl-alpha','Beta Refinery Complex':'lbl-beta','Gamma Cold Storage':'lbl-gamma','Delta Processing Plant':'lbl-delta','Epsilon Packaging Hub':'lbl-epsilon'};
+  const lbl=document.getElementById(map[name]);
+  if(lbl) lbl.textContent=el.checked?'On':'Off';
+}
+document.getElementById('escModal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+</script>

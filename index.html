@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insights+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ── */
+    :root {
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --color-text-primary: #1a1916;
+      --color-text-secondary: #5c5a52;
+      --color-text-tertiary: #9a9890;
+      --color-text-info: #0C447C;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f4f0;
+      --color-background-info: #E6F1FB;
+      --color-border-secondary: #d8d6ce;
+      --color-border-tertiary: #eceae2;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: #edeae4;
+      min-height: 100vh;
+      padding: 32px 20px;
+    }
+
+    .app-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      background: var(--color-background-primary);
+      border-radius: 14px;
+      border: 0.5px solid var(--color-border-secondary);
+      padding: 28px 32px;
+      min-height: 640px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Shared: breadcrumb ── */
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+    .breadcrumb a { color: var(--color-text-secondary); text-decoration: none; cursor: pointer; }
+    .breadcrumb a:hover { color: var(--color-text-primary); }
+    .breadcrumb-sep { color: var(--color-text-tertiary); }
+
+    /* ── Shared: toggle ── */
+    .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle input { display: none; }
+    .slider { position: absolute; inset: 0; border-radius: 20px; background: #B4B2A9; cursor: pointer; transition: background .2s; }
+    .slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: transform .2s; }
+    input:checked + .slider { background: #639922; }
+    input:checked + .slider:before { transform: translateX(16px); }
+
+    /* ── Shared: search + filter row ── */
+    .search-row { display: flex; gap: 8px; margin-bottom: 1.1rem; align-items: center; }
+    .search-input { flex: 1; height: 36px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    .filter-btn { height: 36px; padding: 0 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; font-family: var(--font-sans); }
+    .filter-btn:hover { background: var(--color-background-secondary); }
+    .filter-btn.active { background: #E6F1FB; color: #185FA5; border-color: #85B7EB; }
+
+    /* ── Shared: table wrap ── */
+    .table-wrap { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
+    .th { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── Shared: level badges ── */
+    .lbadge { font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 500; }
+    .lb1 { background: #E6F1FB; color: #0C447C; }
+    .lb2 { background: #FAEEDA; color: #633806; }
+    .lb3 { background: #FCEBEB; color: #791F1F; }
+
+    /* ── Shared: comm icons ── */
+    .comm-icons { display: flex; gap: 3px; }
+    .comm-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 0.5px solid var(--color-border-secondary); }
+    .comm-on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    .comm-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+
+    /* ── Shared: buttons ── */
+    .btn-ghost { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #639922; background: #EAF3DE; color: #3B6D11; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
+
+    /* ═══════════════════════════════════════
+       LAYER 1 — Plant list
+    ═══════════════════════════════════════ */
+    #view-l1 .page { padding: 1.5rem 0; min-height: 600px; }
+    #view-l1 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    #view-l1 .page-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+    #view-l1 .stat-pills { display: flex; gap: 8px; }
+    #view-l1 .pill { font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+    #view-l1 .pill-total { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
+    #view-l1 .pill-active { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l1 .pill-inactive { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+    #view-l1 .table-head { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1.1fr 1.1fr 80px; background: var(--color-background-secondary); padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    #view-l1 .plant-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1.1fr 1.1fr 80px; padding: 13px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; cursor: pointer; transition: background .1s; }
+    #view-l1 .plant-row:last-child { border-bottom: none; }
+    #view-l1 .plant-row:hover { background: var(--color-background-secondary); }
+    #view-l1 .plant-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+    #view-l1 .plant-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    #view-l1 .dot-green { background: #639922; }
+    #view-l1 .dot-red { background: #E24B4A; }
+    #view-l1 .cell { font-size: 13px; color: var(--color-text-secondary); }
+    #view-l1 .badge-wrap { display: flex; gap: 4px; flex-wrap: wrap; }
+    #view-l1 .badge { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+    #view-l1 .badge-a { background: #EAF3DE; color: #3B6D11; }
+    #view-l1 .badge-i { background: #FCEBEB; color: #A32D2D; }
+    #view-l1 .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+    #view-l1 .esc-btn { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; transition: background .1s; font-family: var(--font-sans); }
+    #view-l1 .esc-btn:hover { background: var(--color-background-secondary); }
+    #view-l1 .esc-icon { width: 14px; height: 14px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+    #view-l1 .esc-icon span { display: block; height: 1.5px; background: currentColor; border-radius: 1px; }
+    #view-l1 .esc-icon span:nth-child(2) { width: 75%; }
+    #view-l1 .esc-icon span:nth-child(3) { width: 50%; }
+
+    /* L1 Modal */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 520px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .modal-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+    .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-md); border: none; background: transparent; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); }
+    .modal-close:hover { background: var(--color-background-secondary); }
+    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 12px 20px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: flex-end; gap: 8px; }
+    .esc-level { margin-bottom: 16px; }
+    .esc-level-head-modal { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .level-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 10px; }
+    .l1b { background: #E6F1FB; color: #0C447C; }
+    .l2b { background: #FAEEDA; color: #633806; }
+    .l3b { background: #FCEBEB; color: #791F1F; }
+    .level-delay { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
+    .user-list { display: flex; flex-direction: column; gap: 6px; }
+    .user-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+    .edit-btn-sm { font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    .edit-btn-sm:hover { background: var(--color-background-secondary); }
+    .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 12px 0; }
+    .hooter-row-modal { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); margin-top: 8px; }
+    .hooter-badge { background: #EEEDFE; color: #3C3489; font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 500; }
+    .add-level-btn-modal { width: 100%; padding: 8px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; font-family: var(--font-sans); }
+    .add-level-btn-modal:hover { background: var(--color-background-secondary); }
+
+    /* ═══════════════════════════════════════
+       LAYER 2 — Insights list
+    ═══════════════════════════════════════ */
+    #view-l2 .page { padding: 1.5rem 0; min-height: 600px; }
+    #view-l2 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    #view-l2 .plant-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+    #view-l2 .stat-pills { display: flex; gap: 6px; }
+    #view-l2 .pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+    #view-l2 .pill-warn { background: #FAEEDA; color: #633806; border: 0.5px solid #FAC775; }
+    #view-l2 .pill-issue { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+    #view-l2 .pill-inc { background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; }
+    #view-l2 .pill-ok { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l2 .search-row { margin-bottom: 1rem; }
+    #view-l2 .filter-btn { height: 34px; font-size: 12px; }
+    #view-l2 .search-input { height: 34px; }
+    #view-l2 .bulk-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 12px; color: var(--color-text-secondary); }
+    #view-l2 .bulk-bar.hidden { display: none; }
+    #view-l2 .btn-sm { font-size: 12px; padding: 4px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    #view-l2 .btn-sm:hover { background: var(--color-background-secondary); }
+    #view-l2 .btn-sm-danger { border-color: #F09595; color: #A32D2D; background: transparent; }
+    #view-l2 .btn-sm-success { border-color: #97C459; color: #3B6D11; background: transparent; }
+    #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+    #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .1s; cursor: pointer; }
+    #view-l2 .insight-row:last-child { border-bottom: none; }
+    #view-l2 .insight-row:hover { background: var(--color-background-secondary); }
+    #view-l2 .insight-row.selected { background: #E6F1FB; }
+    #view-l2 .iname { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; position: relative; }
+    #view-l2 .iname-text { flex: 1; }
+    #view-l2 .cell { font-size: 12px; color: var(--color-text-secondary); }
+    #view-l2 .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+    #view-l2 .s-warning { background: #FAEEDA; color: #633806; }
+    #view-l2 .s-issue { background: #FCEBEB; color: #A32D2D; }
+    #view-l2 .s-incident { background: #EEEDFE; color: #3C3489; }
+    #view-l2 .s-ok { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .s-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
+    #view-l2 .s-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    #view-l2 .toggle { width: 32px; height: 18px; }
+    #view-l2 .toggle .slider:before { width: 12px; height: 12px; }
+    #view-l2 input:checked + .slider:before { transform: translateX(14px); }
+    #view-l2 .icon-task { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 5px; font-size: 11px; cursor: default; }
+    #view-l2 .icon-task-on { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .icon-task-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    #view-l2 .esc-trigger { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 5px; background: transparent; position: relative; cursor: pointer; flex-shrink: 0; }
+    #view-l2 .esc-trigger:hover { background: var(--color-background-secondary); }
+    #view-l2 .esc-trigger svg { opacity: .45; }
+    #view-l2 .esc-trigger:hover svg { opacity: 1; }
+    #view-l2 .esc-tooltip { display: none; position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 12px; width: 260px; z-index: 50; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    #view-l2 .esc-trigger:hover .esc-tooltip { display: block; }
+    #view-l2 .esc-tooltip-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    #view-l2 .esc-level-row { margin-bottom: 8px; }
+    #view-l2 .esc-level-row:last-child { margin-bottom: 0; }
+    #view-l2 .esc-lhead { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    #view-l2 .esc-users-tt { display: flex; flex-direction: column; gap: 3px; padding-left: 4px; }
+    #view-l2 .esc-user-row { display: flex; align-items: center; gap: 6px; }
+    #view-l2 .esc-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; }
+    #view-l2 .esc-uname { font-size: 11px; color: var(--color-text-secondary); flex: 1; }
+    #view-l2 .esc-comm { display: flex; gap: 2px; }
+    #view-l2 .ec { width: 16px; height: 16px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; }
+    #view-l2 .ec-on { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .ec-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    #view-l2 .hooter-hint { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--color-text-tertiary); margin-top: 4px; padding-top: 4px; border-top: 0.5px solid var(--color-border-tertiary); }
+    #view-l2 .last-trig { font-size: 11px; color: var(--color-text-tertiary); }
+    #view-l2 .last-trig.active { color: #639922; }
+    #view-l2 .row-chevron { color: var(--color-text-tertiary); font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+    /* ═══════════════════════════════════════
+       LAYER 3 — Insight detail
+    ═══════════════════════════════════════ */
+    #view-l3 .page { padding: 1.5rem 0; font-family: var(--font-sans); min-height: 700px; }
+    #view-l3 .top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; }
+    #view-l3 .insight-title { font-size: 19px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; }
+    #view-l3 .insight-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+    #view-l3 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 500; }
+    #view-l3 .b-inc { background: #EEEDFE; color: #3C3489; }
+    #view-l3 .b-active { background: #EAF3DE; color: #3B6D11; }
+    #view-l3 .b-plant { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
+    #view-l3 .b-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    #view-l3 .top-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    #view-l3 .btn { height: 32px; padding: 0 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); font-family: var(--font-sans); }
+    #view-l3 .btn:hover { background: var(--color-background-secondary); }
+    #view-l3 .toggle-row { display: flex; align-items: center; gap: 8px; }
+    #view-l3 .layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+    #view-l3 .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px 18px; margin-bottom: 14px; }
+    #view-l3 .card-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    #view-l3 .desc-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+    #view-l3 .condition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #view-l3 .cond-block { padding: 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); }
+    #view-l3 .cond-open { background: #FAEEDA; border-color: #FAC775; }
+    #view-l3 .cond-close { background: #EAF3DE; border-color: #97C459; }
+    #view-l3 .cond-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    #view-l3 .cond-open .cond-label { color: #633806; }
+    #view-l3 .cond-close .cond-label { color: #3B6D11; }
+    #view-l3 .cond-rule { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+    #view-l3 .cond-open .cond-rule { color: #854F0B; }
+    #view-l3 .cond-close .cond-rule { color: #3B6D11; }
+    #view-l3 .cond-note { font-size: 11px; color: var(--color-text-secondary); }
+    #view-l3 .cond-note b { font-weight: 500; }
+    #view-l3 .state-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; border: 1.5px solid transparent; }
+    #view-l3 .sc-warn { background: #FAEEDA; border-color: #FAC775; color: #633806; }
+    #view-l3 .sc-issue { background: #FCEBEB; border-color: #F09595; color: #A32D2D; }
+    #view-l3 .sc-inc { background: #EEEDFE; border-color: #AFA9EC; color: #3C3489; box-shadow: 0 0 0 3px #EEEDFE; }
+    #view-l3 .sc-ok { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    #view-l3 .detail-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 12px; }
+    #view-l3 .detail-row:last-child { border-bottom: none; }
+    #view-l3 .detail-key { color: var(--color-text-secondary); }
+    #view-l3 .detail-val { color: var(--color-text-primary); font-weight: 500; }
+    #view-l3 .detail-val.red { color: #A32D2D; }
+    #view-l3 .detail-val.green { color: #3B6D11; }
+    #view-l3 .esc-level-block { margin-bottom: 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
+    #view-l3 .esc-level-block:last-of-type { margin-bottom: 0; }
+    #view-l3 .esc-level-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+    #view-l3 .esc-delay { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
+    #view-l3 .esc-edit-link { font-size: 11px; color: var(--color-text-secondary); cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+    #view-l3 .esc-edit-link:hover { background: var(--color-background-primary); }
+    #view-l3 .esc-users { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+    #view-l3 .user-item { display: flex; align-items: center; gap: 8px; }
+    #view-l3 .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; }
+    #view-l3 .uname { font-size: 12px; color: var(--color-text-primary); flex: 1; }
+    #view-l3 .ci { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: pointer; border: 0.5px solid transparent; transition: opacity .15s; }
+    #view-l3 .ci-on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    #view-l3 .ci-off { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); color: var(--color-text-tertiary); }
+    #view-l3 .ci:hover { opacity: .7; }
+    #view-l3 .remove-user { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 13px; }
+    #view-l3 .remove-user:hover { background: #FCEBEB; color: #A32D2D; }
+    #view-l3 .hooter-row { display: flex; align-items: center; gap: 8px; padding: 6px 12px 8px; font-size: 12px; color: var(--color-text-secondary); border-top: 0.5px dashed var(--color-border-tertiary); }
+    #view-l3 .add-user-row { padding: 6px 12px 8px; display: flex; gap: 6px; }
+    #view-l3 .add-user-input { flex: 1; height: 28px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 8px; font-size: 12px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    #view-l3 .add-user-btn { height: 28px; padding: 0 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    #view-l3 .add-user-btn:hover { background: var(--color-background-secondary); }
+    #view-l3 .add-level-btn { width: 100%; padding: 8px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; font-family: var(--font-sans); }
+    #view-l3 .add-level-btn:hover { background: var(--color-background-secondary); }
+    #view-l3 .resolve-card { background: #FCEBEB; border: 0.5px solid #F09595; border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 14px; }
+    #view-l3 .resolve-title { font-size: 13px; font-weight: 500; color: #A32D2D; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    #view-l3 .resolve-note { font-size: 12px; color: #791F1F; line-height: 1.6; margin-bottom: 10px; }
+    #view-l3 .resolve-actions { display: flex; gap: 8px; }
+    #view-l3 .rbtn { height: 30px; padding: 0 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; border: 0.5px solid; font-family: var(--font-sans); }
+    #view-l3 .rbtn-data { border-color: #F09595; background: #FCEBEB; color: #A32D2D; }
+    #view-l3 .rbtn-data:hover { background: #F7C1C1; }
+    #view-l3 .rbtn-ack { border-color: #97C459; background: #EAF3DE; color: #3B6D11; }
+    #view-l3 .rbtn-ack:hover { background: #C0DD97; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- ══════════════════════════════════
+         VIEW L1 — Plant list
+    ══════════════════════════════════ -->
+    <div id="view-l1" class="view active">
+      <div class="page">
+        <div class="top-bar">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="page-title">Insights</span>
+            <div class="stat-pills">
+              <span class="pill pill-total">100 Total</span>
+              <span class="pill pill-active">70 Active</span>
+              <span class="pill pill-inactive">30 Inactive</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--color-text-secondary)">Plant-level configuration</div>
+        </div>
+
+        <div class="search-row">
+          <input class="search-input" placeholder="Search plants…" type="text" />
+          <button class="filter-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2h11M3 6.5h7M5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Filter
+          </button>
+          <button class="filter-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Add plant
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-head">
+            <span class="th">Plant</span>
+            <span class="th">Location</span>
+            <span class="th">Insights</span>
+            <span class="th">Status</span>
+            <span class="th">All Insights</span>
+            <span class="th">Escalation</span>
+          </div>
+
+          <div class="plant-row" onclick="openPlant('Alpha Manufacturing Unit')">
+            <div class="plant-name"><span class="plant-dot dot-green"></span>Alpha Manufacturing Unit</div>
+            <div class="cell">Mumbai, MH</div>
+            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">24</div>
+            <div class="badge-wrap"><span class="badge badge-a">18 active</span><span class="badge badge-i">6 off</span></div>
+            <div class="toggle-wrap" onclick="event.stopPropagation()">
+              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-alpha')"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-alpha">On</span>
+            </div>
+            <div onclick="event.stopPropagation()">
+              <button class="esc-btn" onclick="openEscModal('Alpha Manufacturing Unit')">
+                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+              </button>
+            </div>
+          </div>
+
+          <div class="plant-row" onclick="openPlant('Beta Refinery Complex')">
+            <div class="plant-name"><span class="plant-dot dot-green"></span>Beta Refinery Complex</div>
+            <div class="cell">Surat, GJ</div>
+            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">31</div>
+            <div class="badge-wrap"><span class="badge badge-a">25 active</span><span class="badge badge-i">6 off</span></div>
+            <div class="toggle-wrap" onclick="event.stopPropagation()">
+              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-beta')"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-beta">On</span>
+            </div>
+            <div onclick="event.stopPropagation()">
+              <button class="esc-btn" onclick="openEscModal('Beta Refinery Complex')">
+                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+              </button>
+            </div>
+          </div>
+
+          <div class="plant-row" onclick="openPlant('Gamma Cold Storage')">
+            <div class="plant-name"><span class="plant-dot dot-red"></span>Gamma Cold Storage</div>
+            <div class="cell">Pune, MH</div>
+            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">12</div>
+            <div class="badge-wrap"><span class="badge badge-i">All off</span></div>
+            <div class="toggle-wrap" onclick="event.stopPropagation()">
+              <label class="toggle"><input type="checkbox" onchange="handleToggle(this,'lbl-gamma')"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-gamma">Off</span>
+            </div>
+            <div onclick="event.stopPropagation()">
+              <button class="esc-btn" onclick="openEscModal('Gamma Cold Storage')">
+                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+              </button>
+            </div>
+          </div>
+
+          <div class="plant-row" onclick="openPlant('Delta Processing Plant')">
+            <div class="plant-name"><span class="plant-dot dot-green"></span>Delta Processing Plant</div>
+            <div class="cell">Nagpur, MH</div>
+            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">19</div>
+            <div class="badge-wrap"><span class="badge badge-a">14 active</span><span class="badge badge-i">5 off</span></div>
+            <div class="toggle-wrap" onclick="event.stopPropagation()">
+              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-delta')"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-delta">On</span>
+            </div>
+            <div onclick="event.stopPropagation()">
+              <button class="esc-btn" onclick="openEscModal('Delta Processing Plant')">
+                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+              </button>
+            </div>
+          </div>
+
+          <div class="plant-row" onclick="openPlant('Epsilon Packaging Hub')">
+            <div class="plant-name"><span class="plant-dot dot-green"></span>Epsilon Packaging Hub</div>
+            <div class="cell">Chennai, TN</div>
+            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">14</div>
+            <div class="badge-wrap"><span class="badge badge-a">13 active</span><span class="badge badge-i">1 off</span></div>
+            <div class="toggle-wrap" onclick="event.stopPropagation()">
+              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-epsilon')"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-epsilon">On</span>
+            </div>
+            <div onclick="event.stopPropagation()">
+              <button class="esc-btn" onclick="openEscModal('Epsilon Packaging Hub')">
+                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--color-text-tertiary)">Showing 5 of 100 plants · Click a row to view insights for that plant</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW L2 — Insights list
+    ══════════════════════════════════ -->
+    <div id="view-l2" class="view">
+      <div class="page">
+        <div class="breadcrumb">
+          <a onclick="showView('l1')">Insights</a>
+          <span class="breadcrumb-sep">›</span>
+          <span style="color:var(--color-text-primary);font-weight:500" id="l2PlantName">Alpha Manufacturing Unit</span>
+        </div>
+
+        <div class="top-bar">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="plant-title" id="l2PlantTitle">Alpha Manufacturing Unit</span>
+            <div class="stat-pills">
+              <span class="pill pill-inc">2 incident</span>
+              <span class="pill pill-issue">4 issue</span>
+              <span class="pill pill-warn">6 warning</span>
+              <span class="pill pill-ok">12 normal</span>
+            </div>
+          </div>
+          <div>
+            <button class="filter-btn">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Add insight
+            </button>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <input class="search-input" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
+          <button class="filter-btn" id="filterAll" onclick="setFilter('all')" style="background:var(--color-background-secondary)">All</button>
+          <button class="filter-btn" id="filterIncident" onclick="setFilter('incident')">Incident</button>
+          <button class="filter-btn" id="filterIssue" onclick="setFilter('issue')">Issue</button>
+          <button class="filter-btn" id="filterWarning" onclick="setFilter('warning')">Warning</button>
+          <button class="filter-btn" id="filterOff" onclick="setFilter('off')">Off</button>
+        </div>
+
+        <div class="bulk-bar hidden" id="bulkBar">
+          <span id="bulkCount">0 selected</span>
+          <div style="flex:1"></div>
+          <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable selected</button>
+          <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable selected</button>
+          <button class="btn-sm" onclick="clearSelection()">Clear</button>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><input type="checkbox" id="selectAll" onchange="toggleAll(this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+            <span class="th">Insight</span>
+            <span class="th">Live status</span>
+            <span class="th">Last triggered</span>
+            <span class="th">State</span>
+            <span class="th" style="text-align:center">Task</span>
+            <span class="th"></span>
+          </div>
+          <div id="rowsContainer"></div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open the insight detail</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         VIEW L3 — Insight detail
+    ══════════════════════════════════ -->
+    <div id="view-l3" class="view">
+      <div class="page">
+        <div class="breadcrumb">
+          <a onclick="showView('l1')">Insights</a>
+          <span class="breadcrumb-sep">›</span>
+          <a onclick="showView('l2')">Alpha Manufacturing Unit</a>
+          <span class="breadcrumb-sep">›</span>
+          <span style="color:var(--color-text-primary);font-weight:500">Boiler pressure threshold exceeded</span>
+        </div>
+
+        <div class="top-bar">
+          <div>
+            <div class="insight-title">Boiler pressure threshold exceeded</div>
+            <div class="insight-meta">
+              <span class="badge b-inc"><span class="b-dot"></span>Incident</span>
+              <span class="badge b-active"><span class="b-dot"></span>Active · 2h 14m</span>
+              <span class="badge b-plant">Alpha Manufacturing Unit</span>
+            </div>
+          </div>
+          <div class="top-actions">
+            <div class="toggle-row">
+              <label class="toggle"><input type="checkbox" checked id="mainToggle"><span class="slider"></span></label>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Enabled</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resolve-card">
+          <div class="resolve-title">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#A32D2D" stroke-width="1.2"/><path d="M7 4v3.5M7 9.5v.5" stroke="#A32D2D" stroke-width="1.3" stroke-linecap="round"/></svg>
+            This insight is currently active
+          </div>
+          <div class="resolve-note">Resolution cannot be time-based. It must be triggered by a sensor value crossing the closing threshold, or manually acknowledged via a data input from an authorised user.</div>
+          <div class="resolve-actions">
+            <button class="rbtn rbtn-data">Input sensor data</button>
+            <button class="rbtn rbtn-ack">Acknowledge &amp; resolve</button>
+          </div>
+        </div>
+
+        <div class="layout">
+          <!-- Left column -->
+          <div>
+            <div class="card">
+              <div class="card-title">Description</div>
+              <div class="desc-text">Monitors the primary boiler steam pressure and triggers when pressure exceeds the safe operating range. This insight evaluates readings from pressure transducer PT-101 on a 30-second rolling average. Sustained high pressure can indicate a faulty safety valve, blocked steam line, or excessive heat input and must be resolved before returning the boiler to normal operation.</div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Opening &amp; closing conditions</div>
+              <div class="condition-grid">
+                <div class="cond-block cond-open">
+                  <div class="cond-label">Opening condition</div>
+                  <div class="cond-rule">PT-101 ≥ 12.5 bar</div>
+                  <div class="cond-note">Sustained for <b>60 seconds</b> · rolling avg</div>
+                </div>
+                <div class="cond-block cond-close">
+                  <div class="cond-label">Closing condition</div>
+                  <div class="cond-rule">PT-101 &lt; 11.0 bar</div>
+                  <div class="cond-note">Sustained for <b>120 seconds</b> · cannot be time-based</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Status progression</div>
+              <div style="position:relative;padding:0 6px">
+                <div style="position:absolute;top:14px;left:20px;right:20px;height:1.5px;background:var(--color-border-secondary);z-index:0"></div>
+                <div style="position:absolute;top:14px;left:20px;height:1.5px;width:66%;background:#AFA9EC;z-index:1"></div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:2">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                    <div class="state-circle sc-warn">WARN</div>
+                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Warning</span>
+                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 12.5 bar</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                    <div class="state-circle sc-issue">ISSUE</div>
+                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Issue</span>
+                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 14.0 bar</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                    <div class="state-circle sc-inc">INC</div>
+                    <span style="font-size:10px;color:var(--color-text-primary);font-weight:500">Incident ←</span>
+                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 16.0 bar</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                    <div class="state-circle sc-ok">OK</div>
+                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Resolved</span>
+                    <span style="font-size:10px;color:var(--color-text-tertiary)">&lt; 11.0 bar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Details</div>
+              <div class="detail-row"><span class="detail-key">Sensor</span><span class="detail-val">PT-101 · Pressure transducer</span></div>
+              <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
+              <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
+              <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM</span></div>
+              <div class="detail-row"><span class="detail-key">Task linked</span><span class="detail-val green">TASK-4821 · Inspect safety valve</span></div>
+              <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
+            </div>
+          </div>
+
+          <!-- Right column — escalation -->
+          <div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:12px 16px 10px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em">Escalation</span>
+                <span style="font-size:11px;color:var(--color-text-tertiary)">Inherits from plant · overrides below</span>
+              </div>
+              <div style="padding:12px 14px">
+
+                <div class="esc-level-block">
+                  <div class="esc-level-head">
+                    <span class="lbadge lb1">Level 1</span>
+                    <span style="font-size:11px;color:var(--color-text-secondary)">Immediate</span>
+                    <span class="esc-delay">0 min</span>
+                    <span class="esc-edit-link">Edit</span>
+                  </div>
+                  <div class="esc-users">
+                    <div class="user-item">
+                      <div class="avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
+                      <span class="uname">Rahul Sharma</span>
+                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-off">W</div><div class="ci ci-off">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                    <div class="user-item">
+                      <div class="avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
+                      <span class="uname">Priya Kumar</span>
+                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-off">✆</div><div class="ci ci-on">W</div><div class="ci ci-off">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                  </div>
+                  <div class="add-user-row">
+                    <input class="add-user-input" placeholder="Add user…" type="text"/>
+                    <button class="add-user-btn">Add</button>
+                  </div>
+                </div>
+
+                <div class="esc-level-block">
+                  <div class="esc-level-head">
+                    <span class="lbadge lb2">Level 2</span>
+                    <span style="font-size:11px;color:var(--color-text-secondary)">Supervisor</span>
+                    <span class="esc-delay">+15 min</span>
+                    <span class="esc-edit-link">Edit</span>
+                  </div>
+                  <div class="esc-users">
+                    <div class="user-item">
+                      <div class="avatar" style="background:#FAEEDA;color:#633806">AM</div>
+                      <span class="uname">Amit Mehta</span>
+                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-on">W</div><div class="ci ci-off">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                    <div class="user-item">
+                      <div class="avatar" style="background:#FAEEDA;color:#633806">RS</div>
+                      <span class="uname">Rahul Sharma</span>
+                      <div class="comm-icons"><div class="ci ci-off">✉</div><div class="ci ci-off">✆</div><div class="ci ci-off">W</div><div class="ci ci-on">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                  </div>
+                  <div class="hooter-row">
+                    <span style="font-size:14px">🔔</span>
+                    <span style="flex:1">Hooter alarm at this level</span>
+                    <label class="toggle" style="width:30px;height:16px"><input type="checkbox" checked><span class="slider"></span></label>
+                  </div>
+                  <div class="add-user-row">
+                    <input class="add-user-input" placeholder="Add user…" type="text"/>
+                    <button class="add-user-btn">Add</button>
+                  </div>
+                </div>
+
+                <div class="esc-level-block">
+                  <div class="esc-level-head">
+                    <span class="lbadge lb3">Level 3</span>
+                    <span style="font-size:11px;color:var(--color-text-secondary)">Management</span>
+                    <span class="esc-delay">+30 min</span>
+                    <span class="esc-edit-link">Edit</span>
+                  </div>
+                  <div class="esc-users">
+                    <div class="user-item">
+                      <div class="avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
+                      <span class="uname">Sunita Gupta</span>
+                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-on">W</div><div class="ci ci-on">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                  </div>
+                  <div class="add-user-row">
+                    <input class="add-user-input" placeholder="Add user…" type="text"/>
+                    <button class="add-user-btn">Add</button>
+                  </div>
+                </div>
+
+                <div class="esc-level-block" style="border-style:dashed">
+                  <div class="esc-level-head" style="background:var(--color-background-primary)">
+                    <span class="lbadge" style="background:#EEEDFE;color:#3C3489">Custom</span>
+                    <span style="font-size:11px;color:var(--color-text-secondary)">Insight-only group</span>
+                    <span class="esc-delay" style="font-size:10px;font-style:italic">not inherited</span>
+                  </div>
+                  <div class="esc-users">
+                    <div class="user-item">
+                      <div class="avatar" style="background:#EEEDFE;color:#3C3489">NK</div>
+                      <span class="uname">Nikhil Kapoor</span>
+                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-off">W</div><div class="ci ci-off">☏</div></div>
+                      <button class="remove-user">×</button>
+                    </div>
+                  </div>
+                  <div class="add-user-row">
+                    <input class="add-user-input" placeholder="Add user to custom group…" type="text"/>
+                    <button class="add-user-btn">Add</button>
+                  </div>
+                </div>
+
+                <button class="add-level-btn">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Add escalation level
+                </button>
+                <button class="add-level-btn" style="margin-top:6px;border-color:#AFA9EC;color:#534AB7">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Create custom escalation group
+                </button>
+
+                <div style="margin-top:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-tertiary);line-height:1.6">
+                  Changes to escalation levels here apply only to this insight. To change plant-wide escalation, go to the plant settings.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-shell -->
+
+  <!-- ══════════════════════════════════
+       L1 Escalation Modal
+  ══════════════════════════════════ -->
+  <div class="modal-bg" id="escModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="modalPlantName">Alpha Manufacturing Unit</div>
+          <div class="modal-sub">Escalation configuration · applies to all insights in this plant</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="esc-level">
+          <div class="esc-level-head-modal">
+            <span class="level-badge l1b">Level 1</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">Immediate alert</span>
+            <span class="level-delay">Trigger: 0 min</span>
+          </div>
+          <div class="user-list">
+            <div class="user-item">
+              <div class="user-avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
+              <span class="user-name">Rahul Sharma</span>
+              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-off">W</div><div class="comm-icon comm-off">☏</div></div>
+              <button class="edit-btn-sm">Edit</button>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
+              <span class="user-name">Priya Kumar</span>
+              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-off">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-off">☏</div></div>
+              <button class="edit-btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="esc-level">
+          <div class="esc-level-head-modal">
+            <span class="level-badge l2b">Level 2</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">Supervisor escalation</span>
+            <span class="level-delay">Trigger: +15 min</span>
+          </div>
+          <div class="user-list">
+            <div class="user-item">
+              <div class="user-avatar" style="background:#FAEEDA;color:#633806">AM</div>
+              <span class="user-name">Amit Mehta</span>
+              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-off">☏</div></div>
+              <button class="edit-btn-sm">Edit</button>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar" style="background:#FAEEDA;color:#633806">RS</div>
+              <span class="user-name">Rahul Sharma</span>
+              <div class="comm-icons"><div class="comm-icon comm-off">✉</div><div class="comm-icon comm-off">✆</div><div class="comm-icon comm-off">W</div><div class="comm-icon comm-on">☏</div></div>
+              <button class="edit-btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="hooter-row-modal">
+            <span style="font-size:16px">🔔</span>
+            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm triggered at this level</span>
+            <span class="hooter-badge">Hooter On</span>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="esc-level">
+          <div class="esc-level-head-modal">
+            <span class="level-badge l3b">Level 3</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">Management escalation</span>
+            <span class="level-delay">Trigger: +30 min</span>
+          </div>
+          <div class="user-list">
+            <div class="user-item">
+              <div class="user-avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
+              <span class="user-name">Sunita Gupta</span>
+              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-on">☏</div></div>
+              <button class="edit-btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+        <button class="add-level-btn-modal">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Add escalation level
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Router ── */
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + id).classList.add('active');
+      window.scrollTo(0, 0);
+      if (id === 'l2') renderRows();
+    }
+
+    /* ── L1 ── */
+    function openPlant(name) {
+      document.getElementById('l2PlantName').textContent = name;
+      document.getElementById('l2PlantTitle').textContent = name;
+      showView('l2');
+    }
+    function openEscModal(name) {
+      document.getElementById('modalPlantName').textContent = name;
+      document.getElementById('escModal').classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('escModal').classList.remove('open');
+    }
+    function handleToggle(el, lblId) {
+      const lbl = document.getElementById(lblId);
+      if (lbl) lbl.textContent = el.checked ? 'On' : 'Off';
+    }
+    document.getElementById('escModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    /* ── L2 ── */
+    const insights = [
+      {id:1,name:'Boiler pressure threshold exceeded',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 2h 14m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,1,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,0]}],hooter:true},{label:'Level 3',cls:'lb3',users:[{init:'SG',bg:'#FCEBEB',tc:'#791F1F',name:'Sunita Gupta',comm:[1,1,1,1]}],hooter:false}]},
+      {id:2,name:'Cooling tower water level critical',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 47m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,1,1]}],hooter:true}]},
+      {id:3,name:'Compressor vibration anomaly',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 18m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[0,1,1,0]}],hooter:false}]},
+      {id:4,name:'Steam leak detection triggered',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Active since 5m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,1,0]}],hooter:true}]},
+      {id:5,name:'Conveyor belt speed deviation',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Resolved 1h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+      {id:6,name:'Motor temperature high',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 3m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,1]}],hooter:false}]},
+      {id:7,name:'Feed water pH out of range',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 22m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
+      {id:8,name:'Turbine RPM fluctuation',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Resolved 3h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false}]},
+      {id:9,name:'Ambient temperature rising',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 8m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
+      {id:10,name:'Hydraulic fluid pressure low',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:true,lastTrig:'Resolved 30m ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false}]},
+      {id:11,name:'Exhaust gas CO₂ elevated',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 1m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,1,0]}],hooter:false}]},
+      {id:12,name:'Lube oil level low warning',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+      {id:13,name:'Chiller unit efficiency drop',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 6h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,0,0]}],hooter:false}]},
+      {id:14,name:'Pump discharge pressure variance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 2d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
+      {id:15,name:'Panel board voltage imbalance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:true,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,1,0]}],hooter:false}]},
+      {id:16,name:'Dust collector filter clog',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
+      {id:17,name:'Emergency stop circuit fault',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]}],hooter:false}]},
+      {id:18,name:'Nitrogen purge cycle missed',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:true,lastTrig:'Resolved 5d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
+    ];
+
+    const commLabels = ['✉','✆','W','☏'];
+    let selected = new Set();
+    let currentFilter = 'all';
+
+    function buildEscTooltip(levels) {
+      let html = '<div class="esc-tooltip"><div class="esc-tooltip-title">Escalation levels</div>';
+      levels.forEach(lv => {
+        html += `<div class="esc-level-row"><div class="esc-lhead"><span class="lbadge ${lv.cls}">${lv.label}</span></div><div class="esc-users-tt">`;
+        lv.users.forEach(u => {
+          html += `<div class="esc-user-row"><div class="esc-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div><span class="esc-uname">${u.name}</span><div class="esc-comm">`;
+          u.comm.forEach((on, i) => { html += `<div class="ec ${on?'ec-on':'ec-off'}">${commLabels[i]}</div>`; });
+          html += '</div></div>';
+        });
+        html += '</div>';
+        if (lv.hooter) html += '<div class="hooter-hint">🔔 Hooter alarm at this level</div>';
+        html += '</div>';
+      });
+      return html + '</div>';
+    }
+
+    function renderRows() {
+      const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      const container = document.getElementById('rowsContainer');
+      if (!container) return;
+      const rows = insights.filter(r => {
+        if (q && !r.name.toLowerCase().includes(q)) return false;
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'off') return !r.enabled;
+        return r.status === currentFilter;
+      });
+      if (!rows.length) {
+        container.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match this filter</div>';
+        return;
+      }
+      container.innerHTML = rows.map(r => {
+        const isSel = selected.has(r.id);
+        return `<div class="insight-row${isSel?' selected':''}" id="row-${r.id}" onclick="handleRowClick(event,${r.id})">
+          <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+          <div class="iname">
+            <div class="esc-trigger" onclick="event.stopPropagation()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h7M2 10.5h5" stroke="var(--color-text-secondary)" stroke-width="1.2" stroke-linecap="round"/></svg>
+              ${buildEscTooltip(r.escLevels)}
+            </div>
+            <span class="iname-text">${r.name}</span>
+          </div>
+          <div><span class="status-badge ${r.stateClass}"><span class="s-dot"></span>${r.statusLabel}</span></div>
+          <div class="last-trig${r.lastTrigActive?' active':''}">${r.lastTrig}</div>
+          <div onclick="event.stopPropagation()">
+            <label class="toggle"><input type="checkbox"${r.enabled?' checked':''} onchange="toggleInsight(${r.id},this)"><span class="slider"></span></label>
+          </div>
+          <div style="display:flex;justify-content:center">
+            <div class="icon-task ${r.task?'icon-task-on':'icon-task-off'}" title="${r.task?'Task linked':'No task'}">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 6l1.5 1.5 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="row-chevron">›</div>
+        </div>`;
+      }).join('');
+    }
+
+    function handleRowClick(e, id) {
+      showView('l3');
+    }
+
+    function toggleSelect(id, cb) {
+      if (cb.checked) selected.add(id); else selected.delete(id);
+      updateBulkBar(); renderRows();
+    }
+    function toggleAll(cb) {
+      const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      const visible = insights.filter(r => {
+        if (q && !r.name.toLowerCase().includes(q)) return false;
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'off') return !r.enabled;
+        return r.status === currentFilter;
+      }).map(r => r.id);
+      if (cb.checked) visible.forEach(id => selected.add(id));
+      else visible.forEach(id => selected.delete(id));
+      updateBulkBar(); renderRows();
+    }
+    function updateBulkBar() {
+      const bar = document.getElementById('bulkBar');
+      const cnt = document.getElementById('bulkCount');
+      if (selected.size > 0) { bar.classList.remove('hidden'); cnt.textContent = selected.size + ' selected'; }
+      else bar.classList.add('hidden');
+    }
+    function clearSelection() { selected.clear(); updateBulkBar(); renderRows(); }
+    function bulkEnable() {
+      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) { r.enabled = true; if (r.status === 'off') { r.status = 'ok'; r.statusLabel = 'Normal'; r.stateClass = 's-ok'; } } });
+      renderRows();
+    }
+    function bulkDisable() {
+      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) { r.enabled = false; r.status = 'off'; r.statusLabel = 'Disabled'; r.stateClass = 's-off'; } });
+      renderRows();
+    }
+    function toggleInsight(id, cb) {
+      const r = insights.find(x => x.id === id);
+      if (!r) return;
+      r.enabled = cb.checked;
+      if (!cb.checked) { r.status = 'off'; r.statusLabel = 'Disabled'; r.stateClass = 's-off'; }
+      else { r.status = 'ok'; r.statusLabel = 'Normal'; r.stateClass = 's-ok'; }
+      renderRows();
+    }
+    function setFilter(f) {
+      currentFilter = f;
+      ['all','incident','issue','warning','off'].forEach(x => {
+        const el = document.getElementById('filter' + x.charAt(0).toUpperCase() + x.slice(1));
+        if (el) el.style.background = x === f ? 'var(--color-background-secondary)' : '';
+      });
+      renderRows();
+    }
+
+    /* ── L3 ── */
+    document.getElementById('mainToggle').addEventListener('change', function() {
+      document.getElementById('toggleLbl').textContent = this.checked ? 'Enabled' : 'Disabled';
+    });
+  </script>
+</body>
+</html>
