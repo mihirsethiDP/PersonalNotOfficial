@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* ── Variables ── */
     :root {
       --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
       --color-text-primary: #1a1916;
@@ -22,37 +21,19 @@
       --border-radius-md: 6px;
       --border-radius-lg: 10px;
     }
-
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-sans);
-      background: #edeae4;
-      min-height: 100vh;
-      padding: 32px 20px;
-    }
-
-    .app-shell {
-      max-width: 1120px;
-      margin: 0 auto;
-      background: var(--color-background-primary);
-      border-radius: 14px;
-      border: 0.5px solid var(--color-border-secondary);
-      padding: 28px 32px;
-      min-height: 640px;
-    }
-
+    body { font-family: var(--font-sans); background: #edeae4; min-height: 100vh; padding: 32px 20px; }
+    .app-shell { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; min-height: 640px; }
     .view { display: none; }
     .view.active { display: block; }
 
-    /* ── Shared: breadcrumb ── */
+    /* Breadcrumb */
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
     .breadcrumb a { color: var(--color-text-secondary); text-decoration: none; cursor: pointer; }
     .breadcrumb a:hover { color: var(--color-text-primary); }
     .breadcrumb-sep { color: var(--color-text-tertiary); }
 
-    /* ── Shared: toggle ── */
+    /* Toggle */
     .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { display: none; }
     .slider { position: absolute; inset: 0; border-radius: 20px; background: #B4B2A9; cursor: pointer; transition: background .2s; }
@@ -60,37 +41,99 @@
     input:checked + .slider { background: #639922; }
     input:checked + .slider:before { transform: translateX(16px); }
 
-    /* ── Shared: search + filter row ── */
-    .search-row { display: flex; gap: 8px; margin-bottom: 1.1rem; align-items: center; }
-    .search-input { flex: 1; height: 36px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    /* Shared search + filter row */
+    .search-row { display: flex; gap: 8px; margin-bottom: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; height: 36px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
     .filter-btn { height: 36px; padding: 0 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; font-family: var(--font-sans); }
     .filter-btn:hover { background: var(--color-background-secondary); }
-    .filter-btn.active { background: #E6F1FB; color: #185FA5; border-color: #85B7EB; }
+    .filter-btn.active-filter { background: #E6F1FB; color: #185FA5; border-color: #85B7EB; }
+    .filter-btn-count { font-size: 10px; background: #185FA5; color: #fff; padding: 1px 6px; border-radius: 8px; font-weight: 500; }
 
-    /* ── Shared: table wrap ── */
+    /* Table */
     .table-wrap { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
     .th { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
 
-    /* ── Shared: level badges ── */
-    .lbadge { font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 500; }
+    /* Level badges */
+    .lbadge { font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
     .lb1 { background: #E6F1FB; color: #0C447C; }
     .lb2 { background: #FAEEDA; color: #633806; }
     .lb3 { background: #FCEBEB; color: #791F1F; }
+    .lbn { background: #3D3B35; color: #ffffff; } /* Notify */
+    .lbc { background: #EEEDFE; color: #3C3489; } /* Custom */
 
-    /* ── Shared: comm icons ── */
+    /* Comm icons */
     .comm-icons { display: flex; gap: 3px; }
     .comm-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 0.5px solid var(--color-border-secondary); }
     .comm-on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
     .comm-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
 
-    /* ── Shared: buttons ── */
+    /* Buttons */
     .btn-ghost { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
     .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #639922; background: #EAF3DE; color: #3B6D11; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
+    .btn-danger { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #F09595; background: transparent; color: #A32D2D; cursor: pointer; font-family: var(--font-sans); }
 
-    /* ═══════════════════════════════════════
-       LAYER 1 — Plant list
-    ═══════════════════════════════════════ */
-    #view-l1 .page { padding: 1.5rem 0; min-height: 600px; }
+    /* Filter panel */
+    .filter-panel { display: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px; background: var(--color-background-secondary); }
+    .filter-panel.open { display: block; }
+    .filter-panel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 18px; margin-bottom: 12px; }
+    .filter-section { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 10px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
+    .filter-chips-row { display: flex; gap: 4px; flex-wrap: wrap; }
+    .fchip { font-size: 11px; padding: 3px 10px; border-radius: 12px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    .fchip:hover { background: #E6F1FB; border-color: #85B7EB; color: #185FA5; }
+    .fchip.selected { background: #E6F1FB; border-color: #85B7EB; color: #185FA5; }
+    .filter-input { height: 30px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 12px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); width: 100%; }
+    .filter-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 0.5px solid var(--color-border-secondary); }
+    .filter-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    /* Bulk bars */
+    .bulk-bar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #E6F1FB; border: 0.5px solid #85B7EB; border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 12px; color: #185FA5; flex-wrap: wrap; }
+    .bulk-bar.hidden { display: none; }
+    .bulk-bar-count { font-weight: 500; }
+    .btn-sm { font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
+    .btn-sm:hover { background: var(--color-background-secondary); }
+    .btn-sm-danger { border-color: #F09595; color: #A32D2D; background: #fff; }
+    .btn-sm-success { border-color: #97C459; color: #3B6D11; background: #fff; }
+    .btn-sm-blue { border-color: #85B7EB; color: #185FA5; background: #fff; }
+
+    /* Modals */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 540px; max-height: 82vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .modal-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+    .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-md); border: none; background: transparent; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); }
+    .modal-close:hover { background: var(--color-background-secondary); }
+    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 12px 20px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal-section { margin-bottom: 16px; }
+    .modal-section-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    .modal-input { width: 100%; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    .modal-select { width: 100%; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    .comm-checks-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .comm-check { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; padding: 5px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); }
+    .comm-check.on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 14px 0; }
+    .user-list-modal { display: flex; flex-direction: column; gap: 6px; }
+    .user-item-modal { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+    .edit-btn-sm { font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
+    .edit-btn-sm:hover { background: var(--color-background-secondary); }
+    .remove-user-modal { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 14px; }
+    .remove-user-modal:hover { background: #FCEBEB; color: #A32D2D; }
+    .hooter-row-modal { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); margin-top: 8px; }
+    .hooter-badge { background: #EEEDFE; color: #3C3489; font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 500; }
+    .add-level-btn-modal { width: 100%; padding: 8px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; font-family: var(--font-sans); }
+    .add-level-btn-modal:hover { background: var(--color-background-secondary); }
+    .esc-level-modal { margin-bottom: 14px; }
+    .esc-level-head-modal { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .level-delay-label { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
+    .delay-input { width: 60px; height: 24px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; padding: 0 6px; font-size: 11px; text-align: center; font-family: var(--font-sans); }
+
+    /* ═════ L1 ═════ */
+    #view-l1 .page { padding: 0.5rem 0; min-height: 600px; }
     #view-l1 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
     #view-l1 .page-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
     #view-l1 .stat-pills { display: flex; gap: 8px; }
@@ -98,10 +141,12 @@
     #view-l1 .pill-total { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
     #view-l1 .pill-active { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
     #view-l1 .pill-inactive { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
-    #view-l1 .table-head { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1.1fr 1.1fr 80px; background: var(--color-background-secondary); padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
-    #view-l1 .plant-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1.1fr 1.1fr 80px; padding: 13px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; cursor: pointer; transition: background .1s; }
+    #view-l1 .table-head { display: grid; grid-template-columns: 32px 2fr 1.2fr 1fr 1.1fr 1.1fr 90px; background: var(--color-background-secondary); padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+    #view-l1 .plant-row { display: grid; grid-template-columns: 32px 2fr 1.2fr 1fr 1.1fr 1.1fr 90px; padding: 13px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; cursor: pointer; transition: background .1s; }
     #view-l1 .plant-row:last-child { border-bottom: none; }
     #view-l1 .plant-row:hover { background: var(--color-background-secondary); }
+    #view-l1 .plant-row.selected { background: #E6F1FB; }
+    #view-l1 .plant-row.selected:hover { background: #D5E8F8; }
     #view-l1 .plant-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
     #view-l1 .plant-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     #view-l1 .dot-green { background: #639922; }
@@ -119,57 +164,19 @@
     #view-l1 .esc-icon span:nth-child(2) { width: 75%; }
     #view-l1 .esc-icon span:nth-child(3) { width: 50%; }
 
-    /* L1 Modal */
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
-    .modal-bg.open { display: flex; }
-    .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 520px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
-    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
-    .modal-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
-    .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-    .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-md); border: none; background: transparent; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); }
-    .modal-close:hover { background: var(--color-background-secondary); }
-    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
-    .modal-footer { padding: 12px 20px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: flex-end; gap: 8px; }
-    .esc-level { margin-bottom: 16px; }
-    .esc-level-head-modal { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .level-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 10px; }
-    .l1b { background: #E6F1FB; color: #0C447C; }
-    .l2b { background: #FAEEDA; color: #633806; }
-    .l3b { background: #FCEBEB; color: #791F1F; }
-    .level-delay { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
-    .user-list { display: flex; flex-direction: column; gap: 6px; }
-    .user-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
-    .user-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
-    .user-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
-    .edit-btn-sm { font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
-    .edit-btn-sm:hover { background: var(--color-background-secondary); }
-    .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 12px 0; }
-    .hooter-row-modal { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); margin-top: 8px; }
-    .hooter-badge { background: #EEEDFE; color: #3C3489; font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 500; }
-    .add-level-btn-modal { width: 100%; padding: 8px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; font-family: var(--font-sans); }
-    .add-level-btn-modal:hover { background: var(--color-background-secondary); }
-
-    /* ═══════════════════════════════════════
-       LAYER 2 — Insights list
-    ═══════════════════════════════════════ */
-    #view-l2 .page { padding: 1.5rem 0; min-height: 600px; }
+    /* ═════ L2 ═════ */
+    #view-l2 .page { padding: 0.5rem 0; min-height: 600px; }
     #view-l2 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
     #view-l2 .plant-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
-    #view-l2 .stat-pills { display: flex; gap: 6px; }
+    #view-l2 .stat-pills { display: flex; gap: 6px; flex-wrap: wrap; }
     #view-l2 .pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
     #view-l2 .pill-warn { background: #FAEEDA; color: #633806; border: 0.5px solid #FAC775; }
     #view-l2 .pill-issue { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
     #view-l2 .pill-inc { background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; }
-    #view-l2 .pill-ok { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
-    #view-l2 .search-row { margin-bottom: 1rem; }
+    #view-l2 .pill-ach { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l2 .pill-imp { background: #E6F1FB; color: #0C447C; border: 0.5px solid #85B7EB; }
     #view-l2 .filter-btn { height: 34px; font-size: 12px; }
     #view-l2 .search-input { height: 34px; }
-    #view-l2 .bulk-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 12px; color: var(--color-text-secondary); }
-    #view-l2 .bulk-bar.hidden { display: none; }
-    #view-l2 .btn-sm { font-size: 12px; padding: 4px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
-    #view-l2 .btn-sm:hover { background: var(--color-background-secondary); }
-    #view-l2 .btn-sm-danger { border-color: #F09595; color: #A32D2D; background: transparent; }
-    #view-l2 .btn-sm-success { border-color: #97C459; color: #3B6D11; background: transparent; }
     #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
     #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .1s; cursor: pointer; }
     #view-l2 .insight-row:last-child { border-bottom: none; }
@@ -177,12 +184,14 @@
     #view-l2 .insight-row.selected { background: #E6F1FB; }
     #view-l2 .iname { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; position: relative; }
     #view-l2 .iname-text { flex: 1; }
-    #view-l2 .cell { font-size: 12px; color: var(--color-text-secondary); }
+    #view-l2 .iname-meta { font-size: 10px; color: var(--color-text-tertiary); font-weight: 400; margin-left: 6px; }
     #view-l2 .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
     #view-l2 .s-warning { background: #FAEEDA; color: #633806; }
     #view-l2 .s-issue { background: #FCEBEB; color: #A32D2D; }
     #view-l2 .s-incident { background: #EEEDFE; color: #3C3489; }
-    #view-l2 .s-ok { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .s-achievement { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .s-improvement { background: #E6F1FB; color: #0C447C; }
+    #view-l2 .s-resolved { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .s-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .s-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
     #view-l2 .toggle { width: 32px; height: 18px; }
@@ -193,9 +202,9 @@
     #view-l2 .icon-task-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
     #view-l2 .esc-trigger { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 5px; background: transparent; position: relative; cursor: pointer; flex-shrink: 0; }
     #view-l2 .esc-trigger:hover { background: var(--color-background-secondary); }
-    #view-l2 .esc-trigger svg { opacity: .45; }
+    #view-l2 .esc-trigger svg { opacity: .5; }
     #view-l2 .esc-trigger:hover svg { opacity: 1; }
-    #view-l2 .esc-tooltip { display: none; position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 12px; width: 260px; z-index: 50; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    #view-l2 .esc-tooltip { display: none; position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 12px; width: 280px; z-index: 50; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
     #view-l2 .esc-trigger:hover .esc-tooltip { display: block; }
     #view-l2 .esc-tooltip-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
     #view-l2 .esc-level-row { margin-bottom: 8px; }
@@ -214,10 +223,8 @@
     #view-l2 .last-trig.active { color: #639922; }
     #view-l2 .row-chevron { color: var(--color-text-tertiary); font-size: 12px; display: flex; align-items: center; justify-content: center; }
 
-    /* ═══════════════════════════════════════
-       LAYER 3 — Insight detail
-    ═══════════════════════════════════════ */
-    #view-l3 .page { padding: 1.5rem 0; font-family: var(--font-sans); min-height: 700px; }
+    /* ═════ L3 ═════ */
+    #view-l3 .page { padding: 0.5rem 0; min-height: 700px; }
     #view-l3 .top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; }
     #view-l3 .insight-title { font-size: 19px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; }
     #view-l3 .insight-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
@@ -226,16 +233,15 @@
     #view-l3 .b-active { background: #EAF3DE; color: #3B6D11; }
     #view-l3 .b-plant { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
     #view-l3 .b-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-    #view-l3 .top-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    #view-l3 .btn { height: 32px; padding: 0 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); font-family: var(--font-sans); }
-    #view-l3 .btn:hover { background: var(--color-background-secondary); }
     #view-l3 .toggle-row { display: flex; align-items: center; gap: 8px; }
-    #view-l3 .layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+    #view-l3 .layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
     #view-l3 .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px 18px; margin-bottom: 14px; }
     #view-l3 .card-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    #view-l3 .card-title-action { font-size: 11px; color: var(--color-text-secondary); text-transform: none; letter-spacing: 0; cursor: pointer; font-weight: 400; padding: 3px 8px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; background: transparent; font-family: var(--font-sans); }
+    #view-l3 .card-title-action:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
     #view-l3 .desc-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
     #view-l3 .condition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    #view-l3 .cond-block { padding: 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); }
+    #view-l3 .cond-block { padding: 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); position: relative; }
     #view-l3 .cond-open { background: #FAEEDA; border-color: #FAC775; }
     #view-l3 .cond-close { background: #EAF3DE; border-color: #97C459; }
     #view-l3 .cond-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
@@ -246,11 +252,26 @@
     #view-l3 .cond-close .cond-rule { color: #3B6D11; }
     #view-l3 .cond-note { font-size: 11px; color: var(--color-text-secondary); }
     #view-l3 .cond-note b { font-weight: 500; }
-    #view-l3 .state-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; border: 1.5px solid transparent; }
-    #view-l3 .sc-warn { background: #FAEEDA; border-color: #FAC775; color: #633806; }
-    #view-l3 .sc-issue { background: #FCEBEB; border-color: #F09595; color: #A32D2D; }
-    #view-l3 .sc-inc { background: #EEEDFE; border-color: #AFA9EC; color: #3C3489; box-shadow: 0 0 0 3px #EEEDFE; }
-    #view-l3 .sc-ok { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    #view-l3 .cond-edit-form { display: none; flex-direction: column; gap: 6px; }
+    #view-l3 .cond-block.editing .cond-view { display: none; }
+    #view-l3 .cond-block.editing .cond-edit-form { display: flex; }
+    #view-l3 .cond-edit-row { display: grid; grid-template-columns: 1.2fr 50px 1fr 50px; gap: 4px; }
+    #view-l3 .cond-edit-input { height: 26px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; padding: 0 6px; font-size: 11px; font-family: var(--font-sans); background: #fff; outline: none; min-width: 0; }
+    #view-l3 .cond-edit-sub { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); }
+    #view-l3 .cond-edit-sub input[type="number"] { width: 50px; height: 24px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; padding: 0 6px; font-size: 11px; font-family: var(--font-sans); }
+    #view-l3 .cond-edit-actions { display: flex; gap: 6px; margin-top: 4px; }
+    #view-l3 .cond-edit-actions button { font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-sans); border: 0.5px solid; }
+
+    /* Manual close card on L3 */
+    #view-l3 .close-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 18px; margin-bottom: 14px; }
+    #view-l3 .close-card .card-title { margin-bottom: 10px; }
+    #view-l3 .close-info { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); font-size: 12px; color: var(--color-text-secondary); margin-bottom: 10px; }
+    #view-l3 .close-info.active { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l3 .close-info .close-val { color: var(--color-text-primary); font-weight: 500; }
+    #view-l3 .close-info.active .close-val { color: #3B6D11; }
+    #view-l3 .close-history-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 0.5px dashed var(--color-border-tertiary); }
+    #view-l3 .close-history-row:last-of-type { border-bottom: none; }
+
     #view-l3 .detail-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 12px; }
     #view-l3 .detail-row:last-child { border-bottom: none; }
     #view-l3 .detail-key { color: var(--color-text-secondary); }
@@ -260,9 +281,15 @@
     #view-l3 .esc-level-block { margin-bottom: 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
     #view-l3 .esc-level-block:last-of-type { margin-bottom: 0; }
     #view-l3 .esc-level-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
-    #view-l3 .esc-delay { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
-    #view-l3 .esc-edit-link { font-size: 11px; color: var(--color-text-secondary); cursor: pointer; padding: 2px 6px; border-radius: 4px; }
-    #view-l3 .esc-edit-link:hover { background: var(--color-background-primary); }
+    #view-l3 .esc-level-head.notify { background: #2A2824; }
+    #view-l3 .esc-level-head.notify .esc-delay { color: rgba(255,255,255,0.6); }
+    #view-l3 .esc-level-head.notify span:not(.lbadge):not(.esc-delay) { color: rgba(255,255,255,0.85); }
+    #view-l3 .esc-level-head.notify .esc-edit-link { color: rgba(255,255,255,0.75); }
+    #view-l3 .esc-level-head.notify .esc-edit-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    #view-l3 .esc-delay { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    #view-l3 .esc-delay-input { width: 48px; height: 22px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; padding: 0 5px; font-size: 11px; text-align: center; font-family: var(--font-sans); background: #fff; color: var(--color-text-primary); }
+    #view-l3 .esc-edit-link { font-size: 11px; color: var(--color-text-secondary); cursor: pointer; padding: 2px 6px; border-radius: 4px; background: transparent; border: none; font-family: var(--font-sans); }
+    #view-l3 .esc-edit-link:hover { background: var(--color-background-primary); color: var(--color-text-primary); }
     #view-l3 .esc-users { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
     #view-l3 .user-item { display: flex; align-items: center; gap: 8px; }
     #view-l3 .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; }
@@ -283,20 +310,20 @@
     #view-l3 .resolve-card { background: #FCEBEB; border: 0.5px solid #F09595; border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 14px; }
     #view-l3 .resolve-title { font-size: 13px; font-weight: 500; color: #A32D2D; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
     #view-l3 .resolve-note { font-size: 12px; color: #791F1F; line-height: 1.6; margin-bottom: 10px; }
-    #view-l3 .resolve-actions { display: flex; gap: 8px; }
+    #view-l3 .resolve-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     #view-l3 .rbtn { height: 30px; padding: 0 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; border: 0.5px solid; font-family: var(--font-sans); }
     #view-l3 .rbtn-data { border-color: #F09595; background: #FCEBEB; color: #A32D2D; }
     #view-l3 .rbtn-data:hover { background: #F7C1C1; }
     #view-l3 .rbtn-ack { border-color: #97C459; background: #EAF3DE; color: #3B6D11; }
     #view-l3 .rbtn-ack:hover { background: #C0DD97; }
+    #view-l3 .rbtn-time { border-color: #85B7EB; background: #E6F1FB; color: #185FA5; }
+    #view-l3 .rbtn-time:hover { background: #C6DEF4; }
   </style>
 </head>
 <body>
   <div class="app-shell">
 
-    <!-- ══════════════════════════════════
-         VIEW L1 — Plant list
-    ══════════════════════════════════ -->
+    <!-- ══════════════════ L1 — Plant list ══════════════════ -->
     <div id="view-l1" class="view active">
       <div class="page">
         <div class="top-bar">
@@ -323,8 +350,18 @@
           </button>
         </div>
 
+        <div class="bulk-bar hidden" id="l1BulkBar">
+          <span class="bulk-bar-count" id="l1BulkCount">0 plants selected</span>
+          <div style="flex:1"></div>
+          <button class="btn-sm btn-sm-success" onclick="l1BulkEnable()">Enable all insights</button>
+          <button class="btn-sm btn-sm-danger" onclick="l1BulkDisable()">Disable all insights</button>
+          <button class="btn-sm btn-sm-blue" onclick="openBulkPlantEscModal()">Manage escalation users…</button>
+          <button class="btn-sm" onclick="l1ClearSelection()">Clear</button>
+        </div>
+
         <div class="table-wrap">
           <div class="table-head">
+            <div><input type="checkbox" id="l1SelectAll" onchange="l1ToggleAll(this)" style="cursor:pointer;accent-color:#185FA5"/></div>
             <span class="th">Plant</span>
             <span class="th">Location</span>
             <span class="th">Insights</span>
@@ -332,94 +369,13 @@
             <span class="th">All Insights</span>
             <span class="th">Escalation</span>
           </div>
-
-          <div class="plant-row" onclick="openPlant('Alpha Manufacturing Unit')">
-            <div class="plant-name"><span class="plant-dot dot-green"></span>Alpha Manufacturing Unit</div>
-            <div class="cell">Mumbai, MH</div>
-            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">24</div>
-            <div class="badge-wrap"><span class="badge badge-a">18 active</span><span class="badge badge-i">6 off</span></div>
-            <div class="toggle-wrap" onclick="event.stopPropagation()">
-              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-alpha')"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-alpha">On</span>
-            </div>
-            <div onclick="event.stopPropagation()">
-              <button class="esc-btn" onclick="openEscModal('Alpha Manufacturing Unit')">
-                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-              </button>
-            </div>
-          </div>
-
-          <div class="plant-row" onclick="openPlant('Beta Refinery Complex')">
-            <div class="plant-name"><span class="plant-dot dot-green"></span>Beta Refinery Complex</div>
-            <div class="cell">Surat, GJ</div>
-            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">31</div>
-            <div class="badge-wrap"><span class="badge badge-a">25 active</span><span class="badge badge-i">6 off</span></div>
-            <div class="toggle-wrap" onclick="event.stopPropagation()">
-              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-beta')"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-beta">On</span>
-            </div>
-            <div onclick="event.stopPropagation()">
-              <button class="esc-btn" onclick="openEscModal('Beta Refinery Complex')">
-                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-              </button>
-            </div>
-          </div>
-
-          <div class="plant-row" onclick="openPlant('Gamma Cold Storage')">
-            <div class="plant-name"><span class="plant-dot dot-red"></span>Gamma Cold Storage</div>
-            <div class="cell">Pune, MH</div>
-            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">12</div>
-            <div class="badge-wrap"><span class="badge badge-i">All off</span></div>
-            <div class="toggle-wrap" onclick="event.stopPropagation()">
-              <label class="toggle"><input type="checkbox" onchange="handleToggle(this,'lbl-gamma')"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-gamma">Off</span>
-            </div>
-            <div onclick="event.stopPropagation()">
-              <button class="esc-btn" onclick="openEscModal('Gamma Cold Storage')">
-                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-              </button>
-            </div>
-          </div>
-
-          <div class="plant-row" onclick="openPlant('Delta Processing Plant')">
-            <div class="plant-name"><span class="plant-dot dot-green"></span>Delta Processing Plant</div>
-            <div class="cell">Nagpur, MH</div>
-            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">19</div>
-            <div class="badge-wrap"><span class="badge badge-a">14 active</span><span class="badge badge-i">5 off</span></div>
-            <div class="toggle-wrap" onclick="event.stopPropagation()">
-              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-delta')"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-delta">On</span>
-            </div>
-            <div onclick="event.stopPropagation()">
-              <button class="esc-btn" onclick="openEscModal('Delta Processing Plant')">
-                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-              </button>
-            </div>
-          </div>
-
-          <div class="plant-row" onclick="openPlant('Epsilon Packaging Hub')">
-            <div class="plant-name"><span class="plant-dot dot-green"></span>Epsilon Packaging Hub</div>
-            <div class="cell">Chennai, TN</div>
-            <div class="cell" style="font-weight:500;color:var(--color-text-primary)">14</div>
-            <div class="badge-wrap"><span class="badge badge-a">13 active</span><span class="badge badge-i">1 off</span></div>
-            <div class="toggle-wrap" onclick="event.stopPropagation()">
-              <label class="toggle"><input type="checkbox" checked onchange="handleToggle(this,'lbl-epsilon')"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="lbl-epsilon">On</span>
-            </div>
-            <div onclick="event.stopPropagation()">
-              <button class="esc-btn" onclick="openEscModal('Epsilon Packaging Hub')">
-                <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-              </button>
-            </div>
-          </div>
+          <div id="l1Rows"></div>
         </div>
-        <div style="margin-top:12px;font-size:12px;color:var(--color-text-tertiary)">Showing 5 of 100 plants · Click a row to view insights for that plant</div>
+        <div style="margin-top:12px;font-size:12px;color:var(--color-text-tertiary)">Showing 5 of 100 plants · Select plants with the checkbox for bulk actions · Click a row to view insights</div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         VIEW L2 — Insights list
-    ══════════════════════════════════ -->
+    <!-- ══════════════════ L2 — Insights list ══════════════════ -->
     <div id="view-l2" class="view">
       <div class="page">
         <div class="breadcrumb">
@@ -429,13 +385,14 @@
         </div>
 
         <div class="top-bar">
-          <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <span class="plant-title" id="l2PlantTitle">Alpha Manufacturing Unit</span>
             <div class="stat-pills">
               <span class="pill pill-inc">2 incident</span>
               <span class="pill pill-issue">4 issue</span>
               <span class="pill pill-warn">6 warning</span>
-              <span class="pill pill-ok">12 normal</span>
+              <span class="pill pill-ach">3 achievement</span>
+              <span class="pill pill-imp">2 improvement</span>
             </div>
           </div>
           <div>
@@ -448,18 +405,87 @@
 
         <div class="search-row">
           <input class="search-input" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
-          <button class="filter-btn" id="filterAll" onclick="setFilter('all')" style="background:var(--color-background-secondary)">All</button>
-          <button class="filter-btn" id="filterIncident" onclick="setFilter('incident')">Incident</button>
-          <button class="filter-btn" id="filterIssue" onclick="setFilter('issue')">Issue</button>
-          <button class="filter-btn" id="filterWarning" onclick="setFilter('warning')">Warning</button>
-          <button class="filter-btn" id="filterOff" onclick="setFilter('off')">Off</button>
+          <button class="filter-btn" id="toggleFiltersBtn" onclick="toggleFiltersPanel()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M2 6h8M4 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Filters <span id="activeFilterCount" class="filter-btn-count" style="display:none">0</span>
+          </button>
+        </div>
+
+        <!-- Filter panel -->
+        <div class="filter-panel" id="filterPanel">
+          <div class="filter-panel-grid">
+            <div class="filter-section">
+              <span class="filter-label">Type of insight</span>
+              <div class="filter-chips-row" id="filterTypes">
+                <span class="fchip" data-val="warning">Warning</span>
+                <span class="fchip" data-val="issue">Issue</span>
+                <span class="fchip" data-val="incident">Incident</span>
+                <span class="fchip" data-val="achievement">Achievement</span>
+                <span class="fchip" data-val="improvement">Improvement</span>
+              </div>
+            </div>
+            <div class="filter-section">
+              <span class="filter-label">Equipment</span>
+              <div class="filter-chips-row" id="filterEquipment">
+                <span class="fchip" data-val="blower">Blower</span>
+                <span class="fchip" data-val="pump">Pump</span>
+                <span class="fchip" data-val="tank">Tank</span>
+                <span class="fchip" data-val="valve">Valve</span>
+              </div>
+            </div>
+            <div class="filter-section">
+              <span class="filter-label">Channel of communication</span>
+              <div class="filter-chips-row" id="filterChannels">
+                <span class="fchip" data-val="0">Email</span>
+                <span class="fchip" data-val="1">SMS</span>
+                <span class="fchip" data-val="2">WhatsApp</span>
+                <span class="fchip" data-val="3">Call</span>
+              </div>
+            </div>
+            <div class="filter-section">
+              <span class="filter-label">Users</span>
+              <input class="filter-input" type="text" id="filterUser" oninput="renderRows()" placeholder="Filter by user name…"/>
+            </div>
+            <div class="filter-section">
+              <span class="filter-label">Active / Inactive</span>
+              <div class="filter-chips-row" id="filterState">
+                <span class="fchip selected" data-val="all">All</span>
+                <span class="fchip" data-val="active">Active</span>
+                <span class="fchip" data-val="inactive">Inactive</span>
+              </div>
+            </div>
+            <div class="filter-section">
+              <span class="filter-label">Escalation time window (min)</span>
+              <div class="filter-row-2col">
+                <input class="filter-input" type="number" id="filterTimeMin" oninput="renderRows()" placeholder="Min delay"/>
+                <input class="filter-input" type="number" id="filterTimeMax" oninput="renderRows()" placeholder="Max delay"/>
+              </div>
+            </div>
+            <div class="filter-section" style="grid-column:span 3">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);cursor:pointer">
+                <input type="checkbox" id="filterRepeats" onchange="renderRows()" style="accent-color:#185FA5"/>
+                Only show insights with repeat users across escalation levels
+              </label>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <span style="font-size:11px;color:var(--color-text-tertiary)" id="filterSummary">No filters active</span>
+            <div style="display:flex;gap:8px">
+              <button class="btn-ghost" onclick="clearAllFilters()">Clear all</button>
+              <button class="btn-primary" onclick="toggleFiltersPanel()">Done</button>
+            </div>
+          </div>
         </div>
 
         <div class="bulk-bar hidden" id="bulkBar">
-          <span id="bulkCount">0 selected</span>
+          <span class="bulk-bar-count" id="bulkCount">0 selected</span>
           <div style="flex:1"></div>
-          <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable selected</button>
-          <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable selected</button>
+          <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable</button>
+          <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable</button>
+          <button class="btn-sm btn-sm-blue" onclick="openBulkAddUserModal()">Add user…</button>
+          <button class="btn-sm" onclick="openBulkRemoveUserModal()">Remove user…</button>
+          <button class="btn-sm" onclick="openBulkTimingModal()">Edit timing…</button>
+          <button class="btn-sm" onclick="openBulkAddLevelModal()">Add level…</button>
           <button class="btn-sm" onclick="clearSelection()">Clear</button>
         </div>
 
@@ -475,13 +501,11 @@
           </div>
           <div id="rowsContainer"></div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open the insight detail</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Select rows for bulk actions</div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         VIEW L3 — Insight detail
-    ══════════════════════════════════ -->
+    <!-- ══════════════════ L3 — Insight detail ══════════════════ -->
     <div id="view-l3" class="view">
       <div class="page">
         <div class="breadcrumb">
@@ -499,9 +523,10 @@
               <span class="badge b-inc"><span class="b-dot"></span>Incident</span>
               <span class="badge b-active"><span class="b-dot"></span>Active · 2h 14m</span>
               <span class="badge b-plant">Alpha Manufacturing Unit</span>
+              <span class="badge b-plant">Equipment: Boiler (Tank)</span>
             </div>
           </div>
-          <div class="top-actions">
+          <div style="display:flex;align-items:center;gap:8px">
             <div class="toggle-row">
               <label class="toggle"><input type="checkbox" checked id="mainToggle"><span class="slider"></span></label>
               <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Enabled</span>
@@ -509,203 +534,145 @@
           </div>
         </div>
 
-        <div class="resolve-card">
+        <!-- Resolve banner -->
+        <div class="resolve-card" id="resolveCard">
           <div class="resolve-title">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#A32D2D" stroke-width="1.2"/><path d="M7 4v3.5M7 9.5v.5" stroke="#A32D2D" stroke-width="1.3" stroke-linecap="round"/></svg>
             This insight is currently active
           </div>
-          <div class="resolve-note">Resolution cannot be time-based. It must be triggered by a sensor value crossing the closing threshold, or manually acknowledged via a data input from an authorised user.</div>
+          <div class="resolve-note">Resolution can be triggered by a sensor value crossing the closing threshold, manually acknowledged by an authorised user, or automatically resolved after a configured time window.</div>
           <div class="resolve-actions">
             <button class="rbtn rbtn-data">Input sensor data</button>
-            <button class="rbtn rbtn-ack">Acknowledge &amp; resolve</button>
+            <button class="rbtn rbtn-ack" onclick="manualClose()">Acknowledge &amp; close manually</button>
+            <button class="rbtn rbtn-time">Auto-close after time</button>
           </div>
         </div>
 
         <div class="layout">
-          <!-- Left column -->
+          <!-- LEFT -->
           <div>
+            <!-- Description -->
             <div class="card">
               <div class="card-title">Description</div>
               <div class="desc-text">Monitors the primary boiler steam pressure and triggers when pressure exceeds the safe operating range. This insight evaluates readings from pressure transducer PT-101 on a 30-second rolling average. Sustained high pressure can indicate a faulty safety valve, blocked steam line, or excessive heat input and must be resolved before returning the boiler to normal operation.</div>
             </div>
 
+            <!-- Conditions — now editable -->
             <div class="card">
-              <div class="card-title">Opening &amp; closing conditions</div>
+              <div class="card-title">
+                <span>Opening &amp; closing conditions</span>
+                <button class="card-title-action" id="editCondBtn" onclick="toggleConditionEdit()">Edit</button>
+              </div>
               <div class="condition-grid">
-                <div class="cond-block cond-open">
-                  <div class="cond-label">Opening condition</div>
-                  <div class="cond-rule">PT-101 ≥ 12.5 bar</div>
-                  <div class="cond-note">Sustained for <b>60 seconds</b> · rolling avg</div>
+                <div class="cond-block cond-open" id="condOpen">
+                  <div class="cond-view">
+                    <div class="cond-label">Opening condition</div>
+                    <div class="cond-rule" id="condOpenRule">PT-101 ≥ 12.5 bar</div>
+                    <div class="cond-note">Sustained for <b id="condOpenSustain">60 seconds</b> · rolling avg</div>
+                  </div>
+                  <div class="cond-edit-form">
+                    <div class="cond-label">Opening condition</div>
+                    <div class="cond-edit-row">
+                      <input class="cond-edit-input" id="condOpenSensor" value="PT-101" placeholder="Sensor"/>
+                      <select class="cond-edit-input" id="condOpenOp"><option>≥</option><option>&gt;</option><option>≤</option><option>&lt;</option><option>=</option></select>
+                      <input class="cond-edit-input" id="condOpenVal" type="number" step="0.1" value="12.5"/>
+                      <input class="cond-edit-input" id="condOpenUnit" value="bar"/>
+                    </div>
+                    <div class="cond-edit-sub">
+                      Sustained for <input type="number" id="condOpenDur" value="60"/> seconds
+                    </div>
+                  </div>
                 </div>
-                <div class="cond-block cond-close">
-                  <div class="cond-label">Closing condition</div>
-                  <div class="cond-rule">PT-101 &lt; 11.0 bar</div>
-                  <div class="cond-note">Sustained for <b>120 seconds</b> · cannot be time-based</div>
+                <div class="cond-block cond-close" id="condClose">
+                  <div class="cond-view">
+                    <div class="cond-label">Closing condition</div>
+                    <div class="cond-rule" id="condCloseRule">PT-101 &lt; 11.0 bar</div>
+                    <div class="cond-note">Sustained for <b id="condCloseSustain">120 seconds</b> · sensor, manual, or time-based</div>
+                  </div>
+                  <div class="cond-edit-form">
+                    <div class="cond-label">Closing condition</div>
+                    <div class="cond-edit-row">
+                      <input class="cond-edit-input" id="condCloseSensor" value="PT-101"/>
+                      <select class="cond-edit-input" id="condCloseOp"><option>&lt;</option><option>≤</option><option>&gt;</option><option>≥</option><option>=</option></select>
+                      <input class="cond-edit-input" id="condCloseVal" type="number" step="0.1" value="11.0"/>
+                      <input class="cond-edit-input" id="condCloseUnit" value="bar"/>
+                    </div>
+                    <div class="cond-edit-sub">
+                      Sustained for <input type="number" id="condCloseDur" value="120"/> seconds
+                    </div>
+                    <div class="cond-edit-sub">
+                      <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="condTimeResolve" style="accent-color:#185FA5"/> Also auto-resolve after</label>
+                      <input type="number" id="condTimeValue" value="30" style="width:50px"/>
+                      <select class="cond-edit-input" id="condTimeUnit" style="height:24px;width:auto"><option>minutes</option><option>hours</option></select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="cond-edit-actions" id="condEditActions" style="display:none">
+                <button onclick="saveConditions()" style="border-color:#97C459;color:#3B6D11;background:#EAF3DE">Save</button>
+                <button onclick="cancelConditions()" style="border-color:var(--color-border-secondary);color:var(--color-text-secondary);background:transparent">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Closure / resolution history -->
+            <div class="card close-card">
+              <div class="card-title">
+                <span>Closure &amp; resolution history</span>
+              </div>
+              <div class="close-info" id="closeInfoBanner">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span id="closeStatusText">Currently active — not yet resolved</span>
+              </div>
+              <div id="closeHistory">
+                <div class="close-history-row">
+                  <span style="color:var(--color-text-secondary)">Manually closed by</span>
+                  <span class="close-val" style="color:var(--color-text-primary);font-weight:500">Priya Kumar · Yesterday, 11:22 PM</span>
+                </div>
+                <div class="close-history-row">
+                  <span style="color:var(--color-text-secondary)">Manual closure reason</span>
+                  <span class="close-val" style="color:var(--color-text-primary);font-weight:500">Safety valve replaced — verified nominal pressure</span>
+                </div>
+                <div class="close-history-row">
+                  <span style="color:var(--color-text-secondary)">Previous resolution</span>
+                  <span class="close-val" style="color:var(--color-text-primary);font-weight:500">Auto-resolved by sensor · 2 days ago</span>
                 </div>
               </div>
             </div>
 
-            <div class="card">
-              <div class="card-title">Status progression</div>
-              <div style="position:relative;padding:0 6px">
-                <div style="position:absolute;top:14px;left:20px;right:20px;height:1.5px;background:var(--color-border-secondary);z-index:0"></div>
-                <div style="position:absolute;top:14px;left:20px;height:1.5px;width:66%;background:#AFA9EC;z-index:1"></div>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:2">
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                    <div class="state-circle sc-warn">WARN</div>
-                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Warning</span>
-                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 12.5 bar</span>
-                  </div>
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                    <div class="state-circle sc-issue">ISSUE</div>
-                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Issue</span>
-                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 14.0 bar</span>
-                  </div>
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                    <div class="state-circle sc-inc">INC</div>
-                    <span style="font-size:10px;color:var(--color-text-primary);font-weight:500">Incident ←</span>
-                    <span style="font-size:10px;color:var(--color-text-tertiary)">≥ 16.0 bar</span>
-                  </div>
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                    <div class="state-circle sc-ok">OK</div>
-                    <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500">Resolved</span>
-                    <span style="font-size:10px;color:var(--color-text-tertiary)">&lt; 11.0 bar</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            <!-- Details -->
             <div class="card">
               <div class="card-title">Details</div>
               <div class="detail-row"><span class="detail-key">Sensor</span><span class="detail-val">PT-101 · Pressure transducer</span></div>
+              <div class="detail-row"><span class="detail-key">Equipment</span><span class="detail-val">Boiler (Tank)</span></div>
               <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
               <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
-              <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM</span></div>
+              <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM · Manual by Priya Kumar</span></div>
               <div class="detail-row"><span class="detail-key">Task linked</span><span class="detail-val green">TASK-4821 · Inspect safety valve</span></div>
               <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
             </div>
           </div>
 
-          <!-- Right column — escalation -->
+          <!-- RIGHT — escalation -->
           <div>
             <div class="card" style="padding:0;overflow:hidden">
               <div style="padding:12px 16px 10px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
                 <span style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em">Escalation</span>
                 <span style="font-size:11px;color:var(--color-text-tertiary)">Inherits from plant · overrides below</span>
               </div>
-              <div style="padding:12px 14px">
-
-                <div class="esc-level-block">
-                  <div class="esc-level-head">
-                    <span class="lbadge lb1">Level 1</span>
-                    <span style="font-size:11px;color:var(--color-text-secondary)">Immediate</span>
-                    <span class="esc-delay">0 min</span>
-                    <span class="esc-edit-link">Edit</span>
-                  </div>
-                  <div class="esc-users">
-                    <div class="user-item">
-                      <div class="avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
-                      <span class="uname">Rahul Sharma</span>
-                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-off">W</div><div class="ci ci-off">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                    <div class="user-item">
-                      <div class="avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
-                      <span class="uname">Priya Kumar</span>
-                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-off">✆</div><div class="ci ci-on">W</div><div class="ci ci-off">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                  </div>
-                  <div class="add-user-row">
-                    <input class="add-user-input" placeholder="Add user…" type="text"/>
-                    <button class="add-user-btn">Add</button>
-                  </div>
-                </div>
-
-                <div class="esc-level-block">
-                  <div class="esc-level-head">
-                    <span class="lbadge lb2">Level 2</span>
-                    <span style="font-size:11px;color:var(--color-text-secondary)">Supervisor</span>
-                    <span class="esc-delay">+15 min</span>
-                    <span class="esc-edit-link">Edit</span>
-                  </div>
-                  <div class="esc-users">
-                    <div class="user-item">
-                      <div class="avatar" style="background:#FAEEDA;color:#633806">AM</div>
-                      <span class="uname">Amit Mehta</span>
-                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-on">W</div><div class="ci ci-off">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                    <div class="user-item">
-                      <div class="avatar" style="background:#FAEEDA;color:#633806">RS</div>
-                      <span class="uname">Rahul Sharma</span>
-                      <div class="comm-icons"><div class="ci ci-off">✉</div><div class="ci ci-off">✆</div><div class="ci ci-off">W</div><div class="ci ci-on">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                  </div>
-                  <div class="hooter-row">
-                    <span style="font-size:14px">🔔</span>
-                    <span style="flex:1">Hooter alarm at this level</span>
-                    <label class="toggle" style="width:30px;height:16px"><input type="checkbox" checked><span class="slider"></span></label>
-                  </div>
-                  <div class="add-user-row">
-                    <input class="add-user-input" placeholder="Add user…" type="text"/>
-                    <button class="add-user-btn">Add</button>
-                  </div>
-                </div>
-
-                <div class="esc-level-block">
-                  <div class="esc-level-head">
-                    <span class="lbadge lb3">Level 3</span>
-                    <span style="font-size:11px;color:var(--color-text-secondary)">Management</span>
-                    <span class="esc-delay">+30 min</span>
-                    <span class="esc-edit-link">Edit</span>
-                  </div>
-                  <div class="esc-users">
-                    <div class="user-item">
-                      <div class="avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
-                      <span class="uname">Sunita Gupta</span>
-                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-on">W</div><div class="ci ci-on">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                  </div>
-                  <div class="add-user-row">
-                    <input class="add-user-input" placeholder="Add user…" type="text"/>
-                    <button class="add-user-btn">Add</button>
-                  </div>
-                </div>
-
-                <div class="esc-level-block" style="border-style:dashed">
-                  <div class="esc-level-head" style="background:var(--color-background-primary)">
-                    <span class="lbadge" style="background:#EEEDFE;color:#3C3489">Custom</span>
-                    <span style="font-size:11px;color:var(--color-text-secondary)">Insight-only group</span>
-                    <span class="esc-delay" style="font-size:10px;font-style:italic">not inherited</span>
-                  </div>
-                  <div class="esc-users">
-                    <div class="user-item">
-                      <div class="avatar" style="background:#EEEDFE;color:#3C3489">NK</div>
-                      <span class="uname">Nikhil Kapoor</span>
-                      <div class="comm-icons"><div class="ci ci-on">✉</div><div class="ci ci-on">✆</div><div class="ci ci-off">W</div><div class="ci ci-off">☏</div></div>
-                      <button class="remove-user">×</button>
-                    </div>
-                  </div>
-                  <div class="add-user-row">
-                    <input class="add-user-input" placeholder="Add user to custom group…" type="text"/>
-                    <button class="add-user-btn">Add</button>
-                  </div>
-                </div>
-
-                <button class="add-level-btn">
+              <div style="padding:12px 14px" id="l3EscalationContainer">
+                <!-- Escalation levels rendered by JS -->
+              </div>
+              <div style="padding:0 14px 14px">
+                <button class="add-level-btn" onclick="addL3Level()">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                   Add escalation level
                 </button>
-                <button class="add-level-btn" style="margin-top:6px;border-color:#AFA9EC;color:#534AB7">
+                <button class="add-level-btn" style="margin-top:6px;border-color:#AFA9EC;color:#534AB7" onclick="addL3CustomLevel()">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
                   Create custom escalation group
                 </button>
-
                 <div style="margin-top:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-tertiary);line-height:1.6">
-                  Changes to escalation levels here apply only to this insight. To change plant-wide escalation, go to the plant settings.
+                  The <b>Notify</b> level fires immediately when opening conditions are met. Escalation levels then fire on a time-based delay. Changes here apply only to this insight.
                 </div>
               </div>
             </div>
@@ -716,9 +683,7 @@
 
   </div><!-- /app-shell -->
 
-  <!-- ══════════════════════════════════
-       L1 Escalation Modal
-  ══════════════════════════════════ -->
+  <!-- ══════════════════ L1 plant escalation modal ══════════════════ -->
   <div class="modal-bg" id="escModal">
     <div class="modal">
       <div class="modal-head">
@@ -728,75 +693,8 @@
         </div>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="esc-level">
-          <div class="esc-level-head-modal">
-            <span class="level-badge l1b">Level 1</span>
-            <span style="font-size:12px;color:var(--color-text-secondary)">Immediate alert</span>
-            <span class="level-delay">Trigger: 0 min</span>
-          </div>
-          <div class="user-list">
-            <div class="user-item">
-              <div class="user-avatar" style="background:#E6F1FB;color:#0C447C">RS</div>
-              <span class="user-name">Rahul Sharma</span>
-              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-off">W</div><div class="comm-icon comm-off">☏</div></div>
-              <button class="edit-btn-sm">Edit</button>
-            </div>
-            <div class="user-item">
-              <div class="user-avatar" style="background:#EAF3DE;color:#3B6D11">PK</div>
-              <span class="user-name">Priya Kumar</span>
-              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-off">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-off">☏</div></div>
-              <button class="edit-btn-sm">Edit</button>
-            </div>
-          </div>
-        </div>
-        <hr class="divider">
-        <div class="esc-level">
-          <div class="esc-level-head-modal">
-            <span class="level-badge l2b">Level 2</span>
-            <span style="font-size:12px;color:var(--color-text-secondary)">Supervisor escalation</span>
-            <span class="level-delay">Trigger: +15 min</span>
-          </div>
-          <div class="user-list">
-            <div class="user-item">
-              <div class="user-avatar" style="background:#FAEEDA;color:#633806">AM</div>
-              <span class="user-name">Amit Mehta</span>
-              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-off">☏</div></div>
-              <button class="edit-btn-sm">Edit</button>
-            </div>
-            <div class="user-item">
-              <div class="user-avatar" style="background:#FAEEDA;color:#633806">RS</div>
-              <span class="user-name">Rahul Sharma</span>
-              <div class="comm-icons"><div class="comm-icon comm-off">✉</div><div class="comm-icon comm-off">✆</div><div class="comm-icon comm-off">W</div><div class="comm-icon comm-on">☏</div></div>
-              <button class="edit-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hooter-row-modal">
-            <span style="font-size:16px">🔔</span>
-            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm triggered at this level</span>
-            <span class="hooter-badge">Hooter On</span>
-          </div>
-        </div>
-        <hr class="divider">
-        <div class="esc-level">
-          <div class="esc-level-head-modal">
-            <span class="level-badge l3b">Level 3</span>
-            <span style="font-size:12px;color:var(--color-text-secondary)">Management escalation</span>
-            <span class="level-delay">Trigger: +30 min</span>
-          </div>
-          <div class="user-list">
-            <div class="user-item">
-              <div class="user-avatar" style="background:#FCEBEB;color:#791F1F">SG</div>
-              <span class="user-name">Sunita Gupta</span>
-              <div class="comm-icons"><div class="comm-icon comm-on">✉</div><div class="comm-icon comm-on">✆</div><div class="comm-icon comm-on">W</div><div class="comm-icon comm-on">☏</div></div>
-              <button class="edit-btn-sm">Edit</button>
-            </div>
-          </div>
-        </div>
-        <button class="add-level-btn-modal">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          Add escalation level
-        </button>
+      <div class="modal-body" id="escModalBody">
+        <!-- Filled by JS -->
       </div>
       <div class="modal-footer">
         <button class="btn-ghost" onclick="closeModal()">Cancel</button>
@@ -805,66 +703,586 @@
     </div>
   </div>
 
+  <!-- ══════════════════ L1 Bulk Plant Escalation modal ══════════════════ -->
+  <div class="modal-bg" id="bulkPlantEscModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Manage escalation users · bulk</div>
+          <div class="modal-sub" id="bulkPlantSub">Action applies to all insights across selected plants</div>
+        </div>
+        <button class="modal-close" onclick="closeBulkPlantEsc()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-label">Action</div>
+          <div class="filter-chips-row" id="bulkPlantAction">
+            <span class="fchip selected" data-val="add">Add user</span>
+            <span class="fchip" data-val="remove">Remove user</span>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">Apply to level</div>
+          <select class="modal-select" id="bulkPlantLevel">
+            <option value="notify">Notify (immediate)</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">User</div>
+          <input class="modal-input" id="bulkPlantUser" placeholder="Search user by name…"/>
+        </div>
+        <div class="modal-section" id="bulkPlantCommSection">
+          <div class="modal-section-label">Communication methods</div>
+          <div class="comm-checks-row">
+            <label class="comm-check"><input type="checkbox" checked class="bp-comm" value="0"/> Email</label>
+            <label class="comm-check"><input type="checkbox" class="bp-comm" value="1"/> SMS</label>
+            <label class="comm-check"><input type="checkbox" class="bp-comm" value="2"/> WhatsApp</label>
+            <label class="comm-check"><input type="checkbox" class="bp-comm" value="3"/> Call</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeBulkPlantEsc()">Cancel</button>
+        <button class="btn-primary" onclick="applyBulkPlantEsc()">Apply to selected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ L2 Bulk Add User modal ══════════════════ -->
+  <div class="modal-bg" id="bulkAddUserModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Add user to escalation · bulk</div>
+          <div class="modal-sub" id="bulkAddSub">Add a user to selected insights</div>
+        </div>
+        <button class="modal-close" onclick="closeBulkAddUser()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-label">Apply to level</div>
+          <select class="modal-select" id="bulkAddLevel">
+            <option value="notify">Notify (immediate)</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">User name</div>
+          <input class="modal-input" id="bulkAddUserName" placeholder="Enter user name…"/>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">Communication methods</div>
+          <div class="comm-checks-row">
+            <label class="comm-check"><input type="checkbox" checked class="ba-comm" value="0"/> Email</label>
+            <label class="comm-check"><input type="checkbox" class="ba-comm" value="1"/> SMS</label>
+            <label class="comm-check"><input type="checkbox" class="ba-comm" value="2"/> WhatsApp</label>
+            <label class="comm-check"><input type="checkbox" class="ba-comm" value="3"/> Call</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeBulkAddUser()">Cancel</button>
+        <button class="btn-primary" onclick="applyBulkAddUser()">Add to selected insights</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ L2 Bulk Remove User modal ══════════════════ -->
+  <div class="modal-bg" id="bulkRemoveUserModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Remove user from escalation · bulk</div>
+          <div class="modal-sub" id="bulkRemoveSub">Remove a user from selected insights</div>
+        </div>
+        <button class="modal-close" onclick="closeBulkRemoveUser()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-label">Remove from level</div>
+          <select class="modal-select" id="bulkRemoveLevel">
+            <option value="any">Any level</option>
+            <option value="notify">Notify (immediate)</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">User name (exact match)</div>
+          <input class="modal-input" id="bulkRemoveUserName" placeholder="Enter user name…"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeBulkRemoveUser()">Cancel</button>
+        <button class="btn-danger" onclick="applyBulkRemoveUser()">Remove from selected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ L2 Bulk Edit Timing modal ══════════════════ -->
+  <div class="modal-bg" id="bulkTimingModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Edit escalation timing · bulk</div>
+          <div class="modal-sub" id="bulkTimingSub">Set delay (in minutes) for a level across selected insights</div>
+        </div>
+        <button class="modal-close" onclick="closeBulkTiming()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-label">Level</div>
+          <select class="modal-select" id="bulkTimingLevel">
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">New delay (minutes after trigger)</div>
+          <input class="modal-input" type="number" id="bulkTimingDelay" value="15" min="0"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeBulkTiming()">Cancel</button>
+        <button class="btn-primary" onclick="applyBulkTiming()">Apply to selected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ L2 Bulk Add Level modal ══════════════════ -->
+  <div class="modal-bg" id="bulkAddLevelModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Add escalation level · bulk</div>
+          <div class="modal-sub" id="bulkAddLevelSub">Append a new escalation level to selected insights</div>
+        </div>
+        <button class="modal-close" onclick="closeBulkAddLevel()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-label">Level type</div>
+          <div class="filter-chips-row" id="bulkLevelType">
+            <span class="fchip selected" data-val="standard">Standard</span>
+            <span class="fchip" data-val="custom">Custom (insight-only)</span>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">Delay (minutes after trigger)</div>
+          <input class="modal-input" type="number" id="bulkAddLevelDelay" value="45" min="0"/>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-label">Initial user (optional)</div>
+          <input class="modal-input" id="bulkAddLevelUser" placeholder="User name (leave blank to create empty level)…"/>
+          <div class="comm-checks-row" style="margin-top:8px">
+            <label class="comm-check"><input type="checkbox" checked class="bal-comm" value="0"/> Email</label>
+            <label class="comm-check"><input type="checkbox" class="bal-comm" value="1"/> SMS</label>
+            <label class="comm-check"><input type="checkbox" class="bal-comm" value="2"/> WhatsApp</label>
+            <label class="comm-check"><input type="checkbox" class="bal-comm" value="3"/> Call</label>
+          </div>
+        </div>
+        <div class="modal-section">
+          <label class="comm-check" style="border:none;padding:0">
+            <input type="checkbox" id="bulkAddLevelHooter" style="accent-color:#185FA5"/> Trigger hooter alarm at this level
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeBulkAddLevel()">Cancel</button>
+        <button class="btn-primary" onclick="applyBulkAddLevel()">Add level to selected</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    /* ── Router ── */
+    /* ════════════════════ Shared ════════════════════ */
     function showView(id) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + id).classList.add('active');
       window.scrollTo(0, 0);
+      if (id === 'l1') renderL1Rows();
       if (id === 'l2') renderRows();
+      if (id === 'l3') renderL3Escalation();
     }
 
-    /* ── L1 ── */
-    function openPlant(name) {
-      document.getElementById('l2PlantName').textContent = name;
-      document.getElementById('l2PlantTitle').textContent = name;
-      showView('l2');
-    }
-    function openEscModal(name) {
-      document.getElementById('modalPlantName').textContent = name;
-      document.getElementById('escModal').classList.add('open');
-    }
-    function closeModal() {
-      document.getElementById('escModal').classList.remove('open');
-    }
-    function handleToggle(el, lblId) {
-      const lbl = document.getElementById(lblId);
-      if (lbl) lbl.textContent = el.checked ? 'On' : 'Off';
-    }
-    document.getElementById('escModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-
-    /* ── L2 ── */
-    const insights = [
-      {id:1,name:'Boiler pressure threshold exceeded',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 2h 14m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,1,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,0]}],hooter:true},{label:'Level 3',cls:'lb3',users:[{init:'SG',bg:'#FCEBEB',tc:'#791F1F',name:'Sunita Gupta',comm:[1,1,1,1]}],hooter:false}]},
-      {id:2,name:'Cooling tower water level critical',status:'incident',statusLabel:'Incident',stateClass:'s-incident',enabled:true,task:true,lastTrig:'Active since 47m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,1,1]}],hooter:true}]},
-      {id:3,name:'Compressor vibration anomaly',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 18m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]},{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[0,1,1,0]}],hooter:false}]},
-      {id:4,name:'Steam leak detection triggered',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Active since 5m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,1,0]}],hooter:true}]},
-      {id:5,name:'Conveyor belt speed deviation',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:false,lastTrig:'Resolved 1h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
-      {id:6,name:'Motor temperature high',status:'issue',statusLabel:'Issue',stateClass:'s-issue',enabled:true,task:true,lastTrig:'Active since 3m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false},{label:'Level 2',cls:'lb2',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,1,1]}],hooter:false}]},
-      {id:7,name:'Feed water pH out of range',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 22m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
-      {id:8,name:'Turbine RPM fluctuation',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Resolved 3h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,1,0,0]}],hooter:false}]},
-      {id:9,name:'Ambient temperature rising',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 8m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
-      {id:10,name:'Hydraulic fluid pressure low',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:true,lastTrig:'Resolved 30m ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,0,0]}],hooter:false}]},
-      {id:11,name:'Exhaust gas CO₂ elevated',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Active since 1m',lastTrigActive:true,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,1,0]}],hooter:false}]},
-      {id:12,name:'Lube oil level low warning',status:'warning',statusLabel:'Warning',stateClass:'s-warning',enabled:true,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
-      {id:13,name:'Chiller unit efficiency drop',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 6h ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,1,0,0]}],hooter:false}]},
-      {id:14,name:'Pump discharge pressure variance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:false,lastTrig:'Resolved 2d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,0,0,0]}],hooter:false}]},
-      {id:15,name:'Panel board voltage imbalance',status:'ok',statusLabel:'Normal',stateClass:'s-ok',enabled:true,task:true,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'NK',bg:'#EEEDFE',tc:'#3C3489',name:'Nikhil Kapoor',comm:[1,1,1,0]}],hooter:false}]},
-      {id:16,name:'Dust collector filter clog',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'PK',bg:'#EAF3DE',tc:'#3B6D11',name:'Priya Kumar',comm:[1,0,0,0]}],hooter:false}]},
-      {id:17,name:'Emergency stop circuit fault',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:false,lastTrig:'Never triggered',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'RS',bg:'#E6F1FB',tc:'#0C447C',name:'Rahul Sharma',comm:[1,1,0,0]}],hooter:false}]},
-      {id:18,name:'Nitrogen purge cycle missed',status:'off',statusLabel:'Disabled',stateClass:'s-off',enabled:false,task:true,lastTrig:'Resolved 5d ago',lastTrigActive:false,escLevels:[{label:'Level 1',cls:'lb1',users:[{init:'AM',bg:'#FAEEDA',tc:'#633806',name:'Amit Mehta',comm:[1,0,0,0]}],hooter:false}]},
+    /* ════════════════════ Data ════════════════════ */
+    const plants = [
+      { id: 'alpha', name: 'Alpha Manufacturing Unit', location: 'Mumbai, MH', insights: 24, active: 18, off: 6, allOn: true, statusDot: 'dot-green' },
+      { id: 'beta', name: 'Beta Refinery Complex', location: 'Surat, GJ', insights: 31, active: 25, off: 6, allOn: true, statusDot: 'dot-green' },
+      { id: 'gamma', name: 'Gamma Cold Storage', location: 'Pune, MH', insights: 12, active: 0, off: 12, allOn: false, statusDot: 'dot-red' },
+      { id: 'delta', name: 'Delta Processing Plant', location: 'Nagpur, MH', insights: 19, active: 14, off: 5, allOn: true, statusDot: 'dot-green' },
+      { id: 'epsilon', name: 'Epsilon Packaging Hub', location: 'Chennai, TN', insights: 14, active: 13, off: 1, allOn: true, statusDot: 'dot-green' },
     ];
 
-    const commLabels = ['✉','✆','W','☏'];
-    let selected = new Set();
-    let currentFilter = 'all';
+    const plantEscConfig = {
+      notify: {
+        users: [
+          { init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Operations monitor', comm: [1, 0, 1, 0] },
+          { init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift Supervisor', comm: [1, 1, 1, 0] },
+        ],
+      },
+      levels: [
+        { label: 'Level 1', cls: 'lb1', delay: 0, subtitle: 'Immediate alert', users: [
+          { init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] },
+          { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] },
+        ], hooter: false },
+        { label: 'Level 2', cls: 'lb2', delay: 15, subtitle: 'Supervisor escalation', users: [
+          { init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] },
+          { init: 'RS', bg: '#FAEEDA', tc: '#633806', name: 'Rahul Sharma', comm: [0, 0, 0, 1] },
+        ], hooter: true },
+        { label: 'Level 3', cls: 'lb3', delay: 30, subtitle: 'Management escalation', users: [
+          { init: 'SG', bg: '#FCEBEB', tc: '#791F1F', name: 'Sunita Gupta', comm: [1, 1, 1, 1] },
+        ], hooter: false },
+      ],
+    };
 
-    function buildEscTooltip(levels) {
+    const insights = [
+      { id: 1, name: 'Boiler pressure threshold exceeded', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 2h 14m', lastTrigActive: true,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Operations monitor', comm: [1, 0, 1, 0] }] },
+        escLevels: [
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] }], hooter: false },
+          { label: 'Level 2', cls: 'lb2', delay: 15, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] }, { init: 'RS', bg: '#FAEEDA', tc: '#633806', name: 'Rahul Sharma', comm: [0, 0, 0, 1] }], hooter: true },
+          { label: 'Level 3', cls: 'lb3', delay: 30, users: [{ init: 'SG', bg: '#FCEBEB', tc: '#791F1F', name: 'Sunita Gupta', comm: [1, 1, 1, 1] }], hooter: false },
+        ] },
+      { id: 2, name: 'Cooling tower water level critical', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 47m', lastTrigActive: true,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 1, 0, 0] }] },
+        escLevels: [
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false },
+          { label: 'Level 2', cls: 'lb2', delay: 10, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 0, 1, 1] }], hooter: true },
+        ] },
+      { id: 3, name: 'Compressor vibration anomaly', type: 'issue', equipment: 'pump', enabled: true, task: true, lastTrig: 'Active since 18m', lastTrigActive: true,
+        notify: { users: [{ init: 'NK', bg: '#E0DFDB', tc: '#1a1916', name: 'Maintenance desk', comm: [1, 0, 0, 0] }] },
+        escLevels: [
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [0, 1, 1, 0] }], hooter: false },
+        ] },
+      { id: 4, name: 'Steam leak detection triggered', type: 'issue', equipment: 'valve', enabled: true, task: false, lastTrig: 'Active since 5m', lastTrigActive: true,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 1, 0, 0] }] },
+        escLevels: [
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 1, 0] }], hooter: true },
+        ] },
+      { id: 5, name: 'Conveyor belt speed deviation', type: 'issue', equipment: 'pump', enabled: true, task: false, lastTrig: 'Resolved 1h ago', lastTrigActive: false,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 6, name: 'Motor temperature high', type: 'issue', equipment: 'pump', enabled: true, task: true, lastTrig: 'Active since 3m', lastTrigActive: true,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 0, 1, 0] }] },
+        escLevels: [
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 0, 0] }], hooter: false },
+          { label: 'Level 2', cls: 'lb2', delay: 20, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 1] }], hooter: false },
+        ] },
+      { id: 7, name: 'Feed water pH out of range', type: 'warning', equipment: 'tank', enabled: true, task: false, lastTrig: 'Active since 22m', lastTrigActive: true,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 8, name: 'Turbine RPM fluctuation', type: 'warning', equipment: 'blower', enabled: true, task: false, lastTrig: 'Resolved 3h ago', lastTrigActive: false,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 1, 0, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 10, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false }] },
+      { id: 9, name: 'Ambient temperature rising', type: 'warning', equipment: 'blower', enabled: true, task: false, lastTrig: 'Active since 8m', lastTrigActive: true,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 10, name: 'Hydraulic fluid pressure low', type: 'warning', equipment: 'pump', enabled: true, task: true, lastTrig: 'Resolved 30m ago', lastTrigActive: false,
+        notify: { users: [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 0, 0] }], hooter: false }] },
+      { id: 11, name: 'Exhaust gas CO₂ elevated', type: 'warning', equipment: 'valve', enabled: true, task: false, lastTrig: 'Active since 1m', lastTrigActive: true,
+        notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 1, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 1, 0] }], hooter: false }] },
+      { id: 12, name: 'Lube oil level low warning', type: 'warning', equipment: 'pump', enabled: true, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
+        notify: { users: [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 13, name: 'Energy efficiency target met', type: 'achievement', equipment: 'blower', enabled: true, task: false, lastTrig: 'Achieved 6h ago', lastTrigActive: false,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Plant manager', comm: [1, 0, 1, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 0, 0] }], hooter: false }] },
+      { id: 14, name: 'Downtime below monthly target', type: 'achievement', equipment: 'pump', enabled: true, task: false, lastTrig: 'Achieved 2d ago', lastTrigActive: false,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Plant manager', comm: [1, 0, 0, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 15, name: 'Predictive maintenance window available', type: 'improvement', equipment: 'pump', enabled: true, task: true, lastTrig: 'Detected 1d ago', lastTrigActive: false,
+        notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Maintenance lead', comm: [1, 1, 1, 0] }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 1, 0] }], hooter: false }] },
+      { id: 16, name: 'Recalibration opportunity detected', type: 'improvement', equipment: 'valve', enabled: true, task: false, lastTrig: 'Detected 4h ago', lastTrigActive: false,
+        notify: { users: [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 17, name: 'Dust collector filter clog', type: 'warning', equipment: 'blower', enabled: false, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
+        notify: { users: [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+      { id: 18, name: 'Emergency stop circuit fault', type: 'incident', equipment: 'valve', enabled: false, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
+        notify: { users: [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }], hooter: false }] },
+    ];
+
+    const commLabels = ['✉', '✆', 'W', '☏'];
+    const typeLabels = { warning: 'Warning', issue: 'Issue', incident: 'Incident', achievement: 'Achievement', improvement: 'Improvement' };
+
+    /* ════════════════════ L1 ════════════════════ */
+    const l1Selected = new Set();
+
+    function renderL1Rows() {
+      const c = document.getElementById('l1Rows');
+      c.innerHTML = plants.map(p => {
+        const isSel = l1Selected.has(p.id);
+        const toggleChecked = p.allOn ? 'checked' : '';
+        const lbl = p.allOn ? 'On' : 'Off';
+        const badges = p.allOn
+          ? `<span class="badge badge-a">${p.active} active</span><span class="badge badge-i">${p.off} off</span>`
+          : `<span class="badge badge-i">All off</span>`;
+        return `<div class="plant-row${isSel?' selected':''}" onclick="openPlant('${p.id}')">
+          <div onclick="event.stopPropagation()"><input type="checkbox" ${isSel?'checked':''} onchange="l1ToggleRow('${p.id}',this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+          <div class="plant-name"><span class="plant-dot ${p.statusDot}"></span>${p.name}</div>
+          <div class="cell">${p.location}</div>
+          <div class="cell" style="font-weight:500;color:var(--color-text-primary)">${p.insights}</div>
+          <div class="badge-wrap">${badges}</div>
+          <div class="toggle-wrap" onclick="event.stopPropagation()">
+            <label class="toggle"><input type="checkbox" ${toggleChecked} onchange="togglePlantAll('${p.id}',this)"><span class="slider"></span></label>
+            <span style="font-size:12px;color:var(--color-text-secondary)">${lbl}</span>
+          </div>
+          <div onclick="event.stopPropagation()">
+            <button class="esc-btn" onclick="openEscModal('${p.id}')">
+              <div class="esc-icon"><span></span><span></span><span></span></div>Levels
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function l1ToggleRow(id, cb) {
+      if (cb.checked) l1Selected.add(id); else l1Selected.delete(id);
+      updateL1BulkBar(); renderL1Rows();
+    }
+    function l1ToggleAll(cb) {
+      if (cb.checked) plants.forEach(p => l1Selected.add(p.id));
+      else l1Selected.clear();
+      updateL1BulkBar(); renderL1Rows();
+    }
+    function updateL1BulkBar() {
+      const bar = document.getElementById('l1BulkBar');
+      const cnt = document.getElementById('l1BulkCount');
+      if (l1Selected.size > 0) { bar.classList.remove('hidden'); cnt.textContent = l1Selected.size + ' plant' + (l1Selected.size>1?'s':'') + ' selected'; }
+      else bar.classList.add('hidden');
+    }
+    function l1ClearSelection() { l1Selected.clear(); document.getElementById('l1SelectAll').checked = false; updateL1BulkBar(); renderL1Rows(); }
+    function l1BulkEnable() {
+      l1Selected.forEach(id => { const p = plants.find(x => x.id === id); if (p) { p.allOn = true; if (p.active === 0) { p.active = p.insights; p.off = 0; } p.statusDot = 'dot-green'; } });
+      renderL1Rows();
+    }
+    function l1BulkDisable() {
+      l1Selected.forEach(id => { const p = plants.find(x => x.id === id); if (p) { p.allOn = false; p.off = p.insights; p.active = 0; p.statusDot = 'dot-red'; } });
+      renderL1Rows();
+    }
+    function togglePlantAll(id, cb) {
+      const p = plants.find(x => x.id === id);
+      if (!p) return;
+      p.allOn = cb.checked;
+      if (cb.checked) { if (p.active === 0) { p.active = p.insights; p.off = 0; } p.statusDot = 'dot-green'; }
+      else { p.off = p.insights; p.active = 0; p.statusDot = 'dot-red'; }
+      renderL1Rows();
+    }
+    function openPlant(id) {
+      const p = plants.find(x => x.id === id);
+      document.getElementById('l2PlantName').textContent = p.name;
+      document.getElementById('l2PlantTitle').textContent = p.name;
+      showView('l2');
+    }
+
+    /* L1 escalation modal */
+    function openEscModal(id) {
+      const p = plants.find(x => x.id === id);
+      document.getElementById('modalPlantName').textContent = p.name;
+      renderEscModalBody();
+      document.getElementById('escModal').classList.add('open');
+    }
+    function renderEscModalBody() {
+      const body = document.getElementById('escModalBody');
+      let html = '';
+      // Notify level (top)
+      html += `<div class="esc-level-modal">
+        <div class="esc-level-head-modal">
+          <span class="lbadge lbn">Notify</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Immediate — fires as soon as trigger opens</span>
+          <span class="level-delay-label">0 min</span>
+        </div>
+        <div class="user-list-modal">
+          ${plantEscConfig.notify.users.map(u => renderUserItemModal(u)).join('')}
+        </div>
+      </div><hr class="divider">`;
+      // Escalation levels
+      plantEscConfig.levels.forEach((lv, i) => {
+        html += `<div class="esc-level-modal">
+          <div class="esc-level-head-modal">
+            <span class="lbadge ${lv.cls}">${lv.label}</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">${lv.subtitle}</span>
+            <span class="level-delay-label">Trigger: +${lv.delay} min</span>
+          </div>
+          <div class="user-list-modal">${lv.users.map(u => renderUserItemModal(u)).join('')}</div>
+          ${lv.hooter ? `<div class="hooter-row-modal"><div style="font-size:16px">🔔</div><span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm triggered at this level</span><span class="hooter-badge">Hooter On</span></div>` : ''}
+        </div>${i < plantEscConfig.levels.length - 1 ? '<hr class="divider">' : ''}`;
+      });
+      html += `<button class="add-level-btn-modal" onclick="addPlantLevel()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Add escalation level
+      </button>`;
+      body.innerHTML = html;
+    }
+    function renderUserItemModal(u) {
+      return `<div class="user-item-modal">
+        <div class="user-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div>
+        <span class="user-name">${u.name}</span>
+        <div class="comm-icons">
+          ${u.comm.map((on, i) => `<div class="comm-icon ${on?'comm-on':'comm-off'}">${commLabels[i]}</div>`).join('')}
+        </div>
+        <button class="edit-btn-sm">Edit</button>
+      </div>`;
+    }
+    function addPlantLevel() {
+      const next = plantEscConfig.levels.length + 1;
+      const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
+      plantEscConfig.levels.push({ label: `Level ${next}`, cls: clsMap[Math.min(next-1, 4)], delay: (plantEscConfig.levels[plantEscConfig.levels.length-1]?.delay || 0) + 15, subtitle: 'Additional escalation', users: [], hooter: false });
+      renderEscModalBody();
+    }
+    function closeModal() { document.getElementById('escModal').classList.remove('open'); }
+    document.getElementById('escModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+    /* L1 bulk plant escalation modal */
+    function openBulkPlantEscModal() {
+      if (l1Selected.size === 0) return;
+      document.getElementById('bulkPlantSub').textContent = `Applies to ${l1Selected.size} plant${l1Selected.size>1?'s':''} · affects all insights in those plants`;
+      document.getElementById('bulkPlantEscModal').classList.add('open');
+    }
+    function closeBulkPlantEsc() { document.getElementById('bulkPlantEscModal').classList.remove('open'); }
+    document.getElementById('bulkPlantEscModal').addEventListener('click', function(e) { if (e.target === this) closeBulkPlantEsc(); });
+    document.querySelectorAll('#bulkPlantAction .fchip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#bulkPlantAction .fchip').forEach(x => x.classList.remove('selected'));
+        c.classList.add('selected');
+        const isAdd = c.dataset.val === 'add';
+        document.getElementById('bulkPlantCommSection').style.display = isAdd ? 'block' : 'none';
+      });
+    });
+    function applyBulkPlantEsc() {
+      const action = document.querySelector('#bulkPlantAction .fchip.selected').dataset.val;
+      const user = document.getElementById('bulkPlantUser').value.trim();
+      const level = document.getElementById('bulkPlantLevel').value;
+      if (!user) { alert('Enter a user name'); return; }
+      alert(`${action === 'add' ? 'Added' : 'Removed'} ${user} ${action==='add'?'to':'from'} ${level === 'notify' ? 'Notify' : 'Level '+level} across ${l1Selected.size} selected plant${l1Selected.size>1?'s':''} (${Array.from(l1Selected).join(', ')}).`);
+      closeBulkPlantEsc();
+    }
+
+    /* ════════════════════ L2 ════════════════════ */
+    const selected = new Set();
+    let currentFilter = 'all';
+    let filtersOpen = false;
+    const filterState = {
+      types: new Set(),
+      equipment: new Set(),
+      channels: new Set(),
+      state: 'all',
+      user: '',
+      timeMin: null,
+      timeMax: null,
+      repeats: false,
+    };
+
+    function toggleFiltersPanel() {
+      filtersOpen = !filtersOpen;
+      const panel = document.getElementById('filterPanel');
+      panel.classList.toggle('open', filtersOpen);
+      document.getElementById('toggleFiltersBtn').classList.toggle('active-filter', filtersOpen);
+    }
+
+    // Wire filter chips
+    document.querySelectorAll('#filterTypes .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.types, c.dataset.val); renderRows(); }));
+    document.querySelectorAll('#filterEquipment .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.equipment, c.dataset.val); renderRows(); }));
+    document.querySelectorAll('#filterChannels .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.channels, parseInt(c.dataset.val,10)); renderRows(); }));
+    document.querySelectorAll('#filterState .fchip').forEach(c => c.addEventListener('click', () => {
+      document.querySelectorAll('#filterState .fchip').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      filterState.state = c.dataset.val;
+      renderRows();
+    }));
+
+    function toggleSetChip(chip, set, val) {
+      if (set.has(val)) { set.delete(val); chip.classList.remove('selected'); }
+      else { set.add(val); chip.classList.add('selected'); }
+    }
+
+    function countActiveFilters() {
+      let n = 0;
+      n += filterState.types.size;
+      n += filterState.equipment.size;
+      n += filterState.channels.size;
+      if (filterState.state !== 'all') n++;
+      if (filterState.user) n++;
+      if (filterState.timeMin !== null && filterState.timeMin !== '' && !isNaN(parseInt(filterState.timeMin,10))) n++;
+      if (filterState.timeMax !== null && filterState.timeMax !== '' && !isNaN(parseInt(filterState.timeMax,10))) n++;
+      if (filterState.repeats) n++;
+      return n;
+    }
+
+    function clearAllFilters() {
+      filterState.types.clear(); filterState.equipment.clear(); filterState.channels.clear();
+      filterState.state = 'all'; filterState.user = ''; filterState.timeMin = null; filterState.timeMax = null; filterState.repeats = false;
+      document.querySelectorAll('#filterTypes .fchip, #filterEquipment .fchip, #filterChannels .fchip').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('#filterState .fchip').forEach((c, i) => c.classList.toggle('selected', i === 0));
+      document.getElementById('filterUser').value = '';
+      document.getElementById('filterTimeMin').value = '';
+      document.getElementById('filterTimeMax').value = '';
+      document.getElementById('filterRepeats').checked = false;
+      renderRows();
+    }
+
+    function matchesFilters(r) {
+      if (filterState.types.size > 0 && !filterState.types.has(r.type)) return false;
+      if (filterState.equipment.size > 0 && !filterState.equipment.has(r.equipment)) return false;
+      if (filterState.state === 'active' && !r.enabled) return false;
+      if (filterState.state === 'inactive' && r.enabled) return false;
+      // Users
+      if (filterState.user) {
+        const q = filterState.user.toLowerCase();
+        const allUsers = [...(r.notify?.users||[]), ...r.escLevels.flatMap(l => l.users)];
+        if (!allUsers.some(u => u.name.toLowerCase().includes(q))) return false;
+      }
+      // Channels
+      if (filterState.channels.size > 0) {
+        const allUsers = [...(r.notify?.users||[]), ...r.escLevels.flatMap(l => l.users)];
+        const hasAny = allUsers.some(u => [...filterState.channels].some(ch => u.comm[ch] === 1));
+        if (!hasAny) return false;
+      }
+      // Time window
+      const minT = parseInt(filterState.timeMin, 10);
+      const maxT = parseInt(filterState.timeMax, 10);
+      if (!isNaN(minT) || !isNaN(maxT)) {
+        const delays = r.escLevels.map(l => l.delay);
+        const inRange = delays.some(d => (isNaN(minT) || d >= minT) && (isNaN(maxT) || d <= maxT));
+        if (!inRange) return false;
+      }
+      // Repeats
+      if (filterState.repeats) {
+        const names = r.escLevels.flatMap(l => l.users.map(u => u.name));
+        const set = new Set();
+        let hasRepeat = false;
+        names.forEach(n => { if (set.has(n)) hasRepeat = true; else set.add(n); });
+        if (!hasRepeat) return false;
+      }
+      return true;
+    }
+
+    function buildEscTooltip(r) {
       let html = '<div class="esc-tooltip"><div class="esc-tooltip-title">Escalation levels</div>';
-      levels.forEach(lv => {
-        html += `<div class="esc-level-row"><div class="esc-lhead"><span class="lbadge ${lv.cls}">${lv.label}</span></div><div class="esc-users-tt">`;
+      // Notify first
+      if (r.notify && r.notify.users.length > 0) {
+        html += `<div class="esc-level-row"><div class="esc-lhead"><span class="lbadge lbn">Notify</span><span style="font-size:10px;color:var(--color-text-tertiary);margin-left:auto">immediate</span></div><div class="esc-users-tt">`;
+        r.notify.users.forEach(u => {
+          html += `<div class="esc-user-row"><div class="esc-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div><span class="esc-uname">${u.name}</span><div class="esc-comm">`;
+          u.comm.forEach((on, i) => { html += `<div class="ec ${on?'ec-on':'ec-off'}">${commLabels[i]}</div>`; });
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      }
+      r.escLevels.forEach(lv => {
+        html += `<div class="esc-level-row"><div class="esc-lhead"><span class="lbadge ${lv.cls}">${lv.label}</span><span style="font-size:10px;color:var(--color-text-tertiary);margin-left:auto">+${lv.delay} min</span></div><div class="esc-users-tt">`;
         lv.users.forEach(u => {
           html += `<div class="esc-user-row"><div class="esc-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div><span class="esc-uname">${u.name}</span><div class="esc-comm">`;
           u.comm.forEach((on, i) => { html += `<div class="ec ${on?'ec-on':'ec-off'}">${commLabels[i]}</div>`; });
@@ -877,32 +1295,49 @@
       return html + '</div>';
     }
 
+    function statusBadgeFor(r) {
+      if (!r.enabled) return `<span class="status-badge s-off"><span class="s-dot"></span>Disabled</span>`;
+      if (!r.lastTrigActive) return `<span class="status-badge s-resolved"><span class="s-dot"></span>Resolved</span>`;
+      const cls = 's-' + r.type;
+      return `<span class="status-badge ${cls}"><span class="s-dot"></span>${typeLabels[r.type]}</span>`;
+    }
+
     function renderRows() {
+      filterState.user = (document.getElementById('filterUser')?.value || '').trim();
+      filterState.timeMin = document.getElementById('filterTimeMin')?.value ?? '';
+      filterState.timeMax = document.getElementById('filterTimeMax')?.value ?? '';
+      filterState.repeats = document.getElementById('filterRepeats')?.checked || false;
+
       const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
-      const container = document.getElementById('rowsContainer');
-      if (!container) return;
+      const c = document.getElementById('rowsContainer');
+      if (!c) return;
       const rows = insights.filter(r => {
         if (q && !r.name.toLowerCase().includes(q)) return false;
-        if (currentFilter === 'all') return true;
-        if (currentFilter === 'off') return !r.enabled;
-        return r.status === currentFilter;
+        return matchesFilters(r);
       });
+
+      const count = countActiveFilters();
+      const countEl = document.getElementById('activeFilterCount');
+      const summaryEl = document.getElementById('filterSummary');
+      if (count > 0) { countEl.style.display = 'inline-block'; countEl.textContent = count; summaryEl.textContent = `${count} filter${count>1?'s':''} active · showing ${rows.length} of ${insights.length}`; }
+      else { countEl.style.display = 'none'; summaryEl.textContent = 'No filters active'; }
+
       if (!rows.length) {
-        container.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match this filter</div>';
+        c.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match the current filters</div>';
         return;
       }
-      container.innerHTML = rows.map(r => {
+      c.innerHTML = rows.map(r => {
         const isSel = selected.has(r.id);
-        return `<div class="insight-row${isSel?' selected':''}" id="row-${r.id}" onclick="handleRowClick(event,${r.id})">
+        return `<div class="insight-row${isSel?' selected':''}" onclick="handleRowClick(${r.id})">
           <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#185FA5"/></div>
           <div class="iname">
             <div class="esc-trigger" onclick="event.stopPropagation()">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h7M2 10.5h5" stroke="var(--color-text-secondary)" stroke-width="1.2" stroke-linecap="round"/></svg>
-              ${buildEscTooltip(r.escLevels)}
+              ${buildEscTooltip(r)}
             </div>
-            <span class="iname-text">${r.name}</span>
+            <span class="iname-text">${r.name}<span class="iname-meta">· ${r.equipment}</span></span>
           </div>
-          <div><span class="status-badge ${r.stateClass}"><span class="s-dot"></span>${r.statusLabel}</span></div>
+          <div>${statusBadgeFor(r)}</div>
           <div class="last-trig${r.lastTrigActive?' active':''}">${r.lastTrig}</div>
           <div onclick="event.stopPropagation()">
             <label class="toggle"><input type="checkbox"${r.enabled?' checked':''} onchange="toggleInsight(${r.id},this)"><span class="slider"></span></label>
@@ -916,25 +1351,12 @@
         </div>`;
       }).join('');
     }
-
-    function handleRowClick(e, id) {
-      showView('l3');
-    }
-
-    function toggleSelect(id, cb) {
-      if (cb.checked) selected.add(id); else selected.delete(id);
-      updateBulkBar(); renderRows();
-    }
+    function handleRowClick(id) { showView('l3'); }
+    function toggleSelect(id, cb) { if (cb.checked) selected.add(id); else selected.delete(id); updateBulkBar(); renderRows(); }
     function toggleAll(cb) {
-      const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
-      const visible = insights.filter(r => {
-        if (q && !r.name.toLowerCase().includes(q)) return false;
-        if (currentFilter === 'all') return true;
-        if (currentFilter === 'off') return !r.enabled;
-        return r.status === currentFilter;
-      }).map(r => r.id);
-      if (cb.checked) visible.forEach(id => selected.add(id));
-      else visible.forEach(id => selected.delete(id));
+      const ids = insights.filter(r => matchesFilters(r) && (!document.getElementById('searchInput').value || r.name.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()))).map(r => r.id);
+      if (cb.checked) ids.forEach(id => selected.add(id));
+      else ids.forEach(id => selected.delete(id));
       updateBulkBar(); renderRows();
     }
     function updateBulkBar() {
@@ -943,36 +1365,260 @@
       if (selected.size > 0) { bar.classList.remove('hidden'); cnt.textContent = selected.size + ' selected'; }
       else bar.classList.add('hidden');
     }
-    function clearSelection() { selected.clear(); updateBulkBar(); renderRows(); }
-    function bulkEnable() {
-      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) { r.enabled = true; if (r.status === 'off') { r.status = 'ok'; r.statusLabel = 'Normal'; r.stateClass = 's-ok'; } } });
-      renderRows();
-    }
-    function bulkDisable() {
-      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) { r.enabled = false; r.status = 'off'; r.statusLabel = 'Disabled'; r.stateClass = 's-off'; } });
-      renderRows();
-    }
-    function toggleInsight(id, cb) {
-      const r = insights.find(x => x.id === id);
-      if (!r) return;
-      r.enabled = cb.checked;
-      if (!cb.checked) { r.status = 'off'; r.statusLabel = 'Disabled'; r.stateClass = 's-off'; }
-      else { r.status = 'ok'; r.statusLabel = 'Normal'; r.stateClass = 's-ok'; }
-      renderRows();
-    }
-    function setFilter(f) {
-      currentFilter = f;
-      ['all','incident','issue','warning','off'].forEach(x => {
-        const el = document.getElementById('filter' + x.charAt(0).toUpperCase() + x.slice(1));
-        if (el) el.style.background = x === f ? 'var(--color-background-secondary)' : '';
+    function clearSelection() { selected.clear(); document.getElementById('selectAll').checked = false; updateBulkBar(); renderRows(); }
+    function bulkEnable() { selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) r.enabled = true; }); renderRows(); }
+    function bulkDisable() { selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) r.enabled = false; }); renderRows(); }
+    function toggleInsight(id, cb) { const r = insights.find(x => x.id === id); if (r) r.enabled = cb.checked; renderRows(); }
+
+    /* L2 bulk modals */
+    function initialsOf(name) { return name.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
+    function randBg() { const opts = [['#E6F1FB','#0C447C'],['#EAF3DE','#3B6D11'],['#FAEEDA','#633806'],['#EEEDFE','#3C3489'],['#FCEBEB','#791F1F']]; return opts[Math.floor(Math.random()*opts.length)]; }
+
+    function openBulkAddUserModal() { if (selected.size === 0) return; document.getElementById('bulkAddSub').textContent = `Adds a user to ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkAddUserModal').classList.add('open'); }
+    function closeBulkAddUser() { document.getElementById('bulkAddUserModal').classList.remove('open'); }
+    document.getElementById('bulkAddUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkAddUser(); });
+    function applyBulkAddUser() {
+      const name = document.getElementById('bulkAddUserName').value.trim();
+      if (!name) { alert('Enter a user name'); return; }
+      const level = document.getElementById('bulkAddLevel').value;
+      const comm = [0,0,0,0];
+      document.querySelectorAll('.ba-comm').forEach(cb => { if (cb.checked) comm[parseInt(cb.value,10)] = 1; });
+      const [bg, tc] = randBg();
+      const user = { init: initialsOf(name), bg, tc, name, comm };
+      selected.forEach(id => {
+        const r = insights.find(x => x.id === id); if (!r) return;
+        if (level === 'notify') { r.notify.users.push({...user}); }
+        else {
+          const lv = r.escLevels.find(l => l.label === 'Level ' + level);
+          if (lv) lv.users.push({...user});
+        }
       });
-      renderRows();
+      closeBulkAddUser(); renderRows();
     }
 
-    /* ── L3 ── */
+    function openBulkRemoveUserModal() { if (selected.size === 0) return; document.getElementById('bulkRemoveSub').textContent = `Remove a user from ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkRemoveUserModal').classList.add('open'); }
+    function closeBulkRemoveUser() { document.getElementById('bulkRemoveUserModal').classList.remove('open'); }
+    document.getElementById('bulkRemoveUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkRemoveUser(); });
+    function applyBulkRemoveUser() {
+      const name = document.getElementById('bulkRemoveUserName').value.trim();
+      if (!name) { alert('Enter a user name'); return; }
+      const level = document.getElementById('bulkRemoveLevel').value;
+      selected.forEach(id => {
+        const r = insights.find(x => x.id === id); if (!r) return;
+        if (level === 'any' || level === 'notify') r.notify.users = r.notify.users.filter(u => u.name.toLowerCase() !== name.toLowerCase());
+        r.escLevels.forEach(lv => {
+          if (level === 'any' || lv.label === 'Level ' + level) {
+            lv.users = lv.users.filter(u => u.name.toLowerCase() !== name.toLowerCase());
+          }
+        });
+      });
+      closeBulkRemoveUser(); renderRows();
+    }
+
+    function openBulkTimingModal() { if (selected.size === 0) return; document.getElementById('bulkTimingSub').textContent = `Adjust escalation delay for ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkTimingModal').classList.add('open'); }
+    function closeBulkTiming() { document.getElementById('bulkTimingModal').classList.remove('open'); }
+    document.getElementById('bulkTimingModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkTiming(); });
+    function applyBulkTiming() {
+      const level = document.getElementById('bulkTimingLevel').value;
+      const delay = parseInt(document.getElementById('bulkTimingDelay').value, 10);
+      if (isNaN(delay) || delay < 0) { alert('Enter a valid delay'); return; }
+      selected.forEach(id => {
+        const r = insights.find(x => x.id === id); if (!r) return;
+        const lv = r.escLevels.find(l => l.label === 'Level ' + level);
+        if (lv) lv.delay = delay;
+      });
+      closeBulkTiming(); renderRows();
+    }
+
+    function openBulkAddLevelModal() { if (selected.size === 0) return; document.getElementById('bulkAddLevelSub').textContent = `Append a new escalation level to ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkAddLevelModal').classList.add('open'); }
+    function closeBulkAddLevel() { document.getElementById('bulkAddLevelModal').classList.remove('open'); }
+    document.getElementById('bulkAddLevelModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkAddLevel(); });
+    document.querySelectorAll('#bulkLevelType .fchip').forEach(c => c.addEventListener('click', () => {
+      document.querySelectorAll('#bulkLevelType .fchip').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+    }));
+    function applyBulkAddLevel() {
+      const isCustom = document.querySelector('#bulkLevelType .fchip.selected').dataset.val === 'custom';
+      const delay = parseInt(document.getElementById('bulkAddLevelDelay').value, 10);
+      const userName = document.getElementById('bulkAddLevelUser').value.trim();
+      const hooter = document.getElementById('bulkAddLevelHooter').checked;
+      if (isNaN(delay) || delay < 0) { alert('Enter a valid delay'); return; }
+      const comm = [0,0,0,0];
+      document.querySelectorAll('.bal-comm').forEach(cb => { if (cb.checked) comm[parseInt(cb.value,10)] = 1; });
+      const users = userName ? (() => { const [bg, tc] = randBg(); return [{ init: initialsOf(userName), bg, tc, name: userName, comm }]; })() : [];
+      const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
+      selected.forEach(id => {
+        const r = insights.find(x => x.id === id); if (!r) return;
+        const nextNum = r.escLevels.length + 1;
+        r.escLevels.push({
+          label: isCustom ? 'Custom' : 'Level ' + nextNum,
+          cls: isCustom ? 'lbc' : clsMap[Math.min(nextNum - 1, 4)],
+          delay,
+          users: [...users],
+          hooter,
+        });
+      });
+      closeBulkAddLevel(); renderRows();
+    }
+
+    /* ════════════════════ L3 ════════════════════ */
+    const currentInsightId = 1;
+    let l3Insight = null;
+
+    function getCurrentInsight() {
+      if (!l3Insight) l3Insight = JSON.parse(JSON.stringify(insights.find(i => i.id === currentInsightId)));
+      return l3Insight;
+    }
+
+    function renderL3Escalation() {
+      const r = getCurrentInsight();
+      const c = document.getElementById('l3EscalationContainer');
+      let html = '';
+      // Notify level block (always first)
+      html += `<div class="esc-level-block">
+        <div class="esc-level-head notify">
+          <span class="lbadge lbn">Notify</span>
+          <span style="font-size:11px">Immediate on trigger</span>
+          <span class="esc-delay">0 min</span>
+          <button class="esc-edit-link">Edit</button>
+        </div>
+        <div class="esc-users">
+          ${r.notify.users.map((u, i) => renderL3User(u, 'notify', i)).join('')}
+        </div>
+        <div class="add-user-row">
+          <input class="add-user-input" placeholder="Add user to notify…" id="addNotifyInput"/>
+          <button class="add-user-btn" onclick="addUserToLevel('notify')">Add</button>
+        </div>
+      </div>`;
+      // Escalation levels
+      r.escLevels.forEach((lv, idx) => {
+        html += `<div class="esc-level-block">
+          <div class="esc-level-head">
+            <span class="lbadge ${lv.cls}">${lv.label}</span>
+            <span style="font-size:11px;color:var(--color-text-secondary)">${lv.label === 'Custom' ? 'Insight-only group' : 'Time-based escalation'}</span>
+            <span class="esc-delay">+<input class="esc-delay-input" type="number" min="0" value="${lv.delay}" onchange="updateDelay(${idx}, this.value)"/> min</span>
+          </div>
+          <div class="esc-users">
+            ${lv.users.map((u, ui) => renderL3User(u, idx, ui)).join('')}
+          </div>
+          ${lv.hooter ? `<div class="hooter-row"><span style="font-size:14px">🔔</span><span style="flex:1">Hooter alarm at this level</span><label class="toggle" style="width:30px;height:16px"><input type="checkbox" checked onchange="toggleHooter(${idx},this)"><span class="slider"></span></label></div>` : `<div class="hooter-row"><span style="font-size:14px;opacity:.4">🔔</span><span style="flex:1;color:var(--color-text-tertiary)">Hooter alarm off</span><label class="toggle" style="width:30px;height:16px"><input type="checkbox" onchange="toggleHooter(${idx},this)"><span class="slider"></span></label></div>`}
+          <div class="add-user-row">
+            <input class="add-user-input" placeholder="Add user…" id="addInput${idx}"/>
+            <button class="add-user-btn" onclick="addUserToLevel(${idx})">Add</button>
+          </div>
+        </div>`;
+      });
+      c.innerHTML = html;
+    }
+
+    function renderL3User(u, levelIdx, userIdx) {
+      return `<div class="user-item">
+        <div class="avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div>
+        <span class="uname">${u.name}</span>
+        <div class="comm-icons">
+          ${u.comm.map((on, i) => `<div class="ci ${on?'ci-on':'ci-off'}" onclick="toggleComm('${levelIdx}',${userIdx},${i})">${commLabels[i]}</div>`).join('')}
+        </div>
+        <button class="remove-user" onclick="removeL3User('${levelIdx}',${userIdx})">×</button>
+      </div>`;
+    }
+
+    function addUserToLevel(levelIdx) {
+      const input = levelIdx === 'notify' ? document.getElementById('addNotifyInput') : document.getElementById('addInput' + levelIdx);
+      const name = input.value.trim();
+      if (!name) return;
+      const [bg, tc] = randBg();
+      const user = { init: initialsOf(name), bg, tc, name, comm: [1, 0, 0, 0] };
+      const r = getCurrentInsight();
+      if (levelIdx === 'notify') r.notify.users.push(user);
+      else r.escLevels[parseInt(levelIdx,10)].users.push(user);
+      renderL3Escalation();
+    }
+    function removeL3User(levelIdx, userIdx) {
+      const r = getCurrentInsight();
+      if (levelIdx === 'notify') r.notify.users.splice(userIdx, 1);
+      else r.escLevels[parseInt(levelIdx,10)].users.splice(userIdx, 1);
+      renderL3Escalation();
+    }
+    function toggleComm(levelIdx, userIdx, commIdx) {
+      const r = getCurrentInsight();
+      const users = levelIdx === 'notify' ? r.notify.users : r.escLevels[parseInt(levelIdx,10)].users;
+      users[userIdx].comm[commIdx] = users[userIdx].comm[commIdx] ? 0 : 1;
+      renderL3Escalation();
+    }
+    function updateDelay(levelIdx, val) {
+      const r = getCurrentInsight();
+      const d = parseInt(val, 10);
+      if (!isNaN(d) && d >= 0) r.escLevels[levelIdx].delay = d;
+    }
+    function toggleHooter(levelIdx, cb) {
+      const r = getCurrentInsight();
+      r.escLevels[levelIdx].hooter = cb.checked;
+      renderL3Escalation();
+    }
+    function addL3Level() {
+      const r = getCurrentInsight();
+      const next = r.escLevels.length + 1;
+      const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
+      const prevDelay = r.escLevels.length > 0 ? r.escLevels[r.escLevels.length-1].delay : 0;
+      r.escLevels.push({ label: 'Level ' + next, cls: clsMap[Math.min(next-1, 4)], delay: prevDelay + 15, users: [], hooter: false });
+      renderL3Escalation();
+    }
+    function addL3CustomLevel() {
+      const r = getCurrentInsight();
+      const prevDelay = r.escLevels.length > 0 ? r.escLevels[r.escLevels.length-1].delay : 0;
+      r.escLevels.push({ label: 'Custom', cls: 'lbc', delay: prevDelay, users: [], hooter: false });
+      renderL3Escalation();
+    }
+
+    /* L3 conditions edit */
+    let condEditing = false;
+    function toggleConditionEdit() {
+      condEditing = !condEditing;
+      document.getElementById('condOpen').classList.toggle('editing', condEditing);
+      document.getElementById('condClose').classList.toggle('editing', condEditing);
+      document.getElementById('condEditActions').style.display = condEditing ? 'flex' : 'none';
+      document.getElementById('editCondBtn').textContent = condEditing ? 'Editing…' : 'Edit';
+    }
+    function saveConditions() {
+      const os = document.getElementById('condOpenSensor').value;
+      const oo = document.getElementById('condOpenOp').value;
+      const ov = document.getElementById('condOpenVal').value;
+      const ou = document.getElementById('condOpenUnit').value;
+      const od = document.getElementById('condOpenDur').value;
+      const cs = document.getElementById('condCloseSensor').value;
+      const co = document.getElementById('condCloseOp').value;
+      const cv = document.getElementById('condCloseVal').value;
+      const cu = document.getElementById('condCloseUnit').value;
+      const cd = document.getElementById('condCloseDur').value;
+      const tr = document.getElementById('condTimeResolve').checked;
+      const tv = document.getElementById('condTimeValue').value;
+      const tu = document.getElementById('condTimeUnit').value;
+      document.getElementById('condOpenRule').textContent = `${os} ${oo} ${ov} ${ou}`;
+      document.getElementById('condOpenSustain').textContent = `${od} seconds`;
+      document.getElementById('condCloseRule').textContent = `${cs} ${co} ${cv} ${cu}`;
+      const baseNote = `${cd} seconds · sensor, manual${tr ? `, or auto after ${tv} ${tu}` : ', or time-based'}`;
+      document.getElementById('condCloseSustain').textContent = baseNote;
+      toggleConditionEdit();
+    }
+    function cancelConditions() { toggleConditionEdit(); }
+
+    /* L3 manual close */
+    function manualClose() {
+      const banner = document.getElementById('closeInfoBanner');
+      banner.classList.add('active');
+      document.getElementById('closeStatusText').innerHTML = 'Closed manually by <span class="close-val">you</span> · just now';
+      document.getElementById('resolveCard').style.display = 'none';
+      document.getElementById('closeHistory').insertAdjacentHTML('afterbegin',
+        `<div class="close-history-row"><span style="color:var(--color-text-secondary)">Latest closure</span><span class="close-val" style="color:#3B6D11;font-weight:500">Manual · you · just now</span></div>`);
+    }
+
+    /* L3 mount */
     document.getElementById('mainToggle').addEventListener('change', function() {
       document.getElementById('toggleLbl').textContent = this.checked ? 'Enabled' : 'Disabled';
     });
+
+    /* Init */
+    renderL1Rows();
   </script>
 </body>
 </html>
