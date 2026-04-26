@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Formula Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-dark:  #0C447C;
+    --blue-mid:   #1A6DB5;
+    --blue-light: #E6F1FB;
+    --green:      #1C7C54;
+    --green-light:#E6F5EF;
+    --red:        #C0392B;
+    --red-light:  #FDEDEC;
+    --amber:      #B7570A;
+    --amber-light:#FEF3E2;
+    --gray-50:    #F0F2F5;
+    --gray-100:   #E4E7EC;
+    --gray-200:   #CDD1D8;
+    --gray-400:   #9AA3AD;
+    --gray-600:   #5C6470;
+    --gray-800:   #2D3139;
+    --white:      #FFFFFF;
+    --radius:     8px;
+    --shadow:     0 1px 4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.05);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ── Top Nav ── */
+  .topnav {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topnav-left { display: flex; align-items: center; gap: 12px; }
+  .topnav-logo {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--blue-dark);
+    letter-spacing: -.3px;
+  }
+  .topnav-sep { color: var(--gray-200); font-size: 18px; }
+  .topnav-title { font-size: 14px; font-weight: 500; color: var(--gray-600); }
+  .back-link {
+    font-size: 13px;
+    color: var(--blue-mid);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* ── Page shell ── */
+  .page { max-width: 1080px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .page-header { margin-bottom: 24px; }
+  .page-header h1 { font-size: 22px; font-weight: 700; color: var(--gray-800); }
+  .page-header p  { font-size: 14px; color: var(--gray-600); margin-top: 4px; line-height: 1.5; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-100); margin-bottom: 28px; }
+  .tab-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  .tab-btn.active { color: var(--blue-dark); border-bottom-color: var(--blue-dark); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .badge-open  { background: var(--green-light);  color: var(--green); }
+  .badge-close { background: var(--red-light);    color: var(--red); }
+  .badge-tip   { background: var(--amber-light);  color: var(--amber); }
+
+  /* ── Form elements ── */
+  label { font-size: 13px; font-weight: 500; color: var(--gray-700, #3D4350); display: block; margin-bottom: 4px; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--white);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue-mid);
+    box-shadow: 0 0 0 3px rgba(26,109,181,.12);
+  }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+
+  .form-row { display: grid; gap: 12px; }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background .15s, border-color .15s, opacity .15s;
+  }
+  .btn-primary { background: var(--blue-dark); color: var(--white); border-color: var(--blue-dark); }
+  .btn-primary:hover { background: var(--blue-mid); border-color: var(--blue-mid); }
+  .btn-secondary { background: var(--white); color: var(--gray-800); border-color: var(--gray-200); }
+  .btn-secondary:hover { background: var(--gray-50); }
+  .btn-ghost { background: none; color: var(--blue-mid); border-color: transparent; padding: 6px 10px; }
+  .btn-ghost:hover { background: var(--blue-light); }
+  .btn-danger { background: none; color: var(--red); border-color: transparent; padding: 4px 8px; font-size: 12px; }
+  .btn-danger:hover { background: var(--red-light); }
+  .btn-green { background: var(--green); color: var(--white); border-color: var(--green); }
+  .btn-green:hover { opacity: .9; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ── NLP Input ── */
+  .nlp-area { position: relative; }
+  .nlp-hint {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .nlp-parse-row { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
+  .nlp-parse-row textarea { flex: 1; }
+
+  .divider-or {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    position: relative;
+    margin: 18px 0;
+  }
+  .divider-or::before, .divider-or::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 24px);
+    height: 1px;
+    background: var(--gray-100);
+  }
+  .divider-or::before { left: 0; }
+  .divider-or::after  { right: 0; }
+
+  /* ── Condition Builder ── */
+  .logic-toggle {
+    display: inline-flex;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .logic-toggle button {
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    background: var(--white);
+    color: var(--gray-400);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, color .15s;
+  }
+  .logic-toggle button.active { background: var(--blue-dark); color: var(--white); }
+
+  .condition-rows { display: flex; flex-direction: column; gap: 8px; }
+  .condition-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 120px 80px auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .condition-connector {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue-mid);
+    text-align: center;
+    padding: 2px 0;
+    letter-spacing: .5px;
+  }
+
+  .add-condition-btn {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--blue-mid);
+    background: none;
+    border: 1px dashed var(--gray-200);
+    border-radius: 6px;
+    padding: 8px;
+    width: 100%;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, border-color .15s;
+  }
+  .add-condition-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+
+  /* ── Duration row ── */
+  .duration-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--gray-100);
+    flex-wrap: wrap;
+  }
+  .duration-row label { margin: 0; white-space: nowrap; }
+  .duration-row input { width: 70px; }
+  .duration-row select { width: 110px; }
+
+  /* ── Formula Preview ── */
+  .formula-preview {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--gray-800);
+    word-break: break-all;
+    line-height: 1.6;
+    min-height: 44px;
+    position: relative;
+  }
+  .formula-preview.empty { color: var(--gray-400); font-style: italic; font-family: inherit; font-size: 13px; }
+  .formula-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+  .token-IF    { color: #7B2D8B; font-weight: 600; }
+  .token-FN    { color: #0C447C; font-weight: 600; }
+  .token-TAG   { color: #1C7C54; }
+  .token-OP    { color: #B7570A; font-weight: 600; }
+  .token-VAL   { color: #C0392B; }
+
+  /* ── Closing suggestions ── */
+  .close-suggestions { display: flex; flex-direction: column; gap: 10px; }
+  .close-option {
+    border: 1px solid var(--gray-100);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    position: relative;
+  }
+  .close-option:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+  .close-option.selected { border-color: var(--blue-dark); background: var(--blue-light); }
+  .close-option-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .close-option-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--gray-800);
+    word-break: break-all;
+  }
+  .close-option-desc {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-top: 4px;
+  }
+  .close-check {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+  .close-option.selected .close-check { background: var(--blue-dark); border-color: var(--blue-dark); color: white; }
+
+  /* ── Trigger type chips ── */
+  .type-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .type-chip {
+    padding: 7px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--gray-200);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--gray-800);
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+  }
+  .type-chip.selected { background: var(--blue-dark); color: var(--white); border-color: var(--blue-dark); }
+
+  /* ── Output panel ── */
+  .output-panel {
+    background: #1A1E2A;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 8px;
+  }
+  .output-panel h3 { font-size: 13px; font-weight: 600; color: #8B95A5; margin-bottom: 14px; text-transform: uppercase; letter-spacing: .4px; }
+  .output-block { margin-bottom: 16px; }
+  .output-block-label { font-size: 11px; color: #5C6880; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+  .output-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #A8D8A8;
+    word-break: break-all;
+    line-height: 1.6;
+    background: rgba(255,255,255,.04);
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .output-meta { font-size: 12px; color: #8B95A5; margin-top: 6px; }
+
+  /* ── Upload area ── */
+  .drop-zone {
+    border: 2px dashed var(--gray-200);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragging { border-color: var(--blue-mid); background: var(--blue-light); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-zone-text { font-size: 14px; font-weight: 500; color: var(--gray-800); }
+  .drop-zone-sub  { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+
+  /* ── Table ── */
+  .data-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-100); margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--gray-50);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--gray-600);
+    border-bottom: 1px solid var(--gray-100);
+    white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--gray-50); color: var(--gray-800); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+  .td-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--green);
+    max-width: 300px;
+    word-break: break-all;
+  }
+
+  /* ── Toasts ── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    background: var(--gray-800);
+    color: var(--white);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    animation: slideIn .2s ease;
+  }
+  @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ── Misc ── */
+  .help-text { font-size: 12px; color: var(--gray-400); margin-top: 4px; line-height: 1.4; }
+  .section-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .section-actions .card-title { margin-bottom: 0; }
+  .empty-state { text-align: center; padding: 32px; color: var(--gray-400); font-size: 14px; }
+  .tag-pill {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    margin: 1px;
+  }
+  .success-icon { color: var(--green); }
+  .warn-icon    { color: var(--amber); }
+  .error-icon   { color: var(--red); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .condition-row { grid-template-columns: 1fr 80px 80px 60px auto; }
+    .form-row.cols-2 { grid-template-columns: 1fr; }
+    .form-row.cols-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ Top Nav ══ -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <span class="topnav-logo">Insights+</span>
+    <span class="topnav-sep">|</span>
+    <span class="topnav-title">Smart Formula Builder</span>
+  </div>
+  <a class="back-link" href="index.html">← Back to Insights+</a>
+</nav>
+
+<!-- ══ Page ══ -->
+<div class="page">
+
+  <div class="page-header">
+    <h1>Smart Formula Builder</h1>
+    <p>Build trigger opening &amp; closing formulas visually, or describe the condition in plain English. Upload an Excel sheet to generate triggers in bulk.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('manual')">Manual Builder</button>
+    <button class="tab-btn" onclick="switchTab('bulk')">Bulk Upload (Excel)</button>
+  </div>
+
+  <!-- ══════════════════════════════════
+       TAB: Manual Builder
+       ══════════════════════════════════ -->
+  <div id="tab-manual" class="tab-panel active">
+
+    <!-- Trigger Name -->
+    <div class="card">
+      <div class="form-row cols-2">
+        <div>
+          <label>Trigger Name</label>
+          <input type="text" id="trigger-name" placeholder="e.g. Filter Feed Pump Off With Flow" />
+        </div>
+        <div>
+          <label>Equipment / Tag Group</label>
+          <input type="text" id="trigger-equip" placeholder="e.g. Filtration, Aeration, Sludge" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Opening Condition ── -->
+    <div class="card">
+      <div class="card-title">Opening Condition <span class="badge badge-open">OPEN</span></div>
+
+      <!-- NLP input -->
+      <label>Describe in plain English <span style="font-weight:400;color:var(--gray-400)">(optional — click Parse to auto-fill rows)</span></label>
+      <div class="nlp-parse-row">
+        <textarea id="nlp-open" placeholder="e.g. Both filter feed pumps are off but flow rate is more than 0&#10;e.g. Pressure exceeds 85 bar for 10 minutes&#10;e.g. Either pump 1 or pump 2 is running and DO is less than 2"></textarea>
+        <button class="btn btn-secondary" onclick="parseNLP('open')">⚡ Parse</button>
+      </div>
+      <p class="nlp-hint">Tip: Use "and", "or", "but", "either…or", "both…and", "not", "is on/off", "exceeds", "less than", "equals"</p>
+
+      <div class="divider-or">OR build visually</div>
+
+      <!-- Logic toggle -->
+      <div class="logic-toggle" id="open-logic-toggle">
+        <button class="active" onclick="setLogic('open','AND',this)">AND — all must be true</button>
+        <button onclick="setLogic('open','OR',this)">OR — any one true</button>
+      </div>
+
+      <!-- Condition rows -->
+      <div class="condition-rows" id="open-rows"></div>
+      <button class="add-condition-btn" onclick="addRow('open')">+ Add Condition</button>
+
+      <!-- Duration -->
+      <div class="duration-row">
+        <label>Must be true for</label>
+        <input type="number" id="open-dur-val" min="0" value="0" oninput="rebuildFormula('open')" style="width:70px" />
+        <select id="open-dur-unit" onchange="rebuildFormula('open')">
+          <option value="min">minutes</option>
+          <option value="sec">seconds</option>
+          <option value="hr">hours</option>
+        </select>
+        <span style="font-size:12px;color:var(--gray-400)">(0 = instantaneous)</span>
+      </div>
+
+      <!-- Formula preview -->
+      <div style="margin-top:16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Generated Formula</div>
+        <div class="formula-preview empty" id="open-formula-display">Add conditions above to generate formula</div>
+        <div class="formula-actions">
+          <button class="btn btn-sm btn-secondary" onclick="copyFormula('open')">Copy</button>
+          <button class="btn btn-sm btn-ghost" onclick="resetSection('open')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Closing Condition ── -->
+    <div class="card">
+      <div class="section-actions">
+        <div class="card-title">Closing Condition <span class="badge badge-close">CLOSE</span></div>
+        <button class="btn btn-sm btn-secondary" id="auto-close-btn" onclick="autoGenerateClose()" disabled>⟳ Auto-generate from opening</button>
+      </div>
+
+      <!-- Auto-suggestions -->
+      <div id="close-suggestions-area" style="display:none;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--gray-600)">Choose closing logic:</div>
+        <div class="close-suggestions" id="close-suggestions-list"></div>
+      </div>
+
+      <!-- NLP input -->
+      <label style="margin-top:8px">Describe in plain English <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+      <div class="nlp-parse-row">
+        <textarea id="nlp-close" placeholder="e.g. Either pump turns on, or flow drops to 0"></textarea>
+        <button class="btn btn-secondary" onclick="parseNLP('close')">⚡ Parse</button>
+      </div>
+
+      <div class="divider-or">OR build visually</div>
+
+      <div class="logic-toggle" id="close-logic-toggle">
+        <button class="active" onclick="setLogic('close','AND',this)">AND — all must be true</button>
+        <button onclick="setLogic('close','OR',this)">OR — any one true</button>
+      </div>
+
+      <div class="condition-rows" id="close-rows"></div>
+      <button class="add-condition-btn" onclick="addRow('close')">+ Add Condition</button>
+
+      <div class="duration-row">
+        <label>Must be true for</label>
+        <input type="number" id="close-dur-val" min="0" value="0" oninput="rebuildFormula('close')" style="width:70px" />
+        <select id="close-dur-unit" onchange="rebuildFormula('close')">
+          <option value="min">minutes</option>
+          <option value="sec">seconds</option>
+          <option value="hr">hours</option>
+        </select>
+      </div>
+
+      <div style="margin-top:16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Generated Formula</div>
+        <div class="formula-preview empty" id="close-formula-display">Add conditions above to generate formula</div>
+        <div class="formula-actions">
+          <button class="btn btn-sm btn-secondary" onclick="copyFormula('close')">Copy</button>
+          <button class="btn btn-sm btn-ghost" onclick="resetSection('close')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Trigger Setup ── -->
+    <div class="card">
+      <div class="card-title">Trigger Setup</div>
+
+      <div style="margin-bottom:16px">
+        <label>Trigger Components</label>
+        <div class="type-chips" id="type-chips">
+          <button class="type-chip selected" onclick="toggleChip(this,'alert')">🔔 Alert</button>
+          <button class="type-chip" onclick="toggleChip(this,'communication')">✉ Communication</button>
+          <button class="type-chip" onclick="toggleChip(this,'task')">✅ Task</button>
+          <button class="type-chip" onclick="toggleChip(this,'hooter')">🔊 Hooter</button>
+          <button class="type-chip" onclick="toggleChip(this,'report')">📊 Report</button>
+        </div>
+      </div>
+
+      <div class="form-row cols-3">
+        <div>
+          <label>Check Frequency</label>
+          <input type="number" id="check-freq" min="1" value="1" placeholder="1" />
+          <p class="help-text">How often to evaluate (minutes)</p>
+        </div>
+        <div>
+          <label>Repeat Alert After (min)</label>
+          <input type="number" id="repeat-freq" min="0" value="0" placeholder="0 = no repeat" />
+          <p class="help-text">0 = alert once per trigger</p>
+        </div>
+        <div>
+          <label>Priority</label>
+          <select id="priority">
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Output ── -->
+    <div class="output-panel" id="output-panel" style="display:none">
+      <h3>Generated Trigger</h3>
+      <div class="output-block">
+        <div class="output-block-label">Opening Formula</div>
+        <div class="output-formula" id="out-open">—</div>
+      </div>
+      <div class="output-block">
+        <div class="output-block-label">Closing Formula</div>
+        <div class="output-formula" id="out-close">—</div>
+      </div>
+      <div class="output-meta" id="out-meta"></div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="generateTrigger()">Generate Trigger</button>
+      <button class="btn btn-secondary" onclick="exportJSON()">Export JSON</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset All</button>
+    </div>
+
+  </div><!-- /tab-manual -->
+
+  <!-- ══════════════════════════════════
+       TAB: Bulk Upload
+       ══════════════════════════════════ -->
+  <div id="tab-bulk" class="tab-panel">
+
+    <div class="card">
+      <div class="card-title">Upload Excel Sheet</div>
+
+      <div class="drop-zone" id="drop-zone"
+           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)" />
+        <div class="drop-zone-icon">📄</div>
+        <div class="drop-zone-text">Drop your Excel file here, or click to browse</div>
+        <div class="drop-zone-sub">Supports .xlsx, .xls, .csv</div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadSampleData()">Load Sample Data</button>
+      </div>
+
+      <div style="margin-top:14px;padding:12px 14px;background:var(--amber-light);border-radius:6px;font-size:12px;color:var(--amber)">
+        <strong>Expected columns:</strong> Trigger Name | Equipment | Opening Logic | Closing Logic | Sensor Tags (comma-separated) | Frequency (min) | Priority | Components
+      </div>
+    </div>
+
+    <!-- Parsed preview -->
+    <div class="card" id="bulk-preview-card" style="display:none">
+      <div class="section-actions">
+        <div class="card-title">Preview <span id="bulk-row-count" class="badge badge-tip">0 rows</span></div>
+        <button class="btn btn-green" onclick="generateAllTriggers()">⚡ Generate All Triggers</button>
+      </div>
+      <div class="data-table-wrap">
+        <table id="bulk-preview-table">
+          <thead id="bulk-thead"></thead>
+          <tbody id="bulk-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bulk results -->
+    <div class="card" id="bulk-results-card" style="display:none">
+      <div class="card-title">Generated Triggers <span id="bulk-result-count" class="badge badge-open">0</span></div>
+      <div id="bulk-results-list"></div>
+      <div style="margin-top:14px;display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="exportBulkJSON()">Export All as JSON</button>
+        <button class="btn btn-secondary" onclick="copyAllFormulas()">Copy All Formulas</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-bulk -->
+
+</div><!-- /page -->
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════════════════
+const state = {
+  open:  { logic: 'AND', rows: [], dur: { val: 0, unit: 'min' } },
+  close: { logic: 'AND', rows: [],  dur: { val: 0, unit: 'min' } },
+  chips: new Set(['alert']),
+  bulkData: [],
+  bulkResults: [],
+};
+
+let rowId = 0;
+
+// ═══════════════════════════════════════════════════════════
+// Tabs
+// ═══════════════════════════════════════════════════════════
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    const ids=['manual','bulk'];
+    b.classList.toggle('active', ids[i]===id);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>{
+    p.classList.toggle('active', p.id==='tab-'+id);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// Logic toggle
+// ═══════════════════════════════════════════════════════════
+function setLogic(section, val, btn) {
+  state[section].logic = val;
+  btn.closest('.logic-toggle').querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRows(section);
+  rebuildFormula(section);
+}
+
+// ═══════════════════════════════════════════════════════════
+// Condition Rows
+// ═══════════════════════════════════════════════════════════
+const OPERATORS = ['=','!=','>','>=','<','<='];
+const UNITS     = ['—','bar','kPa','psi','m³/h','L/s','°C','%','mg/L','NTU','pH','rpm','kW','A','V'];
+
+function addRow(section, data={}) {
+  const id = ++rowId;
+  state[section].rows.push({
+    id,
+    tag:  data.tag  || '',
+    op:   data.op   || '=',
+    val:  data.val  !== undefined ? data.val : '',
+    unit: data.unit || '—',
+  });
+  renderRows(section);
+  rebuildFormula(section);
+}
+
+function removeRow(section, id) {
+  state[section].rows = state[section].rows.filter(r=>r.id!==id);
+  renderRows(section);
+  rebuildFormula(section);
+}
+
+function updateRow(section, id, field, value) {
+  const r = state[section].rows.find(r=>r.id===id);
+  if (r) r[field] = value;
+  rebuildFormula(section);
+}
+
+function renderRows(section) {
+  const container = document.getElementById(section+'-rows');
+  const rows = state[section].rows;
+  const logic = state[section].logic;
+
+  if (!rows.length) { container.innerHTML = ''; return; }
+
+  let html = '';
+  rows.forEach((r, i) => {
+    if (i > 0) {
+      html += `<div class="condition-connector">${logic}</div>`;
+    }
+    const opOpts  = OPERATORS.map(o=>`<option value="${o}"${r.op===o?' selected':''}>${o}</option>`).join('');
+    const unitOpts = UNITS.map(u=>`<option value="${u}"${r.unit===u?' selected':''}>${u}</option>`).join('');
+    html += `
+      <div class="condition-row" data-id="${r.id}">
+        <input type="text" value="${esc(r.tag)}" placeholder="Sensor tag (e.g. Pump_1_ONOFF)"
+               onchange="updateRow('${section}',${r.id},'tag',this.value)"
+               oninput="updateRow('${section}',${r.id},'tag',this.value)" />
+        <select onchange="updateRow('${section}',${r.id},'op',this.value)">${opOpts}</select>
+        <input type="text" value="${esc(String(r.val))}" placeholder="Value"
+               onchange="updateRow('${section}',${r.id},'val',this.value)"
+               oninput="updateRow('${section}',${r.id},'val',this.value)" />
+        <select onchange="updateRow('${section}',${r.id},'unit',this.value)">${unitOpts}</select>
+        <button class="btn btn-danger" onclick="removeRow('${section}',${r.id})">✕</button>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function esc(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// ═══════════════════════════════════════════════════════════
+// Formula Generation
+// ═══════════════════════════════════════════════════════════
+function buildFormulaString(section) {
+  const { rows, logic, dur } = state[section];
+  if (!rows.length) return '';
+
+  const valid = rows.filter(r => r.tag.trim() && r.val !== '');
+  if (!valid.length) return '';
+
+  const parts = valid.map(r => {
+    const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : '';
+    return `${r.tag.trim()}${r.op}${r.val}${u}`;
+  });
+
+  let inner;
+  if (parts.length === 1) {
+    inner = parts[0];
+  } else {
+    inner = `${logic}(${parts.join(', ')})`;
+  }
+
+  // Duration annotation
+  const dv = parseInt(document.getElementById(section+'-dur-val')?.value || 0);
+  const du = document.getElementById(section+'-dur-unit')?.value || 'min';
+  const durStr = dv > 0 ? ` [for ${dv} ${du}]` : '';
+
+  return `IF(${inner}, 1, 0)${durStr}`;
+}
+
+function colorizeFormula(f) {
+  if (!f) return '';
+  return f
+    .replace(/\b(IF)\b/g, '<span class="token-IF">$1</span>')
+    .replace(/\b(AND|OR|NOT)\b/g, '<span class="token-FN">$1</span>')
+    .replace(/([A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)\s*(?=[=!<>])/g, '<span class="token-TAG">$1</span>')
+    .replace(/([=!<>]+)/g, '<span class="token-OP">$1</span>')
+    .replace(/(\b\d+(?:\.\d+)?)\b/g, '<span class="token-VAL">$1</span>');
+}
+
+function rebuildFormula(section) {
+  // sync duration state
+  const dv = document.getElementById(section+'-dur-val');
+  const du = document.getElementById(section+'-dur-unit');
+  if (dv) state[section].dur.val  = parseInt(dv.value)||0;
+  if (du) state[section].dur.unit = du.value;
+
+  const f = buildFormulaString(section);
+  const el = document.getElementById(section+'-formula-display');
+  if (!el) return;
+  if (f) {
+    el.classList.remove('empty');
+    el.innerHTML = colorizeFormula(f);
+  } else {
+    el.classList.add('empty');
+    el.textContent = 'Add conditions above to generate formula';
+  }
+
+  // enable auto-close button when opening has formula
+  if (section === 'open') {
+    document.getElementById('auto-close-btn').disabled = !f;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// NLP Parser
+// ═══════════════════════════════════════════════════════════
+function parseNLP(section) {
+  const txt = document.getElementById('nlp-'+section).value.trim();
+  if (!txt) { toast('Enter a description first'); return; }
+
+  const parsed = nlpParse(txt);
+  if (!parsed.rows.length) {
+    toast('Could not parse conditions. Try the visual builder.');
+    return;
+  }
+
+  state[section].rows = [];
+  state[section].logic = parsed.logic;
+
+  // update logic toggle UI
+  const toggleBtns = document.querySelectorAll(`#${section}-logic-toggle button`);
+  toggleBtns.forEach(b => {
+    b.classList.toggle('active', b.textContent.startsWith(parsed.logic));
+  });
+
+  parsed.rows.forEach(r => addRowDirect(section, r));
+  renderRows(section);
+  rebuildFormula(section);
+  toast(`Parsed ${parsed.rows.length} condition${parsed.rows.length>1?'s':''}`);
+}
+
+function addRowDirect(section, data) {
+  const id = ++rowId;
+  state[section].rows.push({ id, ...data });
+}
+
+function nlpParse(text) {
+  const rows = [];
+  let logic = 'AND';
+  const t = text.toLowerCase();
+
+  // Detect top-level logic
+  // "either...or" / "or" = OR, default AND
+  if (/\beither\b|\b or \b/.test(t) && !/\bboth\b|\band\b|\bbut\b/.test(t)) logic = 'OR';
+  if (/\b(and|but|both)\b/.test(t)) logic = 'AND';
+  if (/\b(or)\b/.test(t) && /\b(and|but)\b/.test(t)) logic = 'AND'; // mixed → AND
+
+  // Tokenize by conjunctions
+  const segments = text
+    .replace(/\beither\b/gi, '')
+    .split(/\b(?:and|but|or|,)\b/i)
+    .map(s => s.trim())
+    .filter(s => s.length > 2);
+
+  segments.forEach(seg => {
+    const row = parseSegment(seg);
+    if (row) rows.push(row);
+  });
+
+  return { rows, logic };
+}
+
+function parseSegment(seg) {
+  const s = seg.toLowerCase().trim();
+  let tag = '', op = '=', val = '', unit = '—';
+
+  // Extract numeric value
+  const numMatch = s.match(/\b(\d+(?:\.\d+)?)\s*(bar|kpa|psi|m³\/h|l\/s|°c|%|mg\/l|ntu|ph|rpm|kw|a|v)?\b/i);
+  if (numMatch) {
+    val  = numMatch[1];
+    unit = numMatch[2] ? numMatch[2].toLowerCase() : '—';
+  }
+
+  // Detect ON/OFF
+  if (/\bis\s+on\b|\bturned?\s+on\b|\bstart(?:ed|s)?\b|\brunning\b/.test(s)) {
+    op = '='; val = '1';
+  } else if (/\bis\s+off\b|\bturned?\s+off\b|\bstopp(?:ed|s)?\b|\bnot\s+running\b/.test(s)) {
+    op = '='; val = '0';
+  }
+
+  // Detect comparison operators
+  if (/exceed|more\s+than|greater\s+than|above|over|higher\s+than/.test(s)) op = '>';
+  else if (/less\s+than|below|under|lower\s+than/.test(s))                   op = '<';
+  else if (/at\s+least|minimum|not\s+less\s+than/.test(s))                   op = '>=';
+  else if (/at\s+most|maximum|not\s+more\s+than/.test(s))                    op = '<=';
+  else if (/not\s+equal|not\s+=|different\s+from/.test(s))                   op = '!=';
+  else if (/equals?|is\s+equal/.test(s) && val)                              op = '=';
+
+  // Normalise unit names
+  const unitMap = {'kpa':'kPa','m3/h':'m³/h','l/s':'L/s','mg/l':'mg/L'};
+  if (unitMap[unit]) unit = unitMap[unit];
+  if (unit==='—' && val==='0') unit='—'; // keep clean
+
+  // Extract tag name heuristic: capitalised words or underscore_words
+  const tagMatch = seg.match(/([A-Z][A-Za-z0-9_]+(?: [A-Z][A-Za-z0-9_]+)*|[A-Za-z][a-z]+ [a-z]+ [a-z]+(?:_\d+)?)/);
+  if (tagMatch) {
+    tag = tagMatch[0].trim()
+      .replace(/\s+/g, '_')
+      .replace(/^(The|A|An|Both|Either)_/i, '');
+  }
+
+  if (!tag) {
+    // Fallback: grab first 2-3 meaningful words and convert to snake_case
+    const words = seg.replace(/[^a-z0-9 ]/gi,'').split(/\s+/)
+      .filter(w => !/^(is|are|the|a|an|both|either|and|or|but|not|of|for|with|than|more|less|above|below|over|under|greater|lower|higher|equal|on|off|running|stopped|turned|at|least|most|minimum|maximum|exceeds?|least|most)$/i.test(w))
+      .slice(0,3);
+    tag = words.join('_');
+  }
+
+  if (!tag) return null;
+  if (val === '' && op === '=') val = '0'; // default
+
+  return { tag, op, val, unit };
+}
+
+// ═══════════════════════════════════════════════════════════
+// Auto-generate closing condition
+// ═══════════════════════════════════════════════════════════
+function autoGenerateClose() {
+  const { rows, logic } = state.open;
+  if (!rows.length) return;
+
+  const valid = rows.filter(r => r.tag.trim() && r.val !== '');
+  if (!valid.length) return;
+
+  // Invert operator
+  function invertOp(op, val) {
+    const m = { '=': '!=', '!=': '=', '>': '<=', '>=': '<', '<': '>=', '<=': '>' };
+    // Special case: =0 → =1, =1 → =0
+    if (op === '=' && val === '0') return { op: '=', val: '1' };
+    if (op === '=' && val === '1') return { op: '=', val: '0' };
+    return { op: m[op] || op, val };
+  }
+
+  const inverted = valid.map(r => {
+    const { op, val } = invertOp(r.op, r.val);
+    return { ...r, op, val };
+  });
+
+  const closeLogic = logic === 'AND' ? 'OR' : 'AND';
+
+  // Option 1: Full inversion
+  const opt1Formula = buildFormulaFromRows(inverted, closeLogic);
+  // Option 2: Only status inversion (on/off tags)
+  const statusRows = inverted.filter(r => ['0','1'].includes(String(r.val)));
+  const opt2Formula = statusRows.length ? buildFormulaFromRows(statusRows, closeLogic) : null;
+  // Option 3: Only numeric inversion
+  const numRows = inverted.filter(r => !['0','1'].includes(String(r.val)));
+  const opt3Formula = numRows.length ? buildFormulaFromRows(numRows, closeLogic) : null;
+
+  const suggestions = document.getElementById('close-suggestions-list');
+  let html = '';
+
+  html += closeSuggestionHtml(opt1Formula, 'Option 1 — Full inverse', `Flips all ${valid.length} conditions. Closes when the overall state reverses.`, 0);
+  if (opt2Formula && opt2Formula !== opt1Formula) {
+    html += closeSuggestionHtml(opt2Formula, 'Option 2 — Status-only inverse', 'Closes only based on on/off status changes.', 1);
+  }
+  if (opt3Formula && opt3Formula !== opt1Formula) {
+    html += closeSuggestionHtml(opt3Formula, 'Option 3 — Numeric-only inverse', 'Closes only based on measured values returning to threshold.', 2);
+  }
+
+  suggestions.innerHTML = html;
+  document.getElementById('close-suggestions-area').style.display = 'block';
+  selectCloseOption(0, inverted, closeLogic, opt1Formula);
+}
+
+function closeSuggestionHtml(formula, label, desc, idx) {
+  return `
+    <div class="close-option${idx===0?' selected':''}" onclick="selectCloseOption(${idx})" data-idx="${idx}">
+      <div class="close-option-label">${label}</div>
+      <div class="close-option-formula">${formula}</div>
+      <div class="close-option-desc">${desc}</div>
+      <div class="close-check">${idx===0?'✓':''}</div>
+    </div>`;
+}
+
+let closeOptions = [];
+
+function buildFormulaFromRows(rows, logic) {
+  if (!rows.length) return '';
+  const parts = rows.map(r => {
+    const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : '';
+    return `${r.tag.trim()}${r.op}${r.val}${u}`;
+  });
+  const inner = parts.length === 1 ? parts[0] : `${logic}(${parts.join(', ')})`;
+  return `IF(${inner}, 1, 0)`;
+}
+
+function selectCloseOption(idx) {
+  document.querySelectorAll('.close-option').forEach((el,i) => {
+    el.classList.toggle('selected', i===idx);
+    el.querySelector('.close-check').textContent = i===idx ? '✓' : '';
+  });
+
+  // Load the selected option's formula into the close builder
+  const formulaEl = document.querySelectorAll('.close-option-formula')[idx];
+  if (!formulaEl) return;
+  const formula = formulaEl.textContent;
+
+  // Parse the formula back into rows
+  const inner = formula.replace(/^IF\(/, '').replace(/, 1, 0\)$/, '');
+  let logic = 'AND';
+  let condStr = inner;
+  const logicMatch = inner.match(/^(AND|OR)\((.+)\)$/s);
+  if (logicMatch) { logic = logicMatch[1]; condStr = logicMatch[2]; }
+
+  const parts = smartSplit(condStr);
+  state.close.rows = [];
+  state.close.logic = logic;
+
+  const toggleBtns = document.querySelectorAll('#close-logic-toggle button');
+  toggleBtns.forEach(b => b.classList.toggle('active', b.textContent.startsWith(logic)));
+
+  parts.forEach(p => {
+    const m = p.trim().match(/^([^=!<>]+?)\s*([=!<>]+)\s*(\S+?)(?:\s+(.+))?$/);
+    if (m) {
+      addRowDirect('close', { tag: m[1].trim(), op: m[2], val: m[3], unit: m[4] || '—' });
+    }
+  });
+  renderRows('close');
+  rebuildFormula('close');
+}
+
+function smartSplit(str) {
+  // Split comma-separated conditions respecting nested parens
+  const parts = []; let depth = 0; let cur = '';
+  for (const ch of str) {
+    if (ch==='(') depth++;
+    if (ch===')') depth--;
+    if (ch===',' && depth===0) { parts.push(cur.trim()); cur=''; continue; }
+    cur += ch;
+  }
+  if (cur.trim()) parts.push(cur.trim());
+  return parts;
+}
+
+// ═══════════════════════════════════════════════════════════
+// Trigger type chips
+// ═══════════════════════════════════════════════════════════
+function toggleChip(btn, key) {
+  if (state.chips.has(key)) { state.chips.delete(key); btn.classList.remove('selected'); }
+  else { state.chips.add(key); btn.classList.add('selected'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// Generate trigger output
+// ═══════════════════════════════════════════════════════════
+function generateTrigger() {
+  const openF  = buildFormulaString('open');
+  const closeF = buildFormulaString('close');
+
+  if (!openF) { toast('Add at least one opening condition'); return; }
+  if (!closeF) { toast('Add at least one closing condition'); return; }
+
+  document.getElementById('out-open').textContent  = openF;
+  document.getElementById('out-close').textContent = closeF;
+  document.getElementById('out-meta').textContent  =
+    `Name: ${document.getElementById('trigger-name').value || '(unnamed)'} | ` +
+    `Equipment: ${document.getElementById('trigger-equip').value || '—'} | ` +
+    `Components: ${[...state.chips].join(', ')} | ` +
+    `Check: every ${document.getElementById('check-freq').value} min | ` +
+    `Priority: ${document.getElementById('priority').value}`;
+
+  document.getElementById('output-panel').style.display = 'block';
+  document.getElementById('output-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  toast('Trigger generated');
+}
+
+function exportJSON() {
+  const openF  = buildFormulaString('open');
+  const closeF = buildFormulaString('close');
+  if (!openF || !closeF) { toast('Generate the trigger first'); return; }
+
+  const obj = {
+    name:      document.getElementById('trigger-name').value || 'Unnamed Trigger',
+    equipment: document.getElementById('trigger-equip').value,
+    opening: {
+      formula: openF, logic: state.open.logic,
+      conditions: state.open.rows.map(r=>({tag:r.tag,operator:r.op,value:r.val,unit:r.unit})),
+      duration:   { value: state.open.dur.val, unit: state.open.dur.unit }
+    },
+    closing: {
+      formula: closeF, logic: state.close.logic,
+      conditions: state.close.rows.map(r=>({tag:r.tag,operator:r.op,value:r.val,unit:r.unit})),
+      duration:   { value: state.close.dur.val, unit: state.close.dur.unit }
+    },
+    setup: {
+      components: [...state.chips],
+      checkFrequency: parseInt(document.getElementById('check-freq').value)||1,
+      repeatAfter:    parseInt(document.getElementById('repeat-freq').value)||0,
+      priority:       document.getElementById('priority').value,
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = (obj.name.replace(/\s+/g,'_') || 'trigger') + '.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function copyFormula(section) {
+  const f = buildFormulaString(section);
+  if (!f) { toast('No formula to copy'); return; }
+  navigator.clipboard.writeText(f).then(()=>toast('Copied!')).catch(()=>toast('Copy failed'));
+}
+
+function resetSection(section) {
+  state[section].rows  = [];
+  state[section].logic = 'AND';
+  document.getElementById('nlp-'+section).value = '';
+  document.getElementById(section+'-dur-val').value = 0;
+  document.querySelectorAll(`#${section}-logic-toggle button`).forEach((b,i)=>b.classList.toggle('active',i===0));
+  if (section==='close') {
+    document.getElementById('close-suggestions-area').style.display='none';
+  }
+  renderRows(section);
+  rebuildFormula(section);
+}
+
+function resetAll() {
+  resetSection('open'); resetSection('close');
+  document.getElementById('trigger-name').value  = '';
+  document.getElementById('trigger-equip').value = '';
+  document.getElementById('output-panel').style.display = 'none';
+  state.chips = new Set(['alert']);
+  document.querySelectorAll('.type-chip').forEach(c=>{
+    c.classList.toggle('selected', c.onclick.toString().includes("'alert'"));
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// Bulk Upload
+// ═══════════════════════════════════════════════════════════
+function handleDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('dragging'); }
+function handleDragLeave()  { document.getElementById('drop-zone').classList.remove('dragging'); }
+function handleDrop(e) {
+  e.preventDefault(); handleDragLeave();
+  const f = e.dataTransfer.files[0];
+  if (f) processFile(f);
+}
+function handleFileSelect(e) { const f = e.target.files[0]; if (f) processFile(f); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      if (!json.length) { toast('File appears empty'); return; }
+      state.bulkData = json;
+      renderBulkPreview(json);
+    } catch(err) { toast('Could not parse file: ' + err.message); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function renderBulkPreview(data) {
+  if (!data.length) return;
+  const cols = Object.keys(data[0]);
+  const thead = document.getElementById('bulk-thead');
+  const tbody  = document.getElementById('bulk-tbody');
+
+  thead.innerHTML = '<tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
+  tbody.innerHTML = data.slice(0,20).map(row =>
+    '<tr>' + cols.map(c => `<td>${String(row[c]).slice(0,80)}</td>`).join('') + '</tr>'
+  ).join('');
+
+  document.getElementById('bulk-row-count').textContent = data.length + ' rows';
+  document.getElementById('bulk-preview-card').style.display = 'block';
+}
+
+function generateAllTriggers() {
+  if (!state.bulkData.length) return;
+  state.bulkResults = state.bulkData.map(row => generateBulkTrigger(row));
+  renderBulkResults();
+}
+
+function findCol(row, ...names) {
+  for (const n of names) {
+    const key = Object.keys(row).find(k => k.toLowerCase().replace(/[\s_]/g,'').includes(n.toLowerCase().replace(/[\s_]/g,'')));
+    if (key && row[key]) return String(row[key]).trim();
+  }
+  return '';
+}
+
+function generateBulkTrigger(row) {
+  const name      = findCol(row,'trigger name','name','trigger');
+  const equip     = findCol(row,'equipment','equip','tag group');
+  const openLogic = findCol(row,'opening logic','opening','open condition','open');
+  const closLogic = findCol(row,'closing logic','closing','close condition','close');
+  const tags      = findCol(row,'sensor tags','tags','tag names','sensors');
+  const freq      = findCol(row,'frequency','freq','check frequency') || '1';
+  const priority  = findCol(row,'priority') || 'medium';
+  const comps     = findCol(row,'components','component') || 'alert';
+
+  // Try to parse formulas from the logic columns
+  let openFormula  = tryParseFormula(openLogic, tags);
+  let closeFormula = tryParseFormula(closLogic, tags);
+
+  return { name, equip, openFormula, closeFormula, freq, priority, comps, raw: { openLogic, closLogic } };
+}
+
+function tryParseFormula(text, tagsHint) {
+  if (!text) return '—';
+  // If it already looks like a formula, return as-is
+  if (/^IF\s*\(/i.test(text)) return text.trim();
+  // Try NLP parse
+  const { rows, logic } = nlpParse(text);
+  if (!rows.length) return `/* ${text} */`;
+  return buildFormulaFromRows(rows, logic);
+}
+
+function renderBulkResults() {
+  const list = document.getElementById('bulk-results-list');
+  list.innerHTML = state.bulkResults.map((t,i) => `
+    <div style="border:1px solid var(--gray-100);border-radius:8px;padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <span style="font-weight:600;font-size:14px">${t.name||'Trigger '+(i+1)}</span>
+          ${t.equip ? `<span style="margin-left:8px;font-size:12px;color:var(--gray-400)">${t.equip}</span>` : ''}
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="copyBulkTrigger(${i})">Copy Formulas</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:4px">OPENING</div>
+          <div style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:8px 10px;border-radius:6px;word-break:break-all">${t.openFormula}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:4px">CLOSING</div>
+          <div style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:8px 10px;border-radius:6px;word-break:break-all">${t.closeFormula}</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--gray-400)">
+        Priority: ${t.priority} | Frequency: ${t.freq} min | Components: ${t.comps}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('bulk-result-count').textContent = state.bulkResults.length;
+  document.getElementById('bulk-results-card').style.display = 'block';
+  document.getElementById('bulk-results-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  toast(`Generated ${state.bulkResults.length} trigger${state.bulkResults.length>1?'s':''}`);
+}
+
+function copyBulkTrigger(i) {
+  const t = state.bulkResults[i];
+  const text = `Opening: ${t.openFormula}\nClosing:  ${t.closeFormula}`;
+  navigator.clipboard.writeText(text).then(()=>toast('Copied!')).catch(()=>toast('Copy failed'));
+}
+
+function exportBulkJSON() {
+  if (!state.bulkResults.length) { toast('Generate triggers first'); return; }
+  const blob = new Blob([JSON.stringify(state.bulkResults, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href=url; a.download='triggers.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copyAllFormulas() {
+  if (!state.bulkResults.length) return;
+  const text = state.bulkResults.map(t =>
+    `${t.name}\n  Open:  ${t.openFormula}\n  Close: ${t.closeFormula}`
+  ).join('\n\n');
+  navigator.clipboard.writeText(text).then(()=>toast('All formulas copied!')).catch(()=>toast('Copy failed'));
+}
+
+// ═══════════════════════════════════════════════════════════
+// Excel Template Download
+// ═══════════════════════════════════════════════════════════
+function downloadTemplate() {
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['Trigger Name','Equipment','Opening Logic','Closing Logic','Sensor Tags','Frequency (min)','Priority','Components'],
+    ['Filter Feed Pump Off With Flow','Filtration',
+     'Both filter feed pumps are off but flow rate is more than 0',
+     'Either pump turns on or flow drops to 0',
+     'Filter_Feed_Pump_1_ONOFF, Filter_Feed_Pump_2_ONOFF, Flow_Rate_1','5','high','alert, communication'],
+    ['Boiler Pressure Exceeded','Boiler',
+     'Pressure exceeds 85 bar',
+     'Pressure drops below 80 bar',
+     'PT_101','10','critical','alert, hooter'],
+    ['DO Low During Aeration','Aeration',
+     'DO is less than 2 mg/L and blower is running',
+     'DO rises above 3 or blower stops',
+     'DO_Sensor_1, Blower_1_ONOFF','15','medium','alert'],
+  ]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Triggers');
+  XLSX.writeFile(wb, 'formula_builder_template.xlsx');
+}
+
+function loadSampleData() {
+  state.bulkData = [
+    { 'Trigger Name':'Filter Feed Pump Off With Flow','Equipment':'Filtration',
+      'Opening Logic':'Both filter feed pumps are off but flow rate is more than 0',
+      'Closing Logic':'Either pump turns on or flow drops to 0',
+      'Sensor Tags':'Filter_Feed_Pump_1_ONOFF, Filter_Feed_Pump_2_ONOFF, Flow_Rate_1','Frequency (min)':5,'Priority':'high','Components':'alert, communication' },
+    { 'Trigger Name':'Boiler Pressure Exceeded','Equipment':'Boiler',
+      'Opening Logic':'Pressure exceeds 85',
+      'Closing Logic':'Pressure is less than 80',
+      'Sensor Tags':'PT_101','Frequency (min)':10,'Priority':'critical','Components':'alert, hooter' },
+    { 'Trigger Name':'DO Deficiency','Equipment':'Aeration',
+      'Opening Logic':'DO is less than 2',
+      'Closing Logic':'DO is more than 3',
+      'Sensor Tags':'DO_Sensor_1','Frequency (min)':15,'Priority':'medium','Components':'alert' },
+  ];
+  renderBulkPreview(state.bulkData);
+  toast('Sample data loaded');
+}
+
+// ═══════════════════════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════════════════════
+function toast(msg) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg; c.appendChild(el);
+  setTimeout(()=>el.remove(), 2800);
+}
+
+// ═══════════════════════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════════════════════
+addRow('open');
+addRow('close');
+</script>
+</body>
+</html>
