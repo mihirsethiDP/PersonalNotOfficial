@@ -24,6 +24,25 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-sans); background: #edeae4; min-height: 100vh; padding: 32px 20px; }
     .app-shell { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; min-height: 640px; }
+    .nav-bar { max-width: 1200px; margin: 0 auto 12px; display: flex; align-items: center; gap: 8px; }
+    .nav-btn { width: 34px; height: 34px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: #193458; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .1s; }
+    .nav-btn:hover:not(:disabled) { background: #EBF0F7; border-color: #A8B6CC; }
+    .nav-btn:disabled { color: #B5C2D6; cursor: not-allowed; opacity: .6; }
+    .nav-current { font-size: 12px; color: var(--color-text-secondary); margin-left: 4px; }
+    .nav-current b { color: #193458; font-weight: 600; }
+
+    /* Modal-scoped add-user row (mirrors L3 style) */
+    .modal .add-user-row { display: flex; gap: 6px; }
+    .modal .add-user-input { flex: 1; height: 30px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 12px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    .modal .add-user-input:focus { border-color: #193458; }
+    .modal .add-user-btn { height: 30px; padding: 0 12px; border-radius: var(--border-radius-md); border: 0.5px solid #193458; background: #193458; color: #fff; font-size: 12px; cursor: pointer; font-family: var(--font-sans); }
+    .modal .add-user-btn:hover { background: #2A4A75; border-color: #2A4A75; }
+
+    /* UX guardrail hints */
+    .ux-hint { font-size: 11px; padding: 8px 10px; border-radius: 6px; background: #FFF7E6; color: #6B4E0E; border: 0.5px solid #F2D894; display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; }
+    .ux-hint.error { background: #FCEBEB; color: #791F1F; border-color: #F09595; }
+    .ux-hint.info { background: #EBF0F7; color: #193458; border-color: #A8B6CC; }
+    .ux-hint-icon { font-size: 12px; flex-shrink: 0; line-height: 1.3; }
     .view { display: none; }
     .view.active { display: block; }
 
@@ -353,6 +372,15 @@
   </style>
 </head>
 <body>
+  <div class="nav-bar">
+    <button class="nav-btn" id="navBack" onclick="navBack()" title="Back" aria-label="Back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" id="navForward" onclick="navForward()" title="Forward" aria-label="Forward">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="nav-current">Page <b id="navCurrent">L1 — Plants</b></span>
+  </div>
   <div class="app-shell">
 
     <!-- ══════════════════ L1 — Plant list ══════════════════ -->
@@ -634,16 +662,23 @@
                 <!-- Escalation levels rendered by JS -->
               </div>
               <div style="padding:0 14px 14px">
-                <button class="add-level-btn" onclick="addL3Level()">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                  Add escalation level
-                </button>
-                <button class="add-level-btn" style="margin-top:6px;border-color:#AFA9EC;color:#534AB7" onclick="addL3CustomLevel()">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
-                  Create custom escalation group
-                </button>
+                <div id="l3EscalationHints"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+                  <button class="add-level-btn" onclick="addL3Level()" id="l3AddStandardBtn" title="Standard time-based escalation level">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Standard level
+                  </button>
+                  <button class="add-level-btn" style="border-color:#A8B6CC;color:#193458" onclick="addL3CustomLevel()" title="Custom group — insight-only">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#193458" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Custom group
+                  </button>
+                  <button class="add-level-btn" style="border-color:#F2D894;color:#6B4E0E" onclick="addL3OneOffLevel()" title="One-off — fired manually for rare events">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#6B4E0E" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    One-off
+                  </button>
+                </div>
                 <div style="margin-top:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-tertiary);line-height:1.6">
-                  The <b>Notify</b> level fires immediately when opening conditions are met. Escalation levels then fire on a time-based delay. Changes here apply only to this insight.
+                  <b>Notify</b> fires immediately on trigger · <b>Standard</b> levels fire on a time-based delay · <b>Custom</b> groups are insight-only · <b>One-off</b> levels are manually fired for rare events.
                 </div>
               </div>
             </div>
@@ -894,13 +929,35 @@
 
   <script>
     /* ════════════════════ Shared ════════════════════ */
-    function showView(id) {
+    const viewLabels = { l1: 'L1 — Plants', l2: 'L2 — Insights', l3: 'L3 — Insight detail' };
+    let navHistory = ['l1'];
+    let navFuture = [];
+    function _renderView(id) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + id).classList.add('active');
       window.scrollTo(0, 0);
       if (id === 'l1') renderL1Rows();
       if (id === 'l2') renderRows();
       if (id === 'l3') renderL3Escalation();
+      document.getElementById('navCurrent').textContent = viewLabels[id];
+      document.getElementById('navBack').disabled = navHistory.length <= 1;
+      document.getElementById('navForward').disabled = navFuture.length === 0;
+    }
+    function showView(id) {
+      const cur = navHistory[navHistory.length - 1];
+      if (cur !== id) { navHistory.push(id); navFuture = []; }
+      _renderView(id);
+    }
+    function navBack() {
+      if (navHistory.length <= 1) return;
+      navFuture.push(navHistory.pop());
+      _renderView(navHistory[navHistory.length - 1]);
+    }
+    function navForward() {
+      if (navFuture.length === 0) return;
+      const next = navFuture.pop();
+      navHistory.push(next);
+      _renderView(next);
     }
 
     /* ════════════════════ Data ════════════════════ */
@@ -1078,17 +1135,46 @@
       showView('l2');
     }
 
-    /* L1 escalation modal */
+    /* L1 escalation modal — fully interactive */
+    const MAX_ESC_LEVELS = 5; // Miller's law: keep under 7±2 to limit cognitive load
     function openEscModal(id) {
       const p = plants.find(x => x.id === id);
       document.getElementById('modalPlantName').textContent = p.name;
       renderEscModalBody();
       document.getElementById('escModal').classList.add('open');
     }
+    function plantUXHints() {
+      const out = [];
+      // Empty level (defense in depth)
+      const emptyLevels = plantEscConfig.levels.filter(l => l.users.length === 0).map(l => l.label);
+      if (emptyLevels.length) out.push({ t: 'error', m: `${emptyLevels.join(', ')} has no recipients — escalation will silently fail at this stage.` });
+      // Duplicate users on consecutive levels
+      for (let i = 1; i < plantEscConfig.levels.length; i++) {
+        const a = new Set(plantEscConfig.levels[i-1].users.map(u => u.name));
+        const dup = plantEscConfig.levels[i].users.filter(u => a.has(u.name)).map(u => u.name);
+        if (dup.length) { out.push({ t: 'warn', m: `${dup.join(', ')} appears on both ${plantEscConfig.levels[i-1].label} and ${plantEscConfig.levels[i].label}. Add only if a different channel is needed.` }); break; }
+      }
+      // Monotonic delays
+      for (let i = 1; i < plantEscConfig.levels.length; i++) {
+        if (!plantEscConfig.levels[i].oneOff && plantEscConfig.levels[i].delay <= plantEscConfig.levels[i-1].delay) {
+          out.push({ t: 'error', m: `${plantEscConfig.levels[i].label} delay (${plantEscConfig.levels[i].delay}m) must be greater than ${plantEscConfig.levels[i-1].label} (${plantEscConfig.levels[i-1].delay}m).` }); break;
+        }
+      }
+      // Notify empty
+      if (plantEscConfig.notify.users.length === 0) out.push({ t: 'warn', m: 'Notify level has no users — no one is alerted on trigger.' });
+      // Level count cap
+      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
+      if (standardCount > MAX_ESC_LEVELS) out.push({ t: 'warn', m: `${standardCount} standard escalation levels — consider consolidating to ≤ ${MAX_ESC_LEVELS} (Miller's law) to keep responders aligned.` });
+      return out;
+    }
     function renderEscModalBody() {
       const body = document.getElementById('escModalBody');
       let html = '';
-      // Notify level (top)
+      // UX hints
+      const hints = plantUXHints();
+      if (hints.length) html += hints.map(h => `<div class="ux-hint ${h.t==='error'?'error':(h.t==='info'?'info':'')}"><span class="ux-hint-icon">${h.t==='error'?'⚠':'ⓘ'}</span><span>${h.m}</span></div>`).join('') + '<div style="height:14px"></div>';
+
+      // Notify
       html += `<div class="esc-level-modal">
         <div class="esc-level-head-modal">
           <span class="lbadge lbn">Notify</span>
@@ -1096,41 +1182,114 @@
           <span class="level-delay-label">0 min</span>
         </div>
         <div class="user-list-modal">
-          ${plantEscConfig.notify.users.map(u => renderUserItemModal(u)).join('')}
+          ${plantEscConfig.notify.users.map((u, ui) => renderPlantUserItem(u, 'notify', ui)).join('')}
+        </div>
+        <div class="add-user-row" style="margin-top:8px">
+          <input class="add-user-input" placeholder="Add user to notify…" id="plantAddInputNotify"/>
+          <button class="add-user-btn" onclick="addPlantUser('notify')">Add</button>
         </div>
       </div><hr class="divider">`;
-      // Escalation levels
+
+      // Levels
       plantEscConfig.levels.forEach((lv, i) => {
+        const subtitle = lv.oneOff ? 'One-off custom · manual fire only' : (lv.cls === 'lbc' ? 'Custom group · plant-wide' : (lv.subtitle || 'Time-based escalation'));
+        const delayCell = lv.oneOff
+          ? `<span class="level-delay-label">Manual</span>`
+          : `<span class="level-delay-label">+ <input class="delay-input" type="number" min="0" value="${lv.delay}" onchange="updatePlantDelay(${i}, this.value)"/> min</span>`;
         html += `<div class="esc-level-modal">
           <div class="esc-level-head-modal">
             <span class="lbadge ${lv.cls}">${lv.label}</span>
-            <span style="font-size:12px;color:var(--color-text-secondary)">${lv.subtitle}</span>
-            <span class="level-delay-label">Trigger: +${lv.delay} min</span>
+            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">${subtitle}</span>
+            ${delayCell}
+            <button class="edit-btn-sm" onclick="removePlantLevel(${i})" title="Delete level">×</button>
           </div>
-          <div class="user-list-modal">${lv.users.map(u => renderUserItemModal(u)).join('')}</div>
-          ${lv.hooter ? `<div class="hooter-row-modal"><div style="font-size:16px">🔔</div><span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm triggered at this level</span><span class="hooter-badge">Hooter On</span></div>` : ''}
+          <div class="user-list-modal">${lv.users.map((u, ui) => renderPlantUserItem(u, i, ui)).join('')}</div>
+          <div class="add-user-row" style="margin-top:8px">
+            <input class="add-user-input" placeholder="Add user…" id="plantAddInput${i}"/>
+            <button class="add-user-btn" onclick="addPlantUser(${i})">Add</button>
+          </div>
+          <label class="hooter-row-modal" style="cursor:pointer">
+            <div style="font-size:16px;${lv.hooter?'':'opacity:.4'}">🔔</div>
+            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm at this level</span>
+            <label class="toggle" style="width:30px;height:16px"><input type="checkbox" ${lv.hooter?'checked':''} onchange="togglePlantHooter(${i}, this)"><span class="slider"></span></label>
+          </label>
         </div>${i < plantEscConfig.levels.length - 1 ? '<hr class="divider">' : ''}`;
       });
-      html += `<button class="add-level-btn-modal" onclick="addPlantLevel()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Add escalation level
-      </button>`;
+
+      // Add buttons
+      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
+      const cap = standardCount >= MAX_ESC_LEVELS;
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+        <button class="add-level-btn-modal" onclick="addPlantLevel()" ${cap?'disabled style="opacity:.5;cursor:not-allowed"':''} title="${cap?'Max '+MAX_ESC_LEVELS+' levels':'Add a standard time-based escalation level'}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Standard level
+        </button>
+        <button class="add-level-btn-modal" onclick="addPlantCustomLevel()" style="border-color:#A8B6CC;color:#193458" title="Custom group — plant-wide named escalation">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#193458" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Custom group
+        </button>
+        <button class="add-level-btn-modal" onclick="addPlantOneOffLevel()" style="border-color:#F2D894;color:#6B4E0E" title="One-off custom — manually-fired for rare events">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#6B4E0E" stroke-width="1.3" stroke-linecap="round"/></svg>
+          One-off
+        </button>
+      </div>`;
+
       body.innerHTML = html;
     }
-    function renderUserItemModal(u) {
+    function renderPlantUserItem(u, levelIdx, userIdx) {
+      const idx = levelIdx === 'notify' ? "'notify'" : levelIdx;
       return `<div class="user-item-modal">
         <div class="user-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div>
         <span class="user-name">${u.name}</span>
         <div class="comm-icons">
-          ${u.comm.map((on, i) => `<div class="comm-icon ${on?'comm-on':'comm-off'}">${commLabels[i]}</div>`).join('')}
+          ${u.comm.map((on, i) => `<div class="comm-icon ${on?'comm-on':'comm-off'}" style="cursor:pointer" onclick="togglePlantComm(${idx},${userIdx},${i})">${commLabels[i]}</div>`).join('')}
         </div>
-        <button class="edit-btn-sm">Edit</button>
+        <button class="remove-user-modal" onclick="removePlantUser(${idx},${userIdx})" title="Remove user">×</button>
       </div>`;
     }
+    function addPlantUser(levelIdx) {
+      const inp = document.getElementById(levelIdx === 'notify' ? 'plantAddInputNotify' : ('plantAddInput' + levelIdx));
+      const name = inp.value.trim();
+      if (!name) return;
+      const [bg, tc] = randBg();
+      const user = { init: initialsOf(name), bg, tc, name, comm: [1, 0, 0, 0] };
+      if (levelIdx === 'notify') plantEscConfig.notify.users.push(user);
+      else plantEscConfig.levels[levelIdx].users.push(user);
+      renderEscModalBody();
+    }
+    function removePlantUser(levelIdx, userIdx) {
+      if (levelIdx === 'notify') plantEscConfig.notify.users.splice(userIdx, 1);
+      else plantEscConfig.levels[levelIdx].users.splice(userIdx, 1);
+      renderEscModalBody();
+    }
+    function togglePlantComm(levelIdx, userIdx, commIdx) {
+      const list = levelIdx === 'notify' ? plantEscConfig.notify.users : plantEscConfig.levels[levelIdx].users;
+      list[userIdx].comm[commIdx] = list[userIdx].comm[commIdx] ? 0 : 1;
+      renderEscModalBody();
+    }
+    function updatePlantDelay(i, v) {
+      const d = parseInt(v, 10);
+      if (!isNaN(d) && d >= 0) plantEscConfig.levels[i].delay = d;
+      renderEscModalBody();
+    }
+    function togglePlantHooter(i, cb) { plantEscConfig.levels[i].hooter = cb.checked; renderEscModalBody(); }
+    function removePlantLevel(i) { plantEscConfig.levels.splice(i, 1); renderEscModalBody(); }
     function addPlantLevel() {
-      const next = plantEscConfig.levels.length + 1;
+      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
+      if (standardCount >= MAX_ESC_LEVELS) return;
+      const nextNum = standardCount + 1;
       const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
-      plantEscConfig.levels.push({ label: `Level ${next}`, cls: clsMap[Math.min(next-1, 4)], delay: (plantEscConfig.levels[plantEscConfig.levels.length-1]?.delay || 0) + 15, subtitle: 'Additional escalation', users: [], hooter: false });
+      const lastDelay = plantEscConfig.levels.filter(l => !l.oneOff).reduce((m, l) => Math.max(m, l.delay), 0);
+      plantEscConfig.levels.push({ label: 'Level ' + nextNum, cls: clsMap[Math.min(nextNum-1, 4)], delay: lastDelay + 15, subtitle: 'Time-based escalation', users: [], hooter: false });
+      renderEscModalBody();
+    }
+    function addPlantCustomLevel() {
+      const lastDelay = plantEscConfig.levels.filter(l => !l.oneOff).reduce((m, l) => Math.max(m, l.delay), 0);
+      plantEscConfig.levels.push({ label: 'Custom', cls: 'lbc', delay: lastDelay + 15, subtitle: 'Custom group · plant-wide', users: [], hooter: false });
+      renderEscModalBody();
+    }
+    function addPlantOneOffLevel() {
+      plantEscConfig.levels.push({ label: 'One-off', cls: 'lbc', delay: 0, oneOff: true, subtitle: 'One-off · manual fire', users: [], hooter: false });
       renderEscModalBody();
     }
     function closeModal() { document.getElementById('escModal').classList.remove('open'); }
@@ -1633,11 +1792,15 @@
       </div>`;
       // Escalation levels
       r.escLevels.forEach((lv, idx) => {
+        const subtitle = lv.oneOff ? 'One-off · manual fire' : (lv.cls === 'lbc' ? 'Insight-only group' : 'Time-based escalation');
+        const delayCell = lv.oneOff
+          ? `<span class="esc-delay">Manual</span>`
+          : `<span class="esc-delay">+<input class="esc-delay-input" type="number" min="0" value="${lv.delay}" onchange="updateDelay(${idx}, this.value)"/> min</span>`;
         html += `<div class="esc-level-block">
           <div class="esc-level-head">
             <span class="lbadge ${lv.cls}">${lv.label}</span>
-            <span style="font-size:11px;color:var(--color-text-secondary)">${lv.label === 'Custom' ? 'Insight-only group' : 'Time-based escalation'}</span>
-            <span class="esc-delay">+<input class="esc-delay-input" type="number" min="0" value="${lv.delay}" onchange="updateDelay(${idx}, this.value)"/> min</span>
+            <span style="font-size:11px;color:var(--color-text-secondary);flex:1">${subtitle}</span>
+            ${delayCell}
           </div>
           <div class="esc-users">
             ${lv.users.map((u, ui) => renderL3User(u, idx, ui)).join('')}
@@ -1650,6 +1813,16 @@
         </div>`;
       });
       c.innerHTML = html;
+      // Render UX hints + cap
+      const hints = l3UXHints();
+      const hintEl = document.getElementById('l3EscalationHints');
+      if (hintEl) hintEl.innerHTML = hints.length ? hints.map(h => `<div class="ux-hint ${h.t==='error'?'error':''}" style="margin-top:0;margin-bottom:6px"><span class="ux-hint-icon">${h.t==='error'?'⚠':'ⓘ'}</span><span>${h.m}</span></div>`).join('') : '';
+      const standardCount = r.escLevels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
+      const sb = document.getElementById('l3AddStandardBtn');
+      if (sb) {
+        if (standardCount >= MAX_ESC_LEVELS) { sb.disabled = true; sb.style.opacity = '.5'; sb.style.cursor = 'not-allowed'; sb.title = `Max ${MAX_ESC_LEVELS} standard levels`; }
+        else { sb.disabled = false; sb.style.opacity = ''; sb.style.cursor = ''; sb.title = 'Standard time-based escalation level'; }
+      }
     }
 
     function renderL3User(u, levelIdx, userIdx) {
@@ -1725,11 +1898,14 @@
       renderL3Escalation();
     }
     function addL3Level() {
+      const r = getCurrentInsight();
+      if (r.escLevels.filter(l => !l.oneOff && l.cls !== 'lbc').length >= MAX_ESC_LEVELS) return;
       const buildLevel = (esc) => {
-        const next = esc.length + 1;
+        const standard = esc.filter(l => !l.oneOff && l.cls !== 'lbc');
+        const nextNum = standard.length + 1;
         const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
-        const prevDelay = esc.length > 0 ? esc[esc.length-1].delay : 0;
-        return { label: 'Level ' + next, cls: clsMap[Math.min(next-1, 4)], delay: prevDelay + 15, users: [], hooter: false };
+        const prevDelay = standard.length > 0 ? standard[standard.length-1].delay : 0;
+        return { label: 'Level ' + nextNum, cls: clsMap[Math.min(nextNum-1, 4)], delay: prevDelay + 15, users: [], hooter: false };
       };
       promptApplyToPlant({
         title: 'Add a new escalation level?',
@@ -1763,9 +1939,30 @@
     }
     function addL3CustomLevel() {
       const r = getCurrentInsight();
-      const prevDelay = r.escLevels.length > 0 ? r.escLevels[r.escLevels.length-1].delay : 0;
+      const prevDelay = r.escLevels.filter(l => !l.oneOff).reduce((m, l) => Math.max(m, l.delay), 0);
       r.escLevels.push({ label: 'Custom', cls: 'lbc', delay: prevDelay, users: [], hooter: false });
       renderL3Escalation();
+    }
+    function addL3OneOffLevel() {
+      const r = getCurrentInsight();
+      r.escLevels.push({ label: 'One-off', cls: 'lbc', delay: 0, oneOff: true, users: [], hooter: false });
+      renderL3Escalation();
+    }
+    function l3UXHints() {
+      const r = getCurrentInsight();
+      if (!r) return [];
+      const out = [];
+      const empty = r.escLevels.filter(l => l.users.length === 0).map(l => l.label);
+      if (empty.length) out.push({ t: 'error', m: `${empty.join(', ')} has no recipients — nobody will be alerted at this stage.` });
+      const standard = r.escLevels.filter(l => !l.oneOff && l.cls !== 'lbc');
+      for (let i = 1; i < standard.length; i++) {
+        if (standard[i].delay <= standard[i-1].delay) {
+          out.push({ t: 'error', m: `${standard[i].label} delay (${standard[i].delay}m) must exceed ${standard[i-1].label} (${standard[i-1].delay}m).` }); break;
+        }
+      }
+      if (standard.length > MAX_ESC_LEVELS) out.push({ t: 'warn', m: `${standard.length} standard levels — consider ≤ ${MAX_ESC_LEVELS} (Miller's law) so responders can act without confusion.` });
+      if (r.notify.users.length === 0) out.push({ t: 'warn', m: 'Notify level has no users — no one is alerted on trigger.' });
+      return out;
     }
 
     /* L3 conditions edit */
@@ -1817,6 +2014,8 @@
 
     /* Init */
     renderL1Rows();
+    document.getElementById('navBack').disabled = true;
+    document.getElementById('navForward').disabled = true;
   </script>
 </body>
 </html>
