@@ -12,10 +12,10 @@
       --color-text-primary: #1a1916;
       --color-text-secondary: #5c5a52;
       --color-text-tertiary: #9a9890;
-      --color-text-info: #0C447C;
+      --color-text-info: #193458;
       --color-background-primary: #ffffff;
       --color-background-secondary: #f5f4f0;
-      --color-background-info: #E6F1FB;
+      --color-background-info: #EBF0F7;
       --color-border-secondary: #d8d6ce;
       --color-border-tertiary: #eceae2;
       --border-radius-md: 6px;
@@ -46,8 +46,8 @@
     .search-input { flex: 1; min-width: 200px; height: 36px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
     .filter-btn { height: 36px; padding: 0 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; font-family: var(--font-sans); }
     .filter-btn:hover { background: var(--color-background-secondary); }
-    .filter-btn.active-filter { background: #E6F1FB; color: #185FA5; border-color: #85B7EB; }
-    .filter-btn-count { font-size: 10px; background: #185FA5; color: #fff; padding: 1px 6px; border-radius: 8px; font-weight: 500; }
+    .filter-btn.active-filter { background: #EBF0F7; color: #193458; border-color: #A8B6CC; }
+    .filter-btn-count { font-size: 10px; background: #193458; color: #fff; padding: 1px 6px; border-radius: 8px; font-weight: 500; }
 
     /* Table */
     .table-wrap { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
@@ -55,7 +55,7 @@
 
     /* Level badges */
     .lbadge { font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
-    .lb1 { background: #E6F1FB; color: #0C447C; }
+    .lb1 { background: #EBF0F7; color: #193458; }
     .lb2 { background: #FAEEDA; color: #633806; }
     .lb3 { background: #FCEBEB; color: #791F1F; }
     .lbn { background: #3D3B35; color: #ffffff; } /* Notify */
@@ -72,29 +72,55 @@
     .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #639922; background: #EAF3DE; color: #3B6D11; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
     .btn-danger { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #F09595; background: transparent; color: #A32D2D; cursor: pointer; font-family: var(--font-sans); }
 
-    /* Filter panel */
-    .filter-panel { display: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px; background: var(--color-background-secondary); }
-    .filter-panel.open { display: block; }
-    .filter-panel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 18px; margin-bottom: 12px; }
-    .filter-section { display: flex; flex-direction: column; gap: 6px; }
-    .filter-label { font-size: 10px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
+    /* Filter panel (legacy chips, used in modals) */
     .filter-chips-row { display: flex; gap: 4px; flex-wrap: wrap; }
     .fchip { font-size: 11px; padding: 3px 10px; border-radius: 12px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
-    .fchip:hover { background: #E6F1FB; border-color: #85B7EB; color: #185FA5; }
-    .fchip.selected { background: #E6F1FB; border-color: #85B7EB; color: #185FA5; }
+    .fchip:hover { background: #EBF0F7; border-color: #A8B6CC; color: #193458; }
+    .fchip.selected { background: #EBF0F7; border-color: #A8B6CC; color: #193458; }
     .filter-input { height: 30px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 12px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); width: 100%; }
-    .filter-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 0.5px solid var(--color-border-secondary); }
     .filter-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
+    /* Progressive-disclosure filter dropdown */
+    .filter-dd-wrap { position: relative; }
+    .filter-dd { position: absolute; top: 42px; left: 0; width: 320px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); box-shadow: 0 8px 24px rgba(25,52,88,0.12); z-index: 50; display: none; overflow: hidden; }
+    .filter-dd.open { display: block; }
+    .filter-dd-head { padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; min-height: 40px; }
+    .filter-dd-back { background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; color: var(--color-text-secondary); font-size: 13px; display: flex; align-items: center; gap: 4px; font-family: var(--font-sans); }
+    .filter-dd-back:hover { background: var(--color-background-secondary); color: #193458; }
+    .filter-dd-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+    .filter-dd-clear-cat { font-size: 11px; color: var(--color-text-secondary); background: none; border: none; cursor: pointer; padding: 2px 6px; font-family: var(--font-sans); }
+    .filter-dd-clear-cat:hover { color: #193458; }
+    .filter-dd-list { max-height: 320px; overflow-y: auto; }
+    .filter-dd-cat { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; border-bottom: 0.5px solid var(--color-border-tertiary); transition: background .1s; }
+    .filter-dd-cat:hover { background: var(--color-background-secondary); }
+    .filter-dd-cat:last-child { border-bottom: none; }
+    .filter-dd-cat-icon { width: 28px; height: 28px; border-radius: 6px; background: #EBF0F7; color: #193458; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .filter-dd-cat-text { flex: 1; min-width: 0; }
+    .filter-dd-cat-name { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+    .filter-dd-cat-summary { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .filter-dd-cat-summary.active { color: #193458; }
+    .filter-dd-cat-chev { color: var(--color-text-tertiary); font-size: 14px; }
+    .filter-dd-body { padding: 14px; }
+    .filter-dd-options { display: flex; flex-direction: column; gap: 4px; max-height: 280px; overflow-y: auto; }
+    .filter-dd-opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; color: var(--color-text-primary); transition: background .1s; }
+    .filter-dd-opt:hover { background: var(--color-background-secondary); }
+    .filter-dd-opt input[type=checkbox], .filter-dd-opt input[type=radio] { accent-color: #193458; cursor: pointer; }
+    .filter-dd-foot { padding: 10px 14px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; gap: 8px; background: var(--color-background-secondary); }
+    .filter-dd-foot-info { font-size: 11px; color: var(--color-text-tertiary); }
+    .filter-active-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .filter-active-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 12px; background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
+    .filter-active-pill button { background: none; border: none; color: inherit; cursor: pointer; padding: 0; font-size: 14px; line-height: 1; opacity: .7; }
+    .filter-active-pill button:hover { opacity: 1; }
+
     /* Bulk bars */
-    .bulk-bar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #E6F1FB; border: 0.5px solid #85B7EB; border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 12px; color: #185FA5; flex-wrap: wrap; }
+    .bulk-bar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #EBF0F7; border: 0.5px solid #A8B6CC; border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 12px; color: #193458; flex-wrap: wrap; }
     .bulk-bar.hidden { display: none; }
     .bulk-bar-count { font-weight: 500; }
     .btn-sm { font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
     .btn-sm:hover { background: var(--color-background-secondary); }
     .btn-sm-danger { border-color: #F09595; color: #A32D2D; background: #fff; }
     .btn-sm-success { border-color: #97C459; color: #3B6D11; background: #fff; }
-    .btn-sm-blue { border-color: #85B7EB; color: #185FA5; background: #fff; }
+    .btn-sm-blue { border-color: #A8B6CC; color: #193458; background: #fff; }
 
     /* Modals */
     .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
@@ -145,7 +171,7 @@
     #view-l1 .plant-row { display: grid; grid-template-columns: 32px 2fr 1.2fr 1fr 1.1fr 1.1fr 90px; padding: 13px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; cursor: pointer; transition: background .1s; }
     #view-l1 .plant-row:last-child { border-bottom: none; }
     #view-l1 .plant-row:hover { background: var(--color-background-secondary); }
-    #view-l1 .plant-row.selected { background: #E6F1FB; }
+    #view-l1 .plant-row.selected { background: #EBF0F7; }
     #view-l1 .plant-row.selected:hover { background: #D5E8F8; }
     #view-l1 .plant-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
     #view-l1 .plant-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -174,14 +200,14 @@
     #view-l2 .pill-issue { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
     #view-l2 .pill-inc { background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; }
     #view-l2 .pill-ach { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
-    #view-l2 .pill-imp { background: #E6F1FB; color: #0C447C; border: 0.5px solid #85B7EB; }
+    #view-l2 .pill-imp { background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
     #view-l2 .filter-btn { height: 34px; font-size: 12px; }
     #view-l2 .search-input { height: 34px; }
-    #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
-    #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.2fr 1fr 1fr 90px 60px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .1s; cursor: pointer; }
+    #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 90px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+    #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 90px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .1s; cursor: pointer; }
     #view-l2 .insight-row:last-child { border-bottom: none; }
     #view-l2 .insight-row:hover { background: var(--color-background-secondary); }
-    #view-l2 .insight-row.selected { background: #E6F1FB; }
+    #view-l2 .insight-row.selected { background: #EBF0F7; }
     #view-l2 .iname { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; position: relative; }
     #view-l2 .iname-text { flex: 1; }
     #view-l2 .iname-meta { font-size: 10px; color: var(--color-text-tertiary); font-weight: 400; margin-left: 6px; }
@@ -190,16 +216,13 @@
     #view-l2 .s-issue { background: #FCEBEB; color: #A32D2D; }
     #view-l2 .s-incident { background: #EEEDFE; color: #3C3489; }
     #view-l2 .s-achievement { background: #EAF3DE; color: #3B6D11; }
-    #view-l2 .s-improvement { background: #E6F1FB; color: #0C447C; }
+    #view-l2 .s-improvement { background: #EBF0F7; color: #193458; }
     #view-l2 .s-resolved { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .s-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .s-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
     #view-l2 .toggle { width: 32px; height: 18px; }
     #view-l2 .toggle .slider:before { width: 12px; height: 12px; }
     #view-l2 input:checked + .slider:before { transform: translateX(14px); }
-    #view-l2 .icon-task { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 5px; font-size: 11px; cursor: default; }
-    #view-l2 .icon-task-on { background: #EAF3DE; color: #3B6D11; }
-    #view-l2 .icon-task-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
     #view-l2 .esc-trigger { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 5px; background: transparent; position: relative; cursor: pointer; flex-shrink: 0; }
     #view-l2 .esc-trigger:hover { background: var(--color-background-secondary); }
     #view-l2 .esc-trigger svg { opacity: .5; }
@@ -316,7 +339,7 @@
     #view-l3 .rbtn-data:hover { background: #F7C1C1; }
     #view-l3 .rbtn-ack { border-color: #97C459; background: #EAF3DE; color: #3B6D11; }
     #view-l3 .rbtn-ack:hover { background: #C0DD97; }
-    #view-l3 .rbtn-time { border-color: #85B7EB; background: #E6F1FB; color: #185FA5; }
+    #view-l3 .rbtn-time { border-color: #A8B6CC; background: #EBF0F7; color: #193458; }
     #view-l3 .rbtn-time:hover { background: #C6DEF4; }
   </style>
 </head>
@@ -361,7 +384,7 @@
 
         <div class="table-wrap">
           <div class="table-head">
-            <div><input type="checkbox" id="l1SelectAll" onchange="l1ToggleAll(this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+            <div><input type="checkbox" id="l1SelectAll" onchange="l1ToggleAll(this)" style="cursor:pointer;accent-color:#193458"/></div>
             <span class="th">Plant</span>
             <span class="th">Location</span>
             <span class="th">Insights</span>
@@ -405,77 +428,18 @@
 
         <div class="search-row">
           <input class="search-input" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
-          <button class="filter-btn" id="toggleFiltersBtn" onclick="toggleFiltersPanel()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M2 6h8M4 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-            Filters <span id="activeFilterCount" class="filter-btn-count" style="display:none">0</span>
-          </button>
+          <div class="filter-dd-wrap">
+            <button class="filter-btn" id="toggleFiltersBtn" onclick="toggleFiltersDD(event)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M2 6h8M4 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Filters <span id="activeFilterCount" class="filter-btn-count" style="display:none">0</span>
+            </button>
+            <div class="filter-dd" id="filterDD" onclick="event.stopPropagation()">
+              <!-- rendered by renderFilterDD() -->
+            </div>
+          </div>
         </div>
 
-        <!-- Filter panel -->
-        <div class="filter-panel" id="filterPanel">
-          <div class="filter-panel-grid">
-            <div class="filter-section">
-              <span class="filter-label">Type of insight</span>
-              <div class="filter-chips-row" id="filterTypes">
-                <span class="fchip" data-val="warning">Warning</span>
-                <span class="fchip" data-val="issue">Issue</span>
-                <span class="fchip" data-val="incident">Incident</span>
-                <span class="fchip" data-val="achievement">Achievement</span>
-                <span class="fchip" data-val="improvement">Improvement</span>
-              </div>
-            </div>
-            <div class="filter-section">
-              <span class="filter-label">Equipment</span>
-              <div class="filter-chips-row" id="filterEquipment">
-                <span class="fchip" data-val="blower">Blower</span>
-                <span class="fchip" data-val="pump">Pump</span>
-                <span class="fchip" data-val="tank">Tank</span>
-                <span class="fchip" data-val="valve">Valve</span>
-              </div>
-            </div>
-            <div class="filter-section">
-              <span class="filter-label">Channel of communication</span>
-              <div class="filter-chips-row" id="filterChannels">
-                <span class="fchip" data-val="0">Email</span>
-                <span class="fchip" data-val="1">SMS</span>
-                <span class="fchip" data-val="2">WhatsApp</span>
-                <span class="fchip" data-val="3">Call</span>
-              </div>
-            </div>
-            <div class="filter-section">
-              <span class="filter-label">Users</span>
-              <input class="filter-input" type="text" id="filterUser" oninput="renderRows()" placeholder="Filter by user name…"/>
-            </div>
-            <div class="filter-section">
-              <span class="filter-label">Active / Inactive</span>
-              <div class="filter-chips-row" id="filterState">
-                <span class="fchip selected" data-val="all">All</span>
-                <span class="fchip" data-val="active">Active</span>
-                <span class="fchip" data-val="inactive">Inactive</span>
-              </div>
-            </div>
-            <div class="filter-section">
-              <span class="filter-label">Escalation time window (min)</span>
-              <div class="filter-row-2col">
-                <input class="filter-input" type="number" id="filterTimeMin" oninput="renderRows()" placeholder="Min delay"/>
-                <input class="filter-input" type="number" id="filterTimeMax" oninput="renderRows()" placeholder="Max delay"/>
-              </div>
-            </div>
-            <div class="filter-section" style="grid-column:span 3">
-              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);cursor:pointer">
-                <input type="checkbox" id="filterRepeats" onchange="renderRows()" style="accent-color:#185FA5"/>
-                Only show insights with repeat users across escalation levels
-              </label>
-            </div>
-          </div>
-          <div class="filter-actions">
-            <span style="font-size:11px;color:var(--color-text-tertiary)" id="filterSummary">No filters active</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn-ghost" onclick="clearAllFilters()">Clear all</button>
-              <button class="btn-primary" onclick="toggleFiltersPanel()">Done</button>
-            </div>
-          </div>
-        </div>
+        <div class="filter-active-pills" id="filterActivePills"></div>
 
         <div class="bulk-bar hidden" id="bulkBar">
           <span class="bulk-bar-count" id="bulkCount">0 selected</span>
@@ -491,12 +455,11 @@
 
         <div class="table-wrap">
           <div class="table-head">
-            <div><input type="checkbox" id="selectAll" onchange="toggleAll(this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+            <div><input type="checkbox" id="selectAll" onchange="toggleAll(this)" style="cursor:pointer;accent-color:#193458"/></div>
             <span class="th">Insight</span>
             <span class="th">Live status</span>
             <span class="th">Last triggered</span>
             <span class="th">State</span>
-            <span class="th" style="text-align:center">Task</span>
             <span class="th"></span>
           </div>
           <div id="rowsContainer"></div>
@@ -601,7 +564,7 @@
                       Sustained for <input type="number" id="condCloseDur" value="120"/> seconds
                     </div>
                     <div class="cond-edit-sub">
-                      <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="condTimeResolve" style="accent-color:#185FA5"/> Also auto-resolve after</label>
+                      <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="condTimeResolve" style="accent-color:#193458"/> Also auto-resolve after</label>
                       <input type="number" id="condTimeValue" value="30" style="width:50px"/>
                       <select class="cond-edit-input" id="condTimeUnit" style="height:24px;width:auto"><option>minutes</option><option>hours</option></select>
                     </div>
@@ -647,7 +610,6 @@
               <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
               <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
               <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM · Manual by Priya Kumar</span></div>
-              <div class="detail-row"><span class="detail-key">Task linked</span><span class="detail-val green">TASK-4821 · Inspect safety valve</span></div>
               <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
             </div>
           </div>
@@ -682,6 +644,26 @@
     </div>
 
   </div><!-- /app-shell -->
+
+  <!-- ══════════════════ Apply-to-plant prompt ══════════════════ -->
+  <div class="modal-bg" id="applyPlantModal">
+    <div class="modal" style="width:440px">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="applyPlantTitle">Apply to whole plant?</div>
+          <div class="modal-sub" id="applyPlantSub">This change will affect every insight in the plant.</div>
+        </div>
+        <button class="modal-close" onclick="cancelApplyPlant()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="applyPlantDesc" style="font-size:13px;color:var(--color-text-secondary);line-height:1.5"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" onclick="closeApplyPlant(false)">Only this insight</button>
+        <button class="btn-primary" onclick="closeApplyPlant(true)">Apply to all insights</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ══════════════════ L1 plant escalation modal ══════════════════ -->
   <div class="modal-bg" id="escModal">
@@ -890,7 +872,7 @@
         </div>
         <div class="modal-section">
           <label class="comm-check" style="border:none;padding:0">
-            <input type="checkbox" id="bulkAddLevelHooter" style="accent-color:#185FA5"/> Trigger hooter alarm at this level
+            <input type="checkbox" id="bulkAddLevelHooter" style="accent-color:#193458"/> Trigger hooter alarm at this level
           </label>
         </div>
       </div>
@@ -930,7 +912,7 @@
       },
       levels: [
         { label: 'Level 1', cls: 'lb1', delay: 0, subtitle: 'Immediate alert', users: [
-          { init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] },
+          { init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] },
           { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] },
         ], hooter: false },
         { label: 'Level 2', cls: 'lb2', delay: 15, subtitle: 'Supervisor escalation', users: [
@@ -947,7 +929,7 @@
       { id: 1, name: 'Boiler pressure threshold exceeded', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 2h 14m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Operations monitor', comm: [1, 0, 1, 0] }] },
         escLevels: [
-          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] }], hooter: false },
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] }], hooter: false },
           { label: 'Level 2', cls: 'lb2', delay: 15, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] }, { init: 'RS', bg: '#FAEEDA', tc: '#633806', name: 'Rahul Sharma', comm: [0, 0, 0, 1] }], hooter: true },
           { label: 'Level 3', cls: 'lb3', delay: 30, users: [{ init: 'SG', bg: '#FCEBEB', tc: '#791F1F', name: 'Sunita Gupta', comm: [1, 1, 1, 1] }], hooter: false },
         ] },
@@ -960,12 +942,12 @@
       { id: 3, name: 'Compressor vibration anomaly', type: 'issue', equipment: 'pump', enabled: true, task: true, lastTrig: 'Active since 18m', lastTrigActive: true,
         notify: { users: [{ init: 'NK', bg: '#E0DFDB', tc: '#1a1916', name: 'Maintenance desk', comm: [1, 0, 0, 0] }] },
         escLevels: [
-          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [0, 1, 1, 0] }], hooter: false },
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [0, 1, 1, 0] }], hooter: false },
         ] },
       { id: 4, name: 'Steam leak detection triggered', type: 'issue', equipment: 'valve', enabled: true, task: false, lastTrig: 'Active since 5m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 1, 0, 0] }] },
         escLevels: [
-          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 1, 0] }], hooter: true },
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 1, 0] }], hooter: true },
         ] },
       { id: 5, name: 'Conveyor belt speed deviation', type: 'issue', equipment: 'pump', enabled: true, task: false, lastTrig: 'Resolved 1h ago', lastTrigActive: false,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
@@ -978,7 +960,7 @@
         ] },
       { id: 7, name: 'Feed water pH out of range', type: 'warning', equipment: 'tank', enabled: true, task: false, lastTrig: 'Active since 22m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 8, name: 'Turbine RPM fluctuation', type: 'warning', equipment: 'blower', enabled: true, task: false, lastTrig: 'Resolved 3h ago', lastTrigActive: false,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 1, 0, 0] }] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 10, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false }] },
@@ -990,7 +972,7 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 0, 0] }], hooter: false }] },
       { id: 11, name: 'Exhaust gas CO₂ elevated', type: 'warning', equipment: 'valve', enabled: true, task: false, lastTrig: 'Active since 1m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 1, 0] }] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 1, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 0, 1, 0] }], hooter: false }] },
       { id: 12, name: 'Lube oil level low warning', type: 'warning', equipment: 'pump', enabled: true, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
         notify: { users: [] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
@@ -999,7 +981,7 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 0, 0] }], hooter: false }] },
       { id: 14, name: 'Downtime below monthly target', type: 'achievement', equipment: 'pump', enabled: true, task: false, lastTrig: 'Achieved 2d ago', lastTrigActive: false,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Plant manager', comm: [1, 0, 0, 0] }] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 15, name: 'Predictive maintenance window available', type: 'improvement', equipment: 'pump', enabled: true, task: true, lastTrig: 'Detected 1d ago', lastTrigActive: false,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Maintenance lead', comm: [1, 1, 1, 0] }] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 1, 0] }], hooter: false }] },
@@ -1011,7 +993,7 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 18, name: 'Emergency stop circuit fault', type: 'incident', equipment: 'valve', enabled: false, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
         notify: { users: [] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#E6F1FB', tc: '#0C447C', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }], hooter: false }] },
     ];
 
     const commLabels = ['✉', '✆', 'W', '☏'];
@@ -1030,7 +1012,7 @@
           ? `<span class="badge badge-a">${p.active} active</span><span class="badge badge-i">${p.off} off</span>`
           : `<span class="badge badge-i">All off</span>`;
         return `<div class="plant-row${isSel?' selected':''}" onclick="openPlant('${p.id}')">
-          <div onclick="event.stopPropagation()"><input type="checkbox" ${isSel?'checked':''} onchange="l1ToggleRow('${p.id}',this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+          <div onclick="event.stopPropagation()"><input type="checkbox" ${isSel?'checked':''} onchange="l1ToggleRow('${p.id}',this)" style="cursor:pointer;accent-color:#193458"/></div>
           <div class="plant-name"><span class="plant-dot ${p.statusDot}"></span>${p.name}</div>
           <div class="cell">${p.location}</div>
           <div class="cell" style="font-weight:500;color:var(--color-text-primary)">${p.insights}</div>
@@ -1185,27 +1167,171 @@
       repeats: false,
     };
 
-    function toggleFiltersPanel() {
+    /* ── Progressive-disclosure filter dropdown ── */
+    let ddCurrentCat = null; // null = root list
+
+    const FILTER_CATS = [
+      { key: 'types',     label: 'Type of insight',  icon: '◆' },
+      { key: 'equipment', label: 'Equipment',         icon: '⚙' },
+      { key: 'state',     label: 'Active / Inactive', icon: '●' },
+      { key: 'user',      label: 'Users',             icon: '👤' },
+      { key: 'channels',  label: 'Channel',           icon: '✉' },
+      { key: 'time',      label: 'Escalation time',   icon: '⏱' },
+      { key: 'repeats',   label: 'Repeat users',      icon: '↻' },
+    ];
+    const TYPE_OPTS = [
+      { v: 'warning',     l: 'Warning' },
+      { v: 'issue',       l: 'Issue' },
+      { v: 'incident',    l: 'Incident' },
+      { v: 'achievement', l: 'Achievement' },
+      { v: 'improvement', l: 'Improvement' },
+    ];
+    const EQUIP_OPTS = [
+      { v: 'blower', l: 'Blower' },
+      { v: 'pump',   l: 'Pump' },
+      { v: 'tank',   l: 'Tank' },
+      { v: 'valve',  l: 'Valve' },
+    ];
+    const CHANNEL_OPTS = [
+      { v: 0, l: 'Email' }, { v: 1, l: 'SMS' }, { v: 2, l: 'WhatsApp' }, { v: 3, l: 'Call' },
+    ];
+    const STATE_OPTS = [
+      { v: 'all',      l: 'All' },
+      { v: 'active',   l: 'Active' },
+      { v: 'inactive', l: 'Inactive' },
+    ];
+
+    function toggleFiltersDD(e) {
+      if (e) e.stopPropagation();
       filtersOpen = !filtersOpen;
-      const panel = document.getElementById('filterPanel');
-      panel.classList.toggle('open', filtersOpen);
+      const dd = document.getElementById('filterDD');
+      dd.classList.toggle('open', filtersOpen);
       document.getElementById('toggleFiltersBtn').classList.toggle('active-filter', filtersOpen);
+      if (filtersOpen) { ddCurrentCat = null; renderFilterDD(); }
+    }
+    document.addEventListener('click', () => {
+      if (filtersOpen) {
+        filtersOpen = false;
+        document.getElementById('filterDD')?.classList.remove('open');
+        document.getElementById('toggleFiltersBtn')?.classList.remove('active-filter');
+      }
+    });
+
+    function catSummary(key) {
+      switch (key) {
+        case 'types':     return filterState.types.size ? [...filterState.types].map(v => TYPE_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
+        case 'equipment': return filterState.equipment.size ? [...filterState.equipment].map(v => EQUIP_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
+        case 'channels':  return filterState.channels.size ? [...filterState.channels].map(v => CHANNEL_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
+        case 'state':     return filterState.state !== 'all' ? STATE_OPTS.find(o=>o.v===filterState.state)?.l : '';
+        case 'user':      return filterState.user || '';
+        case 'time': {
+          const a = filterState.timeMin, b = filterState.timeMax;
+          if (a !== '' && a != null && b !== '' && b != null) return `${a}–${b} min`;
+          if (a !== '' && a != null) return `≥ ${a} min`;
+          if (b !== '' && b != null) return `≤ ${b} min`;
+          return '';
+        }
+        case 'repeats':   return filterState.repeats ? 'On' : '';
+      }
+      return '';
     }
 
-    // Wire filter chips
-    document.querySelectorAll('#filterTypes .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.types, c.dataset.val); renderRows(); }));
-    document.querySelectorAll('#filterEquipment .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.equipment, c.dataset.val); renderRows(); }));
-    document.querySelectorAll('#filterChannels .fchip').forEach(c => c.addEventListener('click', () => { toggleSetChip(c, filterState.channels, parseInt(c.dataset.val,10)); renderRows(); }));
-    document.querySelectorAll('#filterState .fchip').forEach(c => c.addEventListener('click', () => {
-      document.querySelectorAll('#filterState .fchip').forEach(x => x.classList.remove('selected'));
-      c.classList.add('selected');
-      filterState.state = c.dataset.val;
-      renderRows();
-    }));
+    function renderFilterDD() {
+      const dd = document.getElementById('filterDD');
+      if (!dd) return;
+      if (ddCurrentCat === null) {
+        let html = `<div class="filter-dd-head"><div class="filter-dd-title">Filters</div>`;
+        if (countActiveFilters() > 0) html += `<button class="filter-dd-clear-cat" onclick="clearAllFilters()">Clear all</button>`;
+        html += `</div><div class="filter-dd-list">`;
+        FILTER_CATS.forEach(cat => {
+          const sum = catSummary(cat.key);
+          html += `<div class="filter-dd-cat" onclick="openFilterCat('${cat.key}')">
+            <div class="filter-dd-cat-icon">${cat.icon}</div>
+            <div class="filter-dd-cat-text">
+              <div class="filter-dd-cat-name">${cat.label}</div>
+              <div class="filter-dd-cat-summary${sum?' active':''}">${sum || 'Any'}</div>
+            </div>
+            <div class="filter-dd-cat-chev">›</div>
+          </div>`;
+        });
+        html += `</div>`;
+        dd.innerHTML = html;
+      } else {
+        const cat = FILTER_CATS.find(c => c.key === ddCurrentCat);
+        let body = '';
+        const sum = catSummary(ddCurrentCat);
+        if (ddCurrentCat === 'types')     body = TYPE_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.types.has(o.v)?'checked':''} onchange="ddToggleSet('types','${o.v}')"/><span>${o.l}</span></label>`).join('');
+        else if (ddCurrentCat === 'equipment') body = EQUIP_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.equipment.has(o.v)?'checked':''} onchange="ddToggleSet('equipment','${o.v}')"/><span>${o.l}</span></label>`).join('');
+        else if (ddCurrentCat === 'channels')  body = CHANNEL_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.channels.has(o.v)?'checked':''} onchange="ddToggleSetNum('channels',${o.v})"/><span>${o.l}</span></label>`).join('');
+        else if (ddCurrentCat === 'state')     body = STATE_OPTS.map(o => `<label class="filter-dd-opt"><input type="radio" name="ddstate" ${filterState.state===o.v?'checked':''} onchange="ddSetState('${o.v}')"/><span>${o.l}</span></label>`).join('');
+        else if (ddCurrentCat === 'user')      body = `<input class="filter-input" type="text" placeholder="Filter by user name…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)"/>`;
+        else if (ddCurrentCat === 'time')      body = `<div class="filter-row-2col"><input class="filter-input" type="number" min="0" placeholder="Min (min)" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)"/><input class="filter-input" type="number" min="0" placeholder="Max (min)" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)"/></div><div style="margin-top:8px;font-size:11px;color:var(--color-text-tertiary)">Match insights with at least one escalation level inside this delay range.</div>`;
+        else if (ddCurrentCat === 'repeats')   body = `<label class="filter-dd-opt"><input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/><span>Only insights with the same user across multiple levels</span></label>`;
+        const wrap = (ddCurrentCat === 'user' || ddCurrentCat === 'time') ? `<div class="filter-dd-body">${body}</div>` : `<div class="filter-dd-body"><div class="filter-dd-options">${body}</div></div>`;
+        dd.innerHTML = `<div class="filter-dd-head">
+            <button class="filter-dd-back" onclick="ddBack()">‹ Back</button>
+            <div class="filter-dd-title">${cat.label}</div>
+            ${sum ? `<button class="filter-dd-clear-cat" onclick="clearFilterCat('${cat.key}')">Clear</button>` : ''}
+          </div>${wrap}`;
+      }
+      renderActivePills();
+    }
 
-    function toggleSetChip(chip, set, val) {
-      if (set.has(val)) { set.delete(val); chip.classList.remove('selected'); }
-      else { set.add(val); chip.classList.add('selected'); }
+    function openFilterCat(k) { ddCurrentCat = k; renderFilterDD(); }
+    function ddBack() { ddCurrentCat = null; renderFilterDD(); }
+    function ddToggleSet(key, val) {
+      const set = filterState[key];
+      if (set.has(val)) set.delete(val); else set.add(val);
+      renderRows(); renderFilterDD();
+    }
+    function ddToggleSetNum(key, val) {
+      const set = filterState[key];
+      if (set.has(val)) set.delete(val); else set.add(val);
+      renderRows(); renderFilterDD();
+    }
+    function ddSetState(v) { filterState.state = v; renderRows(); renderFilterDD(); }
+    function ddSetUser(v) { filterState.user = v; renderRows(); renderActivePills(); updateFilterCountBadge(); }
+    function ddSetTime(which, v) {
+      if (which === 'min') filterState.timeMin = v;
+      else filterState.timeMax = v;
+      renderRows(); renderActivePills(); updateFilterCountBadge();
+    }
+    function ddToggleRepeats(on) { filterState.repeats = on; renderRows(); renderFilterDD(); }
+
+    function clearFilterCat(k) {
+      if (k === 'types') filterState.types.clear();
+      else if (k === 'equipment') filterState.equipment.clear();
+      else if (k === 'channels') filterState.channels.clear();
+      else if (k === 'state') filterState.state = 'all';
+      else if (k === 'user') filterState.user = '';
+      else if (k === 'time') { filterState.timeMin = ''; filterState.timeMax = ''; }
+      else if (k === 'repeats') filterState.repeats = false;
+      renderRows(); renderFilterDD();
+    }
+
+    function renderActivePills() {
+      const wrap = document.getElementById('filterActivePills');
+      if (!wrap) return;
+      const pills = [];
+      filterState.types.forEach(v => pills.push({ k: 'types', v, l: 'Type: ' + (TYPE_OPTS.find(o=>o.v===v)?.l) }));
+      filterState.equipment.forEach(v => pills.push({ k: 'equipment', v, l: 'Equip: ' + (EQUIP_OPTS.find(o=>o.v===v)?.l) }));
+      filterState.channels.forEach(v => pills.push({ k: 'channels', v, l: 'Channel: ' + (CHANNEL_OPTS.find(o=>o.v===v)?.l) }));
+      if (filterState.state !== 'all') pills.push({ k: 'state', v: filterState.state, l: 'State: ' + (STATE_OPTS.find(o=>o.v===filterState.state)?.l) });
+      if (filterState.user) pills.push({ k: 'user', v: filterState.user, l: 'User: ' + filterState.user });
+      const t = catSummary('time');
+      if (t) pills.push({ k: 'time', v: '', l: 'Time: ' + t });
+      if (filterState.repeats) pills.push({ k: 'repeats', v: true, l: 'Repeat users' });
+      wrap.innerHTML = pills.map(p => `<span class="filter-active-pill">${p.l}<button onclick="removePill('${p.k}','${String(p.v).replace(/'/g,"\\'")}')">×</button></span>`).join('');
+    }
+    function removePill(k, v) {
+      if (k === 'types') filterState.types.delete(v);
+      else if (k === 'equipment') filterState.equipment.delete(v);
+      else if (k === 'channels') filterState.channels.delete(parseInt(v,10));
+      else if (k === 'state') filterState.state = 'all';
+      else if (k === 'user') filterState.user = '';
+      else if (k === 'time') { filterState.timeMin = ''; filterState.timeMax = ''; }
+      else if (k === 'repeats') filterState.repeats = false;
+      renderRows(); renderFilterDD();
     }
 
     function countActiveFilters() {
@@ -1221,16 +1347,19 @@
       return n;
     }
 
+    function updateFilterCountBadge() {
+      const n = countActiveFilters();
+      const el = document.getElementById('activeFilterCount');
+      if (!el) return;
+      if (n > 0) { el.style.display = 'inline-block'; el.textContent = n; }
+      else el.style.display = 'none';
+    }
+
     function clearAllFilters() {
       filterState.types.clear(); filterState.equipment.clear(); filterState.channels.clear();
-      filterState.state = 'all'; filterState.user = ''; filterState.timeMin = null; filterState.timeMax = null; filterState.repeats = false;
-      document.querySelectorAll('#filterTypes .fchip, #filterEquipment .fchip, #filterChannels .fchip').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('#filterState .fchip').forEach((c, i) => c.classList.toggle('selected', i === 0));
-      document.getElementById('filterUser').value = '';
-      document.getElementById('filterTimeMin').value = '';
-      document.getElementById('filterTimeMax').value = '';
-      document.getElementById('filterRepeats').checked = false;
-      renderRows();
+      filterState.state = 'all'; filterState.user = ''; filterState.timeMin = ''; filterState.timeMax = ''; filterState.repeats = false;
+      ddCurrentCat = null;
+      renderRows(); renderFilterDD();
     }
 
     function matchesFilters(r) {
@@ -1303,11 +1432,6 @@
     }
 
     function renderRows() {
-      filterState.user = (document.getElementById('filterUser')?.value || '').trim();
-      filterState.timeMin = document.getElementById('filterTimeMin')?.value ?? '';
-      filterState.timeMax = document.getElementById('filterTimeMax')?.value ?? '';
-      filterState.repeats = document.getElementById('filterRepeats')?.checked || false;
-
       const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
       const c = document.getElementById('rowsContainer');
       if (!c) return;
@@ -1315,12 +1439,8 @@
         if (q && !r.name.toLowerCase().includes(q)) return false;
         return matchesFilters(r);
       });
-
-      const count = countActiveFilters();
-      const countEl = document.getElementById('activeFilterCount');
-      const summaryEl = document.getElementById('filterSummary');
-      if (count > 0) { countEl.style.display = 'inline-block'; countEl.textContent = count; summaryEl.textContent = `${count} filter${count>1?'s':''} active · showing ${rows.length} of ${insights.length}`; }
-      else { countEl.style.display = 'none'; summaryEl.textContent = 'No filters active'; }
+      updateFilterCountBadge();
+      renderActivePills();
 
       if (!rows.length) {
         c.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match the current filters</div>';
@@ -1329,7 +1449,7 @@
       c.innerHTML = rows.map(r => {
         const isSel = selected.has(r.id);
         return `<div class="insight-row${isSel?' selected':''}" onclick="handleRowClick(${r.id})">
-          <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#185FA5"/></div>
+          <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#193458"/></div>
           <div class="iname">
             <div class="esc-trigger" onclick="event.stopPropagation()">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h7M2 10.5h5" stroke="var(--color-text-secondary)" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -1341,11 +1461,6 @@
           <div class="last-trig${r.lastTrigActive?' active':''}">${r.lastTrig}</div>
           <div onclick="event.stopPropagation()">
             <label class="toggle"><input type="checkbox"${r.enabled?' checked':''} onchange="toggleInsight(${r.id},this)"><span class="slider"></span></label>
-          </div>
-          <div style="display:flex;justify-content:center">
-            <div class="icon-task ${r.task?'icon-task-on':'icon-task-off'}" title="${r.task?'Task linked':'No task'}">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 6l1.5 1.5 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
           </div>
           <div class="row-chevron">›</div>
         </div>`;
@@ -1372,7 +1487,7 @@
 
     /* L2 bulk modals */
     function initialsOf(name) { return name.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
-    function randBg() { const opts = [['#E6F1FB','#0C447C'],['#EAF3DE','#3B6D11'],['#FAEEDA','#633806'],['#EEEDFE','#3C3489'],['#FCEBEB','#791F1F']]; return opts[Math.floor(Math.random()*opts.length)]; }
+    function randBg() { const opts = [['#EBF0F7','#193458'],['#EAF3DE','#3B6D11'],['#FAEEDA','#633806'],['#EEEDFE','#3C3489'],['#FCEBEB','#791F1F']]; return opts[Math.floor(Math.random()*opts.length)]; }
 
     function openBulkAddUserModal() { if (selected.size === 0) return; document.getElementById('bulkAddSub').textContent = `Adds a user to ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkAddUserModal').classList.add('open'); }
     function closeBulkAddUser() { document.getElementById('bulkAddUserModal').classList.remove('open'); }
@@ -1528,16 +1643,44 @@
       if (!name) return;
       const [bg, tc] = randBg();
       const user = { init: initialsOf(name), bg, tc, name, comm: [1, 0, 0, 0] };
-      const r = getCurrentInsight();
-      if (levelIdx === 'notify') r.notify.users.push(user);
-      else r.escLevels[parseInt(levelIdx,10)].users.push(user);
-      renderL3Escalation();
+      const levelLabel = levelIdx === 'notify' ? 'Notify level' : ('Level ' + (parseInt(levelIdx,10)+1));
+      promptApplyToPlant({
+        title: `Add ${name} to ${levelLabel}?`,
+        desc: `Choose whether to add <b>${name}</b> only to this insight, or to <b>${levelLabel}</b> across every insight in this plant.`,
+        applyAll: () => {
+          insights.forEach(ins => {
+            const u = { ...user, comm: [...user.comm] };
+            if (levelIdx === 'notify') ins.notify.users.push(u);
+            else if (ins.escLevels[parseInt(levelIdx,10)]) ins.escLevels[parseInt(levelIdx,10)].users.push(u);
+          });
+        },
+        applyOne: () => {
+          const r = getCurrentInsight();
+          if (levelIdx === 'notify') r.notify.users.push(user);
+          else r.escLevels[parseInt(levelIdx,10)].users.push(user);
+        },
+        done: () => { renderL3Escalation(); }
+      });
     }
     function removeL3User(levelIdx, userIdx) {
       const r = getCurrentInsight();
-      if (levelIdx === 'notify') r.notify.users.splice(userIdx, 1);
-      else r.escLevels[parseInt(levelIdx,10)].users.splice(userIdx, 1);
-      renderL3Escalation();
+      const users = levelIdx === 'notify' ? r.notify.users : r.escLevels[parseInt(levelIdx,10)].users;
+      const removed = users[userIdx];
+      if (!removed) return;
+      const levelLabel = levelIdx === 'notify' ? 'Notify level' : ('Level ' + (parseInt(levelIdx,10)+1));
+      promptApplyToPlant({
+        title: `Remove ${removed.name} from ${levelLabel}?`,
+        desc: `Choose whether to remove <b>${removed.name}</b> only from this insight, or from <b>${levelLabel}</b> across every insight in this plant.`,
+        applyAll: () => {
+          insights.forEach(ins => {
+            const list = levelIdx === 'notify' ? ins.notify.users : ins.escLevels[parseInt(levelIdx,10)]?.users;
+            if (!list) return;
+            for (let i = list.length - 1; i >= 0; i--) if (list[i].name === removed.name) list.splice(i, 1);
+          });
+        },
+        applyOne: () => { users.splice(userIdx, 1); },
+        done: () => { renderL3Escalation(); }
+      });
     }
     function toggleComm(levelIdx, userIdx, commIdx) {
       const r = getCurrentInsight();
@@ -1556,12 +1699,41 @@
       renderL3Escalation();
     }
     function addL3Level() {
-      const r = getCurrentInsight();
-      const next = r.escLevels.length + 1;
-      const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
-      const prevDelay = r.escLevels.length > 0 ? r.escLevels[r.escLevels.length-1].delay : 0;
-      r.escLevels.push({ label: 'Level ' + next, cls: clsMap[Math.min(next-1, 4)], delay: prevDelay + 15, users: [], hooter: false });
-      renderL3Escalation();
+      const buildLevel = (esc) => {
+        const next = esc.length + 1;
+        const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
+        const prevDelay = esc.length > 0 ? esc[esc.length-1].delay : 0;
+        return { label: 'Level ' + next, cls: clsMap[Math.min(next-1, 4)], delay: prevDelay + 15, users: [], hooter: false };
+      };
+      promptApplyToPlant({
+        title: 'Add a new escalation level?',
+        desc: 'Choose whether to add this level only to the current insight, or to every insight in this plant.',
+        applyAll: () => { insights.forEach(ins => ins.escLevels.push(buildLevel(ins.escLevels))); },
+        applyOne: () => { const r = getCurrentInsight(); r.escLevels.push(buildLevel(r.escLevels)); },
+        done: () => { renderL3Escalation(); }
+      });
+    }
+
+    /* Apply-to-plant prompt helper */
+    let _applyPlantHandler = null;
+    function promptApplyToPlant({ title, desc, applyAll, applyOne, done }) {
+      document.getElementById('applyPlantTitle').textContent = title;
+      document.getElementById('applyPlantDesc').innerHTML = desc;
+      _applyPlantHandler = (toAll) => {
+        if (toAll) applyAll(); else applyOne();
+        if (done) done();
+      };
+      document.getElementById('applyPlantModal').classList.add('open');
+    }
+    function closeApplyPlant(toAll) {
+      document.getElementById('applyPlantModal').classList.remove('open');
+      const h = _applyPlantHandler;
+      _applyPlantHandler = null;
+      if (h) h(toAll);
+    }
+    function cancelApplyPlant() {
+      document.getElementById('applyPlantModal').classList.remove('open');
+      _applyPlantHandler = null;
     }
     function addL3CustomLevel() {
       const r = getCurrentInsight();
