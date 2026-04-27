@@ -7,32 +7,62 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.1/dist/xlsx.full.min.js"></script>
+<script>
+  // Robust XLSX loader with CDN fallbacks (some networks block jsdelivr)
+  (function loadXLSX() {
+    const sources = [
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+      'https://unpkg.com/xlsx@0.20.1/dist/xlsx.full.min.js',
+      'https://cdn.jsdelivr.net/npm/xlsx@0.20.1/dist/xlsx.full.min.js'
+    ];
+    let i = 0;
+    function tryNext() {
+      if (i >= sources.length) { window.__xlsxFailed = true; return; }
+      const s = document.createElement('script');
+      s.src = sources[i++];
+      s.async = false;
+      s.onerror = tryNext;
+      document.head.appendChild(s);
+    }
+    tryNext();
+  })();
+</script>
 <style>
   :root{
     --bg:#f6f7fb; --panel:#fff; --ink:#0f172a; --muted:#64748b; --line:#e5e7eb;
-    --brand:#4f46e5; --ok:#16a34a; --err:#dc2626; --code-bg:#0b1220; --code-ink:#e2e8f0;
+    --brand:#4f46e5; --ok:#16a34a; --warn:#d97706; --err:#dc2626; --code-bg:#0b1220; --code-ink:#e2e8f0;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
   a{color:var(--brand);text-decoration:none}
+
   .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
   .nav-inner{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
   .logo{font-weight:700;font-size:15px;letter-spacing:-.01em}
   .logo .plus{color:var(--brand)}
   .nav a.back{font-size:13px;color:var(--muted)}
   .nav a.back:hover{color:var(--ink)}
-  .container{max-width:1100px;margin:0 auto;padding:18px 20px 60px}
+  .container{max-width:1280px;margin:0 auto;padding:18px 20px 60px}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:flex-start}
+  @media (max-width:980px){.layout{grid-template-columns:1fr}}
+  .sidebar{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow-y:auto}
+  .sidebar h3{margin:0 0 10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .sidebar h3 .count{background:var(--brand);color:#fff;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;letter-spacing:0}
 
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}
-  .tab{padding:9px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab{padding:9px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px}
   .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+  .tab .count{background:var(--line);color:var(--muted);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:600}
+  .tab.active .count{background:var(--brand);color:#fff}
 
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
   .card h3{margin:0 0 10px;font-size:14px;font-weight:600}
   .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
 
+  .name-input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;outline:none}
+  .name-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
   textarea.primary{width:100%;min-height:80px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;outline:none;line-height:1.5}
   textarea.primary:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 
@@ -40,6 +70,10 @@
   .btn:hover{background:#f8fafc}
   .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
   .btn.primary:hover{background:#4338ca}
+  .btn.success{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .btn.success:hover{background:#15803d}
+  .btn.danger{background:#fff;color:var(--err);border-color:#fecaca}
+  .btn.danger:hover{background:#fef2f2}
   .btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
   .btn.ghost:hover{background:#f1f5f9;color:var(--ink)}
   .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
@@ -65,9 +99,26 @@
   .duration input{width:60px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px}
   .duration select{border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px;background:#fff}
 
-  .chips{display:flex;gap:6px;flex-wrap:wrap}
-  .chip{padding:5px 10px;border:1px solid var(--line);border-radius:99px;font-size:12px;cursor:pointer;background:#fff;user-select:none;font-weight:500}
-  .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  /* Components */
+  .components-list{display:flex;flex-direction:column;gap:10px}
+  .component-block{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+  .component-block.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .component-head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;user-select:none}
+  .component-head:hover{background:#f8fafc}
+  .component-block.on .component-head{background:#eef2ff}
+  .component-head .icon{font-size:18px}
+  .component-head .name{font-weight:600;font-size:13px}
+  .component-head .desc{font-size:11px;color:var(--muted)}
+  .component-head .toggle{margin-left:auto;width:16px;height:16px;border:2px solid var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;background:#fff}
+  .component-block.on .component-head .toggle{background:var(--brand);border-color:var(--brand)}
+  .component-cfg{padding:0 12px 12px;border-top:1px solid var(--line);display:none}
+  .component-block.on .component-cfg{display:block}
+  .cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .cfg-grid.full{grid-template-columns:1fr}
+  .cfg-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+  .cfg-field input,.cfg-field select,.cfg-field textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:13px;outline:none;background:#fff}
+  .cfg-field input:focus,.cfg-field select:focus,.cfg-field textarea:focus{border-color:var(--brand)}
+  .cfg-field textarea{min-height:60px;resize:vertical;font-family:inherit}
 
   .out{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
   .out .label{color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
@@ -78,14 +129,49 @@
   .drop strong{color:var(--brand)}
 
   table.results{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
-  table.results th{text-align:left;padding:8px;background:#f1f5f9;font-weight:600;border-bottom:1px solid var(--line)}
-  table.results td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5}
-  table.results td:first-child,table.results th:first-child{font-family:inherit;font-size:12px}
+  table.results th{text-align:left;padding:8px;background:#f1f5f9;font-weight:600;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  table.results td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;word-break:break-word}
+  table.results td:first-child,table.results th:first-child{font-family:inherit;font-size:12px;font-weight:500}
 
-  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none;z-index:50}
+  /* Saved triggers list (sidebar) */
+  .triggers-list{display:flex;flex-direction:column;gap:10px}
+  .trig-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+  .trig-card h4{margin:0;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .trig-card .comps{display:flex;flex-wrap:wrap;gap:4px}
+  .trig-card .comp-pill{font-size:10px;padding:2px 7px;background:#eef2ff;color:var(--brand);border-radius:99px;font-weight:600;letter-spacing:.02em}
+  .trig-card .formula{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:#f8fafc;padding:6px 8px;border-radius:6px;line-height:1.5;word-break:break-word}
+  .trig-card .formula.open{border-left:3px solid var(--ok)}
+  .trig-card .formula.close{border-left:3px solid var(--err)}
+  .trig-card .meta{font-size:11px;color:var(--muted)}
+  .trig-card .actions{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+  .trig-card .actions .btn{padding:5px 10px;font-size:12px}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+  .empty .big{font-size:36px;margin-bottom:12px;opacity:.5}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .15s}
+  .modal-bg.show{opacity:1;pointer-events:auto}
+  .modal{background:#fff;border-radius:14px;width:520px;max-width:92vw;max-height:88vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .2s}
+  .modal-bg.show .modal{transform:translateY(0)}
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .modal-head h3{margin:0;font-size:15px;font-weight:600}
+  .modal-head .check{width:28px;height:28px;background:var(--ok);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .modal-body{padding:18px 20px}
+  .modal-body .row-info{margin-bottom:12px}
+  .modal-body .row-info .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-bottom:4px}
+  .modal-body .row-info .val{font-family:'JetBrains Mono',monospace;font-size:12px;background:#f8fafc;padding:8px 10px;border-radius:6px;word-break:break-word;line-height:1.5}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none;z-index:200}
   .toast.show{opacity:1;transform:translateY(0)}
+  .toast.err{background:var(--err)}
   .err-banner{background:#fef2f2;color:var(--err);border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:8px;word-break:break-word}
+  .ok-banner{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:8px}
   .hide{display:none!important}
+
+  .editing-banner{background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .editing-banner button{margin-left:auto;border:0;background:transparent;color:#92400e;font-weight:600;cursor:pointer;font-size:12px;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -101,13 +187,26 @@
 
 <div class="container">
 
+  <div class="layout">
+  <div class="main">
+
   <div class="tabs">
-    <div class="tab active" data-tab="manual">Single Trigger</div>
+    <div class="tab active" data-tab="manual">Build Trigger</div>
     <div class="tab" data-tab="bulk">Bulk Upload</div>
   </div>
 
-  <!-- ===== SINGLE TRIGGER ===== -->
+  <!-- ===== BUILD TRIGGER ===== -->
   <div id="tab-manual">
+
+    <div id="editingBanner" class="editing-banner hide">
+      Editing: <b id="editingName"></b>
+      <button id="exitEdit">Exit edit mode</button>
+    </div>
+
+    <div class="card">
+      <h3>Trigger details</h3>
+      <input id="triggerName" class="name-input" placeholder="Trigger name (e.g. Bar screen high level)" />
+    </div>
 
     <div class="card">
       <h3>Describe the trigger</h3>
@@ -158,21 +257,16 @@
     </div>
 
     <div class="card">
-      <h3>Component types</h3>
-      <p class="hint">What should fire when this trigger opens?</p>
-      <div class="chips" id="chips">
-        <div class="chip on" data-c="alert">🔔 Alert</div>
-        <div class="chip" data-c="communication">✉️ Communication</div>
-        <div class="chip" data-c="task">📋 Task</div>
-        <div class="chip" data-c="hooter">📢 Hooter</div>
-        <div class="chip" data-c="report">📊 Report</div>
-      </div>
+      <h3>Components</h3>
+      <p class="hint">Click each component to enable + configure what it does when this trigger fires.</p>
+      <div class="components-list" id="componentsList"></div>
     </div>
 
     <div class="card">
       <h3>Generated formulas</h3>
       <div class="out" id="output"><span class="label">Add at least one condition.</span></div>
       <div class="btn-row">
+        <button class="btn success" id="saveBtn">💾 Save Trigger</button>
         <button class="btn" id="copyBtn">📋 Copy</button>
         <button class="btn" id="exportBtn">⬇ Export JSON</button>
       </div>
@@ -183,7 +277,7 @@
   <div id="tab-bulk" class="hide">
     <div class="card">
       <h3>Upload Excel</h3>
-      <p class="hint">Columns: <b>name</b>, <b>opening</b>, <b>closing</b> (optional), <b>components</b> (optional, comma-separated).</p>
+      <p class="hint">Columns: <b>name</b>, <b>opening</b>, <b>closing</b> (optional), <b>components</b> (optional, comma-separated). Each parsed row is automatically saved to your dashboard.</p>
       <div class="btn-row" style="margin-bottom:10px">
         <button class="btn" id="dlTpl">⬇ Download template</button>
       </div>
@@ -193,7 +287,31 @@
       </div>
       <input type="file" id="file" accept=".xlsx,.xls,.csv" style="display:none"/>
       <div id="bulkStatus" class="hint" style="margin-top:10px"></div>
+      <div id="bulkErr" class="err-banner hide"></div>
       <div id="bulkOut"></div>
+    </div>
+  </div>
+
+  </div><!-- /main -->
+
+  <aside class="sidebar">
+    <h3>Saved Triggers <span class="count" id="savedCount">0</span></h3>
+    <div id="savedHost"></div>
+  </aside>
+  </div><!-- /layout -->
+</div>
+
+<!-- Save confirmation modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="check">✓</span>
+      <h3 id="modalTitle">Trigger saved</h3>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn" id="modalDashboard">View Dashboard</button>
+      <button class="btn primary" id="modalNew">Create Another</button>
     </div>
   </div>
 </div>
@@ -201,26 +319,94 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== STATE =====
+'use strict';
+
+// ============================================================
+// COMPONENT SCHEMA
+// ============================================================
+const COMPONENTS = [
+  { key:'alert',         icon:'🔔', name:'Alert',         desc:'Trigger an in-app alert',
+    fields:[
+      { id:'severity', label:'Severity', type:'select', options:['Info','Warning','High','Critical'], default:'Warning' },
+      { id:'title',    label:'Alert title',  type:'text' },
+      { id:'message',  label:'Message',  type:'textarea', full:true },
+    ]
+  },
+  { key:'communication', icon:'✉️',  name:'Communication', desc:'Send email / SMS / chat notification',
+    fields:[
+      { id:'channel',    label:'Channel',     type:'select', options:['Email','SMS','WhatsApp','Slack','Teams'], default:'Email' },
+      { id:'recipients', label:'Recipients',  type:'text', placeholder:'Comma-separated (e.g. ops@company.com, +91...)' },
+      { id:'subject',    label:'Subject',     type:'text' },
+      { id:'body',       label:'Message body',type:'textarea', full:true },
+    ]
+  },
+  { key:'task', icon:'📋', name:'Task', desc:'Create a task for an operator',
+    fields:[
+      { id:'title',       label:'Task title',  type:'text' },
+      { id:'assignee',    label:'Assignee',    type:'text', placeholder:'Operator name or role' },
+      { id:'priority',    label:'Priority',    type:'select', options:['Low','Medium','High','Urgent'], default:'Medium' },
+      { id:'description', label:'Description', type:'textarea', full:true },
+    ]
+  },
+  { key:'hooter', icon:'📢', name:'Hooter', desc:'Sound a physical hooter / siren',
+    fields:[
+      { id:'hooterId', label:'Hooter ID / Location', type:'text', placeholder:'e.g. HOOTER_PLANT_01' },
+      { id:'duration', label:'Duration (sec)',       type:'number', default:30 },
+      { id:'pattern',  label:'Pattern',              type:'select', options:['Continuous','Pulsed','Intermittent'], default:'Continuous' },
+    ]
+  },
+  { key:'report', icon:'📊', name:'Report', desc:'Generate / append to a report',
+    fields:[
+      { id:'reportName', label:'Report',     type:'text', placeholder:'e.g. Daily Plant Incidents' },
+      { id:'frequency',  label:'Frequency',  type:'select', options:['One-off','Daily','Weekly','Monthly'], default:'One-off' },
+      { id:'recipients', label:'Recipients', type:'text', placeholder:'Comma-separated emails' },
+    ]
+  },
+];
+
+// ============================================================
+// STATE
+// ============================================================
 const state = {
+  triggerName: '',
   open:  { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
   close: { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
-  chips: new Set(['alert']),
-  bulk: [],
+  componentsOn:  new Set(['alert']),
+  componentsCfg: {},   // { alert: { severity:'Warning', ... }, ... }
+  editingId: null,
+  saved: [],           // loaded from localStorage
 };
+
 const UNITS = ['—','mm','m','cm','bar','kPa','psi','m³/h','L/s','L/min','°C','%','mg/L','NTU','pH','rpm','kW','A','V','Hz'];
 const OPS   = ['=','!=','>','>=','<','<='];
+const FLIP  = {'=':'!=','!=':'=','>':'<=','>=':'<','<':'>=','<=':'>'};
+const STORAGE_KEY = 'ip_saved_triggers_v1';
 
-// ===== TABS =====
-document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-  t.classList.add('active');
-  const id = t.dataset.tab;
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function loadSaved() {
+  try { state.saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e){ state.saved = []; }
+}
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.saved));
+  document.getElementById('savedCount').textContent = state.saved.length;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === id));
   document.getElementById('tab-manual').classList.toggle('hide', id !== 'manual');
   document.getElementById('tab-bulk').classList.toggle('hide', id !== 'bulk');
-});
+}
 
-// ===== ROW RENDERING =====
+// ============================================================
+// CONDITION ROWS
+// ============================================================
 function renderRows(section) {
   const host = document.getElementById('rows-' + section);
   host.innerHTML = '';
@@ -241,34 +427,75 @@ function renderRows(section) {
   });
 }
 function newRow() { return {tag:'', op:'>', val:'', unit:'—'}; }
+
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
   const s = b.dataset.add; state[s].rows.push(newRow()); renderRows(s); updateOutput();
 });
 
-// logic toggles
 ['open','close'].forEach(s => {
   document.querySelectorAll(`#logic-${s} button`).forEach(b => b.onclick = () => {
     state[s].logic = b.dataset.l;
     document.querySelectorAll(`#logic-${s} button`).forEach(x => x.classList.toggle('on', x===b));
     updateOutput();
   });
-});
-
-// duration inputs
-['open','close'].forEach(s => {
   document.getElementById(`dur-${s}-val`).oninput  = e => { state[s].dur.val  = +e.target.value || 0; updateOutput(); };
   document.getElementById(`dur-${s}-unit`).onchange = e => { state[s].dur.unit = e.target.value;       updateOutput(); };
 });
 
-// chips
-document.querySelectorAll('#chips .chip').forEach(c => c.onclick = () => {
-  const k = c.dataset.c;
-  if (state.chips.has(k)) state.chips.delete(k); else state.chips.add(k);
-  c.classList.toggle('on');
-  updateOutput();
-});
+document.getElementById('triggerName').oninput = e => { state.triggerName = e.target.value; };
 
-// ===== FORMULA BUILD =====
+// ============================================================
+// COMPONENTS UI
+// ============================================================
+function renderComponents() {
+  const host = document.getElementById('componentsList');
+  host.innerHTML = '';
+  COMPONENTS.forEach(c => {
+    const block = document.createElement('div');
+    block.className = 'component-block' + (state.componentsOn.has(c.key) ? ' on' : '');
+    block.dataset.key = c.key;
+    const fieldsHtml = c.fields.map(f => `
+      <div class="cfg-field${f.full ? ' full' : ''}" data-fid="${f.id}">
+        <label>${esc(f.label)}</label>
+        ${f.type === 'select'
+          ? `<select data-cfg="${c.key}.${f.id}">${f.options.map(o => `<option ${(state.componentsCfg[c.key]?.[f.id]||f.default)===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`
+          : f.type === 'textarea'
+            ? `<textarea data-cfg="${c.key}.${f.id}" placeholder="${esc(f.placeholder||'')}">${esc(state.componentsCfg[c.key]?.[f.id]||'')}</textarea>`
+            : `<input type="${f.type}" data-cfg="${c.key}.${f.id}" placeholder="${esc(f.placeholder||'')}" value="${esc(state.componentsCfg[c.key]?.[f.id]||(f.default!=null?f.default:''))}"/>`
+        }
+      </div>`).join('');
+    block.innerHTML = `
+      <div class="component-head">
+        <div class="icon">${c.icon}</div>
+        <div>
+          <div class="name">${esc(c.name)}</div>
+          <div class="desc">${esc(c.desc)}</div>
+        </div>
+        <div class="toggle">${state.componentsOn.has(c.key) ? '✓' : ''}</div>
+      </div>
+      <div class="component-cfg">
+        <div class="cfg-grid${c.fields.some(f=>f.full)?' full':''}">${fieldsHtml}</div>
+      </div>`;
+    block.querySelector('.component-head').onclick = () => {
+      if (state.componentsOn.has(c.key)) state.componentsOn.delete(c.key);
+      else state.componentsOn.add(c.key);
+      renderComponents();
+      updateOutput();
+    };
+    block.querySelectorAll('[data-cfg]').forEach(el => {
+      el.oninput = el.onchange = () => {
+        const [ck, fid] = el.dataset.cfg.split('.');
+        if (!state.componentsCfg[ck]) state.componentsCfg[ck] = {};
+        state.componentsCfg[ck][fid] = el.value;
+      };
+    });
+    host.appendChild(block);
+  });
+}
+
+// ============================================================
+// FORMULA BUILD
+// ============================================================
 function buildFormula(section) {
   const s = state[section];
   const valid = s.rows.filter(r => r.tag.trim() && r.val.toString().trim());
@@ -288,12 +515,13 @@ function updateOutput() {
   let h = '';
   if (o) h += `<span class="label">Opening</span><span class="open-f">${esc(o)}</span>\n\n`;
   if (c) h += `<span class="label">Closing</span><span class="close-f">${esc(c)}</span>\n\n`;
-  if (state.chips.size) h += `<span class="label">Components</span>${[...state.chips].join(', ')}`;
+  if (state.componentsOn.size) h += `<span class="label">Components</span>${[...state.componentsOn].join(', ')}`;
   out.innerHTML = h;
 }
 
-// ===== AUTO-INVERT =====
-const FLIP = {'=':'!=','!=':'=','>':'<=','>=':'<','<':'>=','<=':'>'};
+// ============================================================
+// AUTO-INVERT
+// ============================================================
 document.getElementById('autoClose').onclick = () => {
   const valid = state.open.rows.filter(r => r.tag && r.val);
   if (!valid.length) { toast('Add an opening condition first'); return; }
@@ -307,19 +535,17 @@ document.getElementById('autoClose').onclick = () => {
   updateOutput();
 };
 
-// ===================================================
+// ============================================================
 // SMART LOCAL PARSER
-// ===================================================
-
-// ---- Duration ----
+// ============================================================
 const DUR_RE = /\b(?:for\s+(?:more\s+than\s+|at\s+least\s+|over\s+)?|sustained\s+(?:for\s+)?|after\s+)(\d+(?:\.\d+)?)\s*(sec(?:onds?)?|min(?:utes?)?|hr?|hours?)\b/gi;
 
 function extractDuration(text) {
   DUR_RE.lastIndex = 0;
   const m = DUR_RE.exec(text);
   if (!m) return {val:0, unit:'min'};
-  const val  = Math.round(parseFloat(m[1]));
-  const raw  = m[2].toLowerCase();
+  const val = Math.round(parseFloat(m[1]));
+  const raw = m[2].toLowerCase();
   const unit = /^s/.test(raw) ? 'sec' : /^h/.test(raw) ? 'hr' : 'min';
   return {val, unit};
 }
@@ -328,30 +554,21 @@ function removeDuration(text) {
   return text.replace(DUR_RE, '').replace(/\s+/g, ' ').trim();
 }
 
-// ---- Unit normalisation ----
 const UNIT_NORM = {
-  mm:'mm', cm:'cm', m:'m',
-  bar:'bar', kpa:'kPa', psi:'psi',
+  mm:'mm', cm:'cm', m:'m', bar:'bar', kpa:'kPa', psi:'psi',
   'm3/h':'m³/h','m³/h':'m³/h',
   'l/s':'L/s','l/min':'L/min',lpm:'L/min',
   '°c':'°C',degc:'°C',
-  '%':'%',
-  'mg/l':'mg/L',
-  ntu:'NTU',
-  ph:'pH',
-  rpm:'rpm',
-  kw:'kW',
-  hz:'Hz',
-  a:'A',amp:'A',amps:'A',
-  v:'V',
+  '%':'%','mg/l':'mg/L',
+  ntu:'NTU',ph:'pH',rpm:'rpm',kw:'kW',hz:'Hz',
+  a:'A',amp:'A',amps:'A',v:'V',
 };
 function normUnit(raw) {
   if (!raw) return '';
-  const k = raw.toLowerCase().replace(/\s+/g,'').replace('°','°');
+  const k = raw.toLowerCase().replace(/\s+/g,'');
   return UNIT_NORM[k] || raw;
 }
 
-// ---- Tag dictionary (most specific → least) ----
 const TAG_MAP = [
   {re:/bar[\s_-]*screen/i,                          base:'Bar_Screen_Level_Sensor',              ni:false},
   {re:/filter[\s_-]*feed[\s_-]*pump/i,              base:'Filter_Feed_Pump_N_ONOFF',             ni:true, onoff:true},
@@ -392,42 +609,30 @@ function resolveTag(desc) {
   for (const e of TAG_MAP) {
     if (!e.re.test(desc)) continue;
     if (!e.ni) return [e.base];
-    // Multi-entity: "pump 1 and 2" → expand
     const multi = desc.match(/\b(\d+)\s+and\s+(\d+)\b/i);
-    if (multi) {
-      return [1,2].map(i => e.base.replace('_N_',`_${multi[i]}_`).replace(/_N$/,`_${multi[i]}`));
-    }
-    // Single number: standalone digit not preceded by hyphen/underscore
+    if (multi) return [1,2].map(i => e.base.replace('_N_',`_${multi[i]}_`).replace(/_N$/,`_${multi[i]}`));
     const nums = [...desc.matchAll(/(?<![_\-])(?<!\d)(\d+)(?!\d)(?![\-_])/g)];
     const n    = nums.length ? nums[0][1] : '1';
     return [e.base.replace('_N_',`_${n}_`).replace(/_N$/,`_${n}`)];
   }
-  // Fallback: snake_case the description
   return [desc.trim().replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'') || 'Sensor'];
 }
 
-// ---- Operator detectors (order matters) ----
 const OP_DETECT = [
-  // ON/OFF — fixed value, no capture needed
-  {re:/\b(?:is\s+on|are\s+on|turned?\s*on|started?|running|active|activated|energized)\b/i,               op:'=', fv:'1', fu:''},
+  {re:/\b(?:is\s+on|are\s+on|turned?\s*on|started?|running|active|activated|energized)\b/i,                op:'=', fv:'1', fu:''},
   {re:/\b(?:is\s+off|are\s+off|turned?\s*off|stopped?|inactive|deactivated|de.energized|not\s+running)\b/i, op:'=', fv:'0', fu:''},
-  // Semantic zeros
-  {re:/\bpositive\b|\bnon.?zero\b/i,         op:'>', fv:'0', fu:''},
-  {re:/\b(?:no\s+flow|zero\s+flow|negative)\b/i, op:'<=', fv:'0', fu:''},
-  // Word operators with captured value
+  {re:/\bpositive\b|\bnon.?zero\b/i,                                                                          op:'>', fv:'0', fu:''},
+  {re:/\b(?:no\s+flow|zero\s+flow|negative)\b/i,                                                             op:'<=', fv:'0', fu:''},
   {re:/\b(?:greater\s+than\s+or\s+equal\s+to|at\s+least|minimum\s*(?:of\s*)?)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'>='},
   {re:/\b(?:less\s+than\s+or\s+equal\s+to|at\s+most|maximum\s*(?:of\s*)?|not\s+(?:more|greater)\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'<='},
   {re:/\b(?:greater\s+than|more\s+than|exceeds?|above|over|higher\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'>'},
   {re:/\b(?:less\s+than|below|under|lower\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'<'},
-  // Symbolic operators
   {re:/>=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'>='},
   {re:/<=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'<='},
   {re:/!=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'!='},
   {re:/>\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/,  op:'>'},
   {re:/<\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/,  op:'<'},
-  // "is/equals N"
   {re:/\b(?:is|equals?)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'='},
-  // Bare number at end (last resort)
   {re:/(\d+(?:\.\d+)?)\s*([a-zA-Z]{1,5})?$/, op:'='},
 ];
 
@@ -437,36 +642,22 @@ function parseSegment(seg) {
     const m = s.match(det.re);
     if (!m) continue;
     let op = det.op, val, unit;
-    if (det.fv !== undefined) {   // fixed
-      val = det.fv; unit = det.fu;
-    } else {                       // captured
-      if (!m[1]) continue;
-      val  = m[1];
-      unit = normUnit(m[2] || '');
-    }
+    if (det.fv !== undefined) { val = det.fv; unit = det.fu; }
+    else { if (!m[1]) continue; val = m[1]; unit = normUnit(m[2] || ''); }
     const tagDesc = s.substring(0, m.index).trim() || s;
-    const tags    = resolveTag(tagDesc);
-    return tags.map(t => ({tag:t, op, val, unit: unit || '—'}));
+    return resolveTag(tagDesc).map(t => ({tag:t, op, val, unit: unit || '—'}));
   }
   return null;
 }
 
 function splitSegments(text) {
-  // Strong connectors always split
   const strong = text.split(/\s+(?:but|while|however|whereas|although)\s+/i);
   const segs = [];
   for (const part of strong) {
-    // Try splitting on "and" — only if BOTH sides independently contain an operator indicator
     const andParts = part.split(/\s+and\s+/i);
-    if (andParts.length > 1 && andParts.every(p => OP_DETECT.some(d => d.re.test(p)))) {
-      segs.push(...andParts);
-      continue;
-    }
+    if (andParts.length > 1 && andParts.every(p => OP_DETECT.some(d => d.re.test(p)))) { segs.push(...andParts); continue; }
     const orParts = part.split(/\s+or\s+/i);
-    if (orParts.length > 1 && orParts.every(p => OP_DETECT.some(d => d.re.test(p)))) {
-      segs.push(...orParts);
-      continue;
-    }
+    if (orParts.length > 1 && orParts.every(p => OP_DETECT.some(d => d.re.test(p)))) { segs.push(...orParts); continue; }
     segs.push(part);
   }
   return segs.filter(s => s.trim().length > 2);
@@ -479,17 +670,16 @@ function detectLogic(text) {
 }
 
 function smartParse(input) {
-  const dur     = extractDuration(input);
-  let   cleaned = removeDuration(input);
+  const dur = extractDuration(input);
+  let cleaned = removeDuration(input);
   cleaned = cleaned.replace(/\([^)]+\)/g, ' ').replace(/\s+/g, ' ').trim();
-  const logic   = detectLogic(cleaned);
-  const segs    = splitSegments(cleaned);
+  const logic = detectLogic(cleaned);
+  const segs  = splitSegments(cleaned);
   const conditions = [];
   for (const seg of segs) {
     const parsed = parseSegment(seg);
     if (parsed) conditions.push(...parsed);
   }
-  // Auto-generate closing by inverting
   const closing = {
     logic:      logic === 'AND' ? 'OR' : 'AND',
     conditions: conditions.map(c => ({...c, op: FLIP[c.op] || c.op})),
@@ -499,25 +689,25 @@ function smartParse(input) {
 }
 
 function applyParsed(parsed) {
-  const applySection = (section, src) => {
+  const apply = (section, src) => {
     state[section].logic = src.logic;
-    state[section].rows  = src.conditions.map(c => ({
-      tag: c.tag, op: c.op, val: String(c.val), unit: c.unit || '—'
-    }));
-    state[section].dur = {val: src.duration.val, unit: src.duration.unit};
+    state[section].rows  = src.conditions.map(c => ({tag:c.tag, op:c.op, val:String(c.val), unit:c.unit||'—'}));
+    state[section].dur   = {val:src.duration.val, unit:src.duration.unit};
     document.querySelectorAll(`#logic-${section} button`).forEach(b => b.classList.toggle('on', b.dataset.l === src.logic));
     document.getElementById(`dur-${section}-val`).value  = src.duration.val;
     document.getElementById(`dur-${section}-unit`).value = src.duration.unit;
     renderRows(section);
   };
-  applySection('open',  parsed.opening);
-  applySection('close', parsed.closing);
+  apply('open',  parsed.opening);
+  apply('close', parsed.closing);
   updateOutput();
 }
 
-// Parse button
+// ============================================================
+// PARSE / CLEAR
+// ============================================================
 const parseBtn = document.getElementById('parseBtn');
-const errBox   = document.getElementById('errBox');
+const errBox = document.getElementById('errBox');
 parseBtn.onclick = () => {
   const txt = document.getElementById('nlInput').value.trim();
   if (!txt) { toast('Type something first'); return; }
@@ -537,30 +727,194 @@ parseBtn.onclick = () => {
   }
 };
 
-document.getElementById('clearBtn').onclick = () => {
+document.getElementById('clearBtn').onclick = () => resetForm();
+
+function resetForm() {
   document.getElementById('nlInput').value = '';
-  state.open.rows  = [newRow()];
-  state.close.rows = [newRow()];
+  document.getElementById('triggerName').value = '';
+  state.triggerName = '';
+  state.open  = {logic:'AND', rows:[newRow()], dur:{val:0,unit:'min'}};
+  state.close = {logic:'AND', rows:[newRow()], dur:{val:0,unit:'min'}};
+  state.componentsOn  = new Set(['alert']);
+  state.componentsCfg = {};
+  state.editingId = null;
+  document.getElementById('editingBanner').classList.add('hide');
   ['open','close'].forEach(s => {
-    state[s].dur = {val:0, unit:'min'};
+    document.querySelectorAll(`#logic-${s} button`).forEach(b => b.classList.toggle('on', b.dataset.l === 'AND'));
     document.getElementById(`dur-${s}-val`).value  = 0;
     document.getElementById(`dur-${s}-unit`).value = 'min';
     renderRows(s);
   });
+  renderComponents();
   errBox.classList.add('hide');
   updateOutput();
-};
+}
 
-// ===== COPY / EXPORT =====
+document.getElementById('exitEdit').onclick = () => { resetForm(); toast('Exited edit mode'); };
+
+// ============================================================
+// SAVE / LOAD / DELETE
+// ============================================================
+document.getElementById('saveBtn').onclick = saveTrigger;
+
+function saveTrigger() {
+  const name = state.triggerName.trim();
+  if (!name) { toast('Enter a trigger name first', true); document.getElementById('triggerName').focus(); return; }
+  const validOpen = state.open.rows.filter(r => r.tag.trim() && r.val.toString().trim());
+  if (!validOpen.length) { toast('Add at least one opening condition', true); return; }
+  if (!state.componentsOn.size) { toast('Select at least one component', true); return; }
+
+  const components = {};
+  state.componentsOn.forEach(k => { components[k] = {...(state.componentsCfg[k] || {})}; });
+
+  const trig = {
+    id: state.editingId || `trig_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+    name,
+    opening: { logic: state.open.logic, rows: deepClone(state.open.rows), dur: {...state.open.dur} },
+    closing: { logic: state.close.logic, rows: deepClone(state.close.rows), dur: {...state.close.dur} },
+    components,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const idx = state.saved.findIndex(t => t.id === trig.id);
+  if (idx >= 0) {
+    trig.createdAt = state.saved[idx].createdAt;
+    state.saved[idx] = trig;
+  } else {
+    trig.createdAt = trig.updatedAt;
+    state.saved.unshift(trig);
+  }
+  persist();
+  renderSaved();
+  showSavedModal(trig, idx >= 0);
+}
+
+function loadIntoForm(trig) {
+  state.editingId   = trig.id;
+  state.triggerName = trig.name;
+  state.open        = {logic:trig.opening.logic, rows:deepClone(trig.opening.rows), dur:{...trig.opening.dur}};
+  state.close       = {logic:trig.closing.logic, rows:deepClone(trig.closing.rows), dur:{...trig.closing.dur}};
+  state.componentsOn  = new Set(Object.keys(trig.components));
+  state.componentsCfg = deepClone(trig.components);
+
+  document.getElementById('triggerName').value = trig.name;
+  document.getElementById('editingName').textContent = trig.name;
+  document.getElementById('editingBanner').classList.remove('hide');
+  ['open','close'].forEach(s => {
+    document.querySelectorAll(`#logic-${s} button`).forEach(b => b.classList.toggle('on', b.dataset.l === state[s].logic));
+    document.getElementById(`dur-${s}-val`).value  = state[s].dur.val;
+    document.getElementById(`dur-${s}-unit`).value = state[s].dur.unit;
+    renderRows(s);
+  });
+  renderComponents();
+  updateOutput();
+  switchTab('manual');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function deleteTrigger(id) {
+  if (!confirm('Delete this trigger?')) return;
+  state.saved = state.saved.filter(t => t.id !== id);
+  persist();
+  renderSaved();
+  toast('Deleted');
+}
+
+// ============================================================
+// SAVED DASHBOARD
+// ============================================================
+function renderSaved() {
+  const host = document.getElementById('savedHost');
+  if (!state.saved.length) {
+    host.innerHTML = `<div class="empty" style="padding:24px 12px;font-size:12px"><div class="big" style="font-size:28px">📭</div>No saved triggers yet.<br><span style="font-size:11px">Build one and click <b>Save Trigger</b>.</span></div>`;
+    return;
+  }
+  host.innerHTML = `<div class="triggers-list">${state.saved.map(t => triggerCardHtml(t)).join('')}</div>`;
+  host.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => {
+    const t = state.saved.find(x => x.id === b.dataset.edit);
+    if (t) loadIntoForm(t);
+  });
+  host.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteTrigger(b.dataset.del));
+}
+
+function triggerCardHtml(t) {
+  const open = formulaFromState(t.opening), close = formulaFromState(t.closing);
+  const comps = Object.keys(t.components).map(k => {
+    const def = COMPONENTS.find(c => c.key === k);
+    return `<span class="comp-pill">${def ? def.icon+' '+def.name : k}</span>`;
+  }).join('');
+  const date = new Date(t.updatedAt).toLocaleString();
+  return `<div class="trig-card">
+    <h4>${esc(t.name)}</h4>
+    <div class="comps">${comps}</div>
+    <div class="formula open"><b>Opens:</b> ${esc(open||'—')}</div>
+    <div class="formula close"><b>Closes:</b> ${esc(close||'—')}</div>
+    <div class="meta">Updated ${esc(date)}</div>
+    <div class="actions">
+      <button class="btn" data-edit="${t.id}">✏️ Edit</button>
+      <button class="btn danger" data-del="${t.id}">🗑 Delete</button>
+    </div>
+  </div>`;
+}
+
+function formulaFromState(sec) {
+  const valid = (sec.rows||[]).filter(r => r.tag && r.val.toString().trim());
+  if (!valid.length) return '';
+  const parts = valid.map(r => { const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : ''; return `${r.tag}${r.op}${r.val}${u}`; });
+  const inner = parts.length === 1 ? parts[0] : `${sec.logic}(${parts.join(', ')})`;
+  const d = sec.dur?.val > 0 ? ` [for ${sec.dur.val} ${sec.dur.unit}]` : '';
+  return `IF(${inner}, 1, 0)${d}`;
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function showSavedModal(trig, isUpdate) {
+  document.getElementById('modalTitle').textContent = isUpdate ? 'Trigger updated' : 'Trigger saved';
+  const open = formulaFromState(trig.opening), close = formulaFromState(trig.closing);
+  const compsHtml = Object.keys(trig.components).map(k => {
+    const def = COMPONENTS.find(c => c.key === k);
+    const cfg = trig.components[k];
+    const cfgPairs = Object.entries(cfg||{}).filter(([,v]) => v && String(v).trim()).map(([k2,v]) => `<div style="font-size:11px;color:var(--muted)"><b>${esc(k2)}:</b> ${esc(String(v))}</div>`).join('');
+    return `<div style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+      <div style="font-weight:600;font-size:12px;margin-bottom:4px">${def ? def.icon+' '+def.name : k}</div>
+      ${cfgPairs || '<div style="font-size:11px;color:var(--muted)">No config set</div>'}
+    </div>`;
+  }).join('');
+  document.getElementById('modalBody').innerHTML = `
+    <div class="row-info"><div class="lbl">Name</div><div class="val">${esc(trig.name)}</div></div>
+    <div class="row-info"><div class="lbl">Opening</div><div class="val">${esc(open||'—')}</div></div>
+    <div class="row-info"><div class="lbl">Closing</div><div class="val">${esc(close||'—')}</div></div>
+    <div class="row-info"><div class="lbl">Components</div>${compsHtml || '<div class="val">None</div>'}</div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') closeModal(); };
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modalDashboard').onclick = () => {
+  closeModal();
+  const sb = document.querySelector('.sidebar');
+  if (sb) sb.scrollIntoView({behavior:'smooth', block:'start'});
+};
+document.getElementById('modalNew').onclick = () => { closeModal(); resetForm(); };
+
+// ============================================================
+// COPY / EXPORT
+// ============================================================
 document.getElementById('copyBtn').onclick = async () => {
   const o = buildFormula('open'), c = buildFormula('close');
   if (!o && !c) { toast('Nothing to copy'); return; }
-  const txt = [o ? `Opening: ${o}`:null, c ? `Closing: ${c}`:null, state.chips.size ? `Components: ${[...state.chips].join(', ')}`:null].filter(Boolean).join('\n');
+  const txt = [o ? `Opening: ${o}`:null, c ? `Closing: ${c}`:null, state.componentsOn.size ? `Components: ${[...state.componentsOn].join(', ')}`:null].filter(Boolean).join('\n');
   await navigator.clipboard.writeText(txt);
   toast('Copied');
 };
 document.getElementById('exportBtn').onclick = () => {
-  const data = {opening: serialize('open'), closing: serialize('close'), components: [...state.chips]};
+  const data = {
+    name: state.triggerName,
+    opening: serialize('open'),
+    closing: serialize('close'),
+    components: [...state.componentsOn].reduce((a,k)=>{a[k]=state.componentsCfg[k]||{};return a;}, {}),
+  };
   dl(JSON.stringify(data,null,2), 'trigger.json', 'application/json');
 };
 function serialize(section) {
@@ -573,7 +927,9 @@ function dl(content, name, type) {
   a.download = name; a.click();
 }
 
-// ===== BULK =====
+// ============================================================
+// BULK UPLOAD
+// ============================================================
 const drop = document.getElementById('drop');
 const fileInput = document.getElementById('file');
 drop.onclick = () => fileInput.click();
@@ -583,46 +939,98 @@ drop.addEventListener('drop', e => { if (e.dataTransfer.files[0]) handleFile(e.d
 fileInput.onchange = () => fileInput.files[0] && handleFile(fileInput.files[0]);
 
 function handleFile(file) {
+  const status = document.getElementById('bulkStatus');
+  const errEl  = document.getElementById('bulkErr');
+  const out    = document.getElementById('bulkOut');
+  errEl.classList.add('hide'); errEl.textContent = '';
+  out.innerHTML = '';
+  status.textContent = `Reading ${file.name}...`;
+
+  if (typeof XLSX === 'undefined') {
+    errEl.textContent = 'XLSX library failed to load. Check your internet connection and refresh.';
+    errEl.classList.remove('hide');
+    status.textContent = '';
+    return;
+  }
+
   file.arrayBuffer().then(buf => {
-    const wb   = XLSX.read(buf, {type:'array'});
-    const ws   = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-    if (!rows.length) { toast('Empty sheet'); return; }
-    const results = rows.map((r, i) => {
-      const openText  = r.opening || '';
-      const closeText = r.closing || '';
+    let wb;
+    try { wb = XLSX.read(buf, {type:'array'}); }
+    catch(e) { throw new Error('Could not read file: ' + e.message); }
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    if (!ws) throw new Error('No worksheet found in the file.');
+    const rawRows = XLSX.utils.sheet_to_json(ws, {defval:'', raw:false});
+    if (!rawRows.length) throw new Error('Sheet is empty.');
+
+    // Normalise column names to lowercase
+    const rows = rawRows.map(r => {
+      const out = {};
+      for (const k in r) out[String(k).trim().toLowerCase()] = String(r[k] ?? '').trim();
+      return out;
+    });
+
+    const headers = Object.keys(rows[0]);
+    if (!headers.includes('opening')) {
+      throw new Error(`Sheet must have an "opening" column. Found columns: ${headers.join(', ')}`);
+    }
+
+    status.textContent = `Loaded ${rows.length} rows. Parsing...`;
+
+    const parsed = rows.map((r, i) => {
       try {
-        let opening, closing;
-        if (openText) {
-          const p = smartParse(openText);
-          opening = p.opening;
-          // If sheet has explicit closing, parse it separately
-          closing = closeText ? smartParse(closeText).opening : p.closing;
-        } else {
-          throw new Error('Missing "opening" column');
-        }
+        if (!r.opening) throw new Error('Empty opening text');
+        const p = smartParse(r.opening);
+        const opening = p.opening;
+        const closing = r.closing ? smartParse(r.closing).opening : p.closing;
+        if (!opening.conditions.length) throw new Error('Could not parse any conditions');
         return {
           name: r.name || `Trigger ${i+1}`,
-          opening_formula: formulaFrom(opening),
-          closing_formula: formulaFrom(closing),
-          components: (r.components||'alert').split(',').map(s=>s.trim()).filter(Boolean),
+          opening_formula: formulaFromParsed(opening),
+          closing_formula: formulaFromParsed(closing),
+          components: (r.components || 'alert').split(',').map(s => s.trim()).filter(Boolean),
+          opening, closing,
         };
       } catch(e) {
-        return {name: r.name || `Trigger ${i+1}`, error: e.message};
+        return { name: r.name || `Trigger ${i+1}`, error: e.message };
       }
     });
-    state.bulk = results;
-    renderBulk(results);
-    const ok = results.filter(r=>!r.error).length;
-    document.getElementById('bulkStatus').innerHTML = `<b>Done.</b> ${ok}/${results.length} parsed.`;
+
+    // Auto-save successful ones
+    let savedCount = 0;
+    parsed.forEach(p => {
+      if (p.error) return;
+      const components = {};
+      p.components.forEach(c => { if (COMPONENTS.find(d => d.key === c)) components[c] = {}; });
+      const trig = {
+        id: `trig_${Date.now()}_${Math.random().toString(36).slice(2,7)}_${savedCount}`,
+        name: p.name,
+        opening: { logic:p.opening.logic, rows:p.opening.conditions.map(c=>({tag:c.tag,op:c.op,val:String(c.val),unit:c.unit||'—'})), dur:p.opening.duration },
+        closing: { logic:p.closing.logic, rows:p.closing.conditions.map(c=>({tag:c.tag,op:c.op,val:String(c.val),unit:c.unit||'—'})), dur:p.closing.duration },
+        components,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      state.saved.unshift(trig);
+      savedCount++;
+    });
+    persist();
+    renderSaved();
+
+    renderBulk(parsed);
+    const errs = parsed.filter(p => p.error).length;
+    status.innerHTML = `<b>Done.</b> Parsed ${parsed.length - errs}/${parsed.length} rows. <b>Saved ${savedCount} triggers</b> to dashboard.${errs ? ` (${errs} errors below)` : ''}`;
+  }).catch(e => {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hide');
+    status.textContent = '';
   });
 }
 
-function formulaFrom(b) {
-  if (!b || !b.conditions.length) return '';
+function formulaFromParsed(b) {
+  if (!b || !b.conditions?.length) return '';
   const parts = b.conditions.map(c => { const u = c.unit && c.unit!=='—' ? ` ${c.unit}` : ''; return `${c.tag}${c.op}${c.val}${u}`; });
-  const inner  = parts.length===1 ? parts[0] : `${b.logic}(${parts.join(', ')})`;
-  const d      = b.duration?.val > 0 ? ` [for ${b.duration.val} ${b.duration.unit}]` : '';
+  const inner = parts.length === 1 ? parts[0] : `${b.logic}(${parts.join(', ')})`;
+  const d = b.duration?.val > 0 ? ` [for ${b.duration.val} ${b.duration.unit}]` : '';
   return `IF(${inner}, 1, 0)${d}`;
 }
 
@@ -630,13 +1038,11 @@ function renderBulk(rs) {
   let h = '<table class="results"><thead><tr><th>Name</th><th>Opening</th><th>Closing</th><th>Components</th></tr></thead><tbody>';
   rs.forEach(r => {
     h += r.error
-      ? `<tr><td>${esc(r.name)}</td><td colspan="3" style="color:var(--err)">${esc(r.error)}</td></tr>`
-      : `<tr><td>${esc(r.name)}</td><td>${esc(r.opening_formula)}</td><td>${esc(r.closing_formula)}</td><td>${r.components.join(', ')}</td></tr>`;
+      ? `<tr><td>${esc(r.name)}</td><td colspan="3" style="color:var(--err)">⚠ ${esc(r.error)}</td></tr>`
+      : `<tr><td>${esc(r.name)}</td><td>${esc(r.opening_formula)}</td><td>${esc(r.closing_formula)}</td><td>${(r.components||[]).join(', ')}</td></tr>`;
   });
-  h += '</tbody></table><div class="btn-row"><button class="btn" id="dlBulk">⬇ Download JSON</button></div>';
-  const out = document.getElementById('bulkOut');
-  out.innerHTML = h;
-  document.getElementById('dlBulk').onclick = () => dl(JSON.stringify(rs,null,2), 'triggers.json', 'application/json');
+  h += '</tbody></table>';
+  document.getElementById('bulkOut').innerHTML = h;
 }
 
 document.getElementById('dlTpl').onclick = () => {
@@ -651,19 +1057,30 @@ document.getElementById('dlTpl').onclick = () => {
   XLSX.writeFile(wb, 'trigger-template.xlsx');
 };
 
-// ===== UTIL =====
+// ============================================================
+// UTILS
+// ============================================================
 function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function toast(msg) {
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function toast(msg, isErr) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+  t.textContent = msg;
+  t.classList.toggle('err', !!isErr);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ===== BOOT =====
+// ============================================================
+// BOOT
+// ============================================================
+loadSaved();
+persist();
 state.open.rows.push(newRow());
 state.close.rows.push(newRow());
 renderRows('open');
 renderRows('close');
+renderComponents();
+renderSaved();
 updateOutput();
 </script>
 </body>
