@@ -36,9 +36,9 @@
     /* Toggle */
     .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { display: none; }
-    .slider { position: absolute; inset: 0; border-radius: 20px; background: #B4B2A9; cursor: pointer; transition: background .2s; }
+    .slider { position: absolute; inset: 0; border-radius: 20px; background: #B5C2D6; cursor: pointer; transition: background .2s; }
     .slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: transform .2s; }
-    input:checked + .slider { background: #639922; }
+    input:checked + .slider { background: #193458; }
     input:checked + .slider:before { transform: translateX(16px); }
 
     /* Shared search + filter row */
@@ -64,12 +64,13 @@
     /* Comm icons */
     .comm-icons { display: flex; gap: 3px; }
     .comm-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 0.5px solid var(--color-border-secondary); }
-    .comm-on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    .comm-on { background: #DCE3EE; border-color: #4A6890; color: #193458; }
     .comm-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
 
     /* Buttons */
     .btn-ghost { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
-    .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #639922; background: #EAF3DE; color: #3B6D11; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
+    .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #193458; background: #193458; color: #ffffff; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
+    .btn-primary:hover { background: #2A4A75; border-color: #2A4A75; }
     .btn-danger { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #F09595; background: transparent; color: #A32D2D; cursor: pointer; font-family: var(--font-sans); }
 
     /* Filter panel (legacy chips, used in modals) */
@@ -80,35 +81,42 @@
     .filter-input { height: 30px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 12px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); width: 100%; }
     .filter-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-    /* Progressive-disclosure filter dropdown */
+    /* Comprehensive filter dropdown */
     .filter-dd-wrap { position: relative; }
-    .filter-dd { position: absolute; top: 42px; left: 0; width: 320px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); box-shadow: 0 8px 24px rgba(25,52,88,0.12); z-index: 50; display: none; overflow: hidden; }
-    .filter-dd.open { display: block; }
-    .filter-dd-head { padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; min-height: 40px; }
-    .filter-dd-back { background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; color: var(--color-text-secondary); font-size: 13px; display: flex; align-items: center; gap: 4px; font-family: var(--font-sans); }
-    .filter-dd-back:hover { background: var(--color-background-secondary); color: #193458; }
-    .filter-dd-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
-    .filter-dd-clear-cat { font-size: 11px; color: var(--color-text-secondary); background: none; border: none; cursor: pointer; padding: 2px 6px; font-family: var(--font-sans); }
-    .filter-dd-clear-cat:hover { color: #193458; }
-    .filter-dd-list { max-height: 320px; overflow-y: auto; }
-    .filter-dd-cat { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; border-bottom: 0.5px solid var(--color-border-tertiary); transition: background .1s; }
-    .filter-dd-cat:hover { background: var(--color-background-secondary); }
-    .filter-dd-cat:last-child { border-bottom: none; }
-    .filter-dd-cat-icon { width: 28px; height: 28px; border-radius: 6px; background: #EBF0F7; color: #193458; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .filter-dd-cat-text { flex: 1; min-width: 0; }
-    .filter-dd-cat-name { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
-    .filter-dd-cat-summary { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .filter-dd-cat-summary.active { color: #193458; }
-    .filter-dd-cat-chev { color: var(--color-text-tertiary); font-size: 14px; }
-    .filter-dd-body { padding: 14px; }
-    .filter-dd-options { display: flex; flex-direction: column; gap: 4px; max-height: 280px; overflow-y: auto; }
-    .filter-dd-opt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; color: var(--color-text-primary); transition: background .1s; }
-    .filter-dd-opt:hover { background: var(--color-background-secondary); }
-    .filter-dd-opt input[type=checkbox], .filter-dd-opt input[type=radio] { accent-color: #193458; cursor: pointer; }
-    .filter-dd-foot { padding: 10px 14px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; gap: 8px; background: var(--color-background-secondary); }
-    .filter-dd-foot-info { font-size: 11px; color: var(--color-text-tertiary); }
+    .filter-dd { position: absolute; top: 42px; right: 0; width: 460px; max-height: min(620px, calc(100vh - 100px)); background: var(--color-background-primary); border: 0.5px solid #B5C2D6; border-radius: var(--border-radius-lg); box-shadow: 0 12px 32px rgba(25,52,88,0.18); z-index: 50; display: none; flex-direction: column; overflow: hidden; }
+    .filter-dd.open { display: flex; }
+    .filter-dd-head { padding: 12px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; background: var(--color-background-primary); flex-shrink: 0; }
+    .filter-dd-title { font-size: 14px; font-weight: 600; color: #193458; flex: 1; }
+    .filter-dd-clear-all { font-size: 12px; color: #193458; background: none; border: none; cursor: pointer; padding: 4px 8px; font-family: var(--font-sans); border-radius: 4px; }
+    .filter-dd-clear-all:hover { background: #EBF0F7; }
+    .filter-dd-body { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .filter-dd-body::-webkit-scrollbar { width: 8px; }
+    .filter-dd-body::-webkit-scrollbar-thumb { background: #DCE3EE; border-radius: 4px; }
+    .filter-dd-body::-webkit-scrollbar-thumb:hover { background: #B5C2D6; }
+    .filter-dd-section { padding: 12px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .filter-dd-section:last-child { border-bottom: none; }
+    .filter-dd-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .filter-dd-section-label { font-size: 11px; font-weight: 600; color: #193458; text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 6px; }
+    .filter-dd-section-icon { width: 18px; height: 18px; border-radius: 4px; background: #EBF0F7; color: #193458; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+    .filter-dd-section-clear { font-size: 11px; color: #4A6890; background: none; border: none; cursor: pointer; padding: 2px 6px; font-family: var(--font-sans); border-radius: 4px; }
+    .filter-dd-section-clear:hover { background: #EBF0F7; color: #193458; }
+    .filter-dd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-dd-chip { font-size: 12px; padding: 5px 12px; border-radius: 16px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); transition: all .1s; }
+    .filter-dd-chip:hover { background: #EBF0F7; border-color: #A8B6CC; color: #193458; }
+    .filter-dd-chip.selected { background: #193458; border-color: #193458; color: #ffffff; font-weight: 500; }
+    .filter-dd-chip.selected:hover { background: #2A4A75; border-color: #2A4A75; }
+    .filter-dd-input { width: 100%; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
+    .filter-dd-input:focus { border-color: #193458; box-shadow: 0 0 0 2px #DCE3EE; }
+    .filter-dd-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .filter-dd-toggle { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; }
+    .filter-dd-toggle input { accent-color: #193458; cursor: pointer; width: 14px; height: 14px; }
+    .filter-dd-toggle-text { font-size: 13px; color: var(--color-text-primary); }
+    .filter-dd-toggle-hint { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+    .filter-dd-foot { padding: 10px 16px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #F8F9FC; flex-shrink: 0; }
+    .filter-dd-foot-info { font-size: 11px; color: var(--color-text-secondary); }
     .filter-active-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .filter-active-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 12px; background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
+    .filter-active-pills:empty { display: none; }
+    .filter-active-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
     .filter-active-pill button { background: none; border: none; color: inherit; cursor: pointer; padding: 0; font-size: 14px; line-height: 1; opacity: .7; }
     .filter-active-pill button:hover { opacity: 1; }
 
@@ -119,8 +127,9 @@
     .btn-sm { font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
     .btn-sm:hover { background: var(--color-background-secondary); }
     .btn-sm-danger { border-color: #F09595; color: #A32D2D; background: #fff; }
-    .btn-sm-success { border-color: #97C459; color: #3B6D11; background: #fff; }
+    .btn-sm-success { border-color: #4A6890; color: #193458; background: #fff; }
     .btn-sm-blue { border-color: #A8B6CC; color: #193458; background: #fff; }
+    .btn-sm-success:hover, .btn-sm-blue:hover { background: #EBF0F7; }
 
     /* Modals */
     .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
@@ -139,7 +148,7 @@
     .modal-select { width: 100%; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; font-family: var(--font-sans); }
     .comm-checks-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .comm-check { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; padding: 5px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); }
-    .comm-check.on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    .comm-check.on { background: #DCE3EE; border-color: #4A6890; color: #193458; }
     .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 14px 0; }
     .user-list-modal { display: flex; flex-direction: column; gap: 6px; }
     .user-item-modal { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
@@ -165,7 +174,7 @@
     #view-l1 .stat-pills { display: flex; gap: 8px; }
     #view-l1 .pill { font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
     #view-l1 .pill-total { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
-    #view-l1 .pill-active { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l1 .pill-active { background: #DCE3EE; color: #193458; border: 0.5px solid #4A6890; }
     #view-l1 .pill-inactive { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
     #view-l1 .table-head { display: grid; grid-template-columns: 32px 2fr 1.2fr 1fr 1.1fr 1.1fr 90px; background: var(--color-background-secondary); padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
     #view-l1 .plant-row { display: grid; grid-template-columns: 32px 2fr 1.2fr 1fr 1.1fr 1.1fr 90px; padding: 13px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; cursor: pointer; transition: background .1s; }
@@ -175,13 +184,13 @@
     #view-l1 .plant-row.selected:hover { background: #D5E8F8; }
     #view-l1 .plant-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
     #view-l1 .plant-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    #view-l1 .dot-green { background: #639922; }
-    #view-l1 .dot-red { background: #E24B4A; }
+    #view-l1 .dot-green { background: #193458; }
+    #view-l1 .dot-red { background: #B5C2D6; }
     #view-l1 .cell { font-size: 13px; color: var(--color-text-secondary); }
     #view-l1 .badge-wrap { display: flex; gap: 4px; flex-wrap: wrap; }
     #view-l1 .badge { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
-    #view-l1 .badge-a { background: #EAF3DE; color: #3B6D11; }
-    #view-l1 .badge-i { background: #FCEBEB; color: #A32D2D; }
+    #view-l1 .badge-a { background: #DCE3EE; color: #193458; }
+    #view-l1 .badge-i { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-secondary); }
     #view-l1 .toggle-wrap { display: flex; align-items: center; gap: 8px; }
     #view-l1 .esc-btn { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; transition: background .1s; font-family: var(--font-sans); }
     #view-l1 .esc-btn:hover { background: var(--color-background-secondary); }
@@ -199,7 +208,7 @@
     #view-l2 .pill-warn { background: #FAEEDA; color: #633806; border: 0.5px solid #FAC775; }
     #view-l2 .pill-issue { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
     #view-l2 .pill-inc { background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; }
-    #view-l2 .pill-ach { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l2 .pill-ach { background: #DCE3EE; color: #193458; border: 0.5px solid #4A6890; }
     #view-l2 .pill-imp { background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
     #view-l2 .filter-btn { height: 34px; font-size: 12px; }
     #view-l2 .search-input { height: 34px; }
@@ -215,7 +224,7 @@
     #view-l2 .s-warning { background: #FAEEDA; color: #633806; }
     #view-l2 .s-issue { background: #FCEBEB; color: #A32D2D; }
     #view-l2 .s-incident { background: #EEEDFE; color: #3C3489; }
-    #view-l2 .s-achievement { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .s-achievement { background: #DCE3EE; color: #193458; }
     #view-l2 .s-improvement { background: #EBF0F7; color: #193458; }
     #view-l2 .s-resolved { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .s-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
@@ -239,11 +248,11 @@
     #view-l2 .esc-uname { font-size: 11px; color: var(--color-text-secondary); flex: 1; }
     #view-l2 .esc-comm { display: flex; gap: 2px; }
     #view-l2 .ec { width: 16px; height: 16px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; }
-    #view-l2 .ec-on { background: #EAF3DE; color: #3B6D11; }
+    #view-l2 .ec-on { background: #DCE3EE; color: #193458; }
     #view-l2 .ec-off { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
     #view-l2 .hooter-hint { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--color-text-tertiary); margin-top: 4px; padding-top: 4px; border-top: 0.5px solid var(--color-border-tertiary); }
     #view-l2 .last-trig { font-size: 11px; color: var(--color-text-tertiary); }
-    #view-l2 .last-trig.active { color: #639922; }
+    #view-l2 .last-trig.active { color: #193458; }
     #view-l2 .row-chevron { color: var(--color-text-tertiary); font-size: 12px; display: flex; align-items: center; justify-content: center; }
 
     /* ═════ L3 ═════ */
@@ -253,7 +262,7 @@
     #view-l3 .insight-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     #view-l3 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 500; }
     #view-l3 .b-inc { background: #EEEDFE; color: #3C3489; }
-    #view-l3 .b-active { background: #EAF3DE; color: #3B6D11; }
+    #view-l3 .b-active { background: #DCE3EE; color: #193458; }
     #view-l3 .b-plant { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
     #view-l3 .b-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
     #view-l3 .toggle-row { display: flex; align-items: center; gap: 8px; }
@@ -266,13 +275,13 @@
     #view-l3 .condition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     #view-l3 .cond-block { padding: 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); position: relative; }
     #view-l3 .cond-open { background: #FAEEDA; border-color: #FAC775; }
-    #view-l3 .cond-close { background: #EAF3DE; border-color: #97C459; }
+    #view-l3 .cond-close { background: #DCE3EE; border-color: #4A6890; }
     #view-l3 .cond-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
     #view-l3 .cond-open .cond-label { color: #633806; }
-    #view-l3 .cond-close .cond-label { color: #3B6D11; }
+    #view-l3 .cond-close .cond-label { color: #193458; }
     #view-l3 .cond-rule { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
     #view-l3 .cond-open .cond-rule { color: #854F0B; }
-    #view-l3 .cond-close .cond-rule { color: #3B6D11; }
+    #view-l3 .cond-close .cond-rule { color: #193458; }
     #view-l3 .cond-note { font-size: 11px; color: var(--color-text-secondary); }
     #view-l3 .cond-note b { font-weight: 500; }
     #view-l3 .cond-edit-form { display: none; flex-direction: column; gap: 6px; }
@@ -289,9 +298,9 @@
     #view-l3 .close-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 18px; margin-bottom: 14px; }
     #view-l3 .close-card .card-title { margin-bottom: 10px; }
     #view-l3 .close-info { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); font-size: 12px; color: var(--color-text-secondary); margin-bottom: 10px; }
-    #view-l3 .close-info.active { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #97C459; }
+    #view-l3 .close-info.active { background: #DCE3EE; color: #193458; border: 0.5px solid #4A6890; }
     #view-l3 .close-info .close-val { color: var(--color-text-primary); font-weight: 500; }
-    #view-l3 .close-info.active .close-val { color: #3B6D11; }
+    #view-l3 .close-info.active .close-val { color: #193458; }
     #view-l3 .close-history-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 0.5px dashed var(--color-border-tertiary); }
     #view-l3 .close-history-row:last-of-type { border-bottom: none; }
 
@@ -300,7 +309,7 @@
     #view-l3 .detail-key { color: var(--color-text-secondary); }
     #view-l3 .detail-val { color: var(--color-text-primary); font-weight: 500; }
     #view-l3 .detail-val.red { color: #A32D2D; }
-    #view-l3 .detail-val.green { color: #3B6D11; }
+    #view-l3 .detail-val.green { color: #193458; }
     #view-l3 .esc-level-block { margin-bottom: 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
     #view-l3 .esc-level-block:last-of-type { margin-bottom: 0; }
     #view-l3 .esc-level-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
@@ -318,7 +327,7 @@
     #view-l3 .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; }
     #view-l3 .uname { font-size: 12px; color: var(--color-text-primary); flex: 1; }
     #view-l3 .ci { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; cursor: pointer; border: 0.5px solid transparent; transition: opacity .15s; }
-    #view-l3 .ci-on { background: #EAF3DE; border-color: #97C459; color: #3B6D11; }
+    #view-l3 .ci-on { background: #DCE3EE; border-color: #4A6890; color: #193458; }
     #view-l3 .ci-off { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); color: var(--color-text-tertiary); }
     #view-l3 .ci:hover { opacity: .7; }
     #view-l3 .remove-user { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 13px; }
@@ -337,7 +346,7 @@
     #view-l3 .rbtn { height: 30px; padding: 0 12px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; border: 0.5px solid; font-family: var(--font-sans); }
     #view-l3 .rbtn-data { border-color: #F09595; background: #FCEBEB; color: #A32D2D; }
     #view-l3 .rbtn-data:hover { background: #F7C1C1; }
-    #view-l3 .rbtn-ack { border-color: #97C459; background: #EAF3DE; color: #3B6D11; }
+    #view-l3 .rbtn-ack { border-color: #4A6890; background: #DCE3EE; color: #193458; }
     #view-l3 .rbtn-ack:hover { background: #C0DD97; }
     #view-l3 .rbtn-time { border-color: #A8B6CC; background: #EBF0F7; color: #193458; }
     #view-l3 .rbtn-time:hover { background: #C6DEF4; }
@@ -572,7 +581,7 @@
                 </div>
               </div>
               <div class="cond-edit-actions" id="condEditActions" style="display:none">
-                <button onclick="saveConditions()" style="border-color:#97C459;color:#3B6D11;background:#EAF3DE">Save</button>
+                <button onclick="saveConditions()" style="border-color:#193458;color:#ffffff;background:#193458">Save</button>
                 <button onclick="cancelConditions()" style="border-color:var(--color-border-secondary);color:var(--color-text-secondary);background:transparent">Cancel</button>
               </div>
             </div>
@@ -913,7 +922,7 @@
       levels: [
         { label: 'Level 1', cls: 'lb1', delay: 0, subtitle: 'Immediate alert', users: [
           { init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] },
-          { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] },
+          { init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 1, 0] },
         ], hooter: false },
         { label: 'Level 2', cls: 'lb2', delay: 15, subtitle: 'Supervisor escalation', users: [
           { init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] },
@@ -929,14 +938,14 @@
       { id: 1, name: 'Boiler pressure threshold exceeded', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 2h 14m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Operations monitor', comm: [1, 0, 1, 0] }] },
         escLevels: [
-          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 1, 0] }], hooter: false },
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }, { init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 1, 0] }], hooter: false },
           { label: 'Level 2', cls: 'lb2', delay: 15, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] }, { init: 'RS', bg: '#FAEEDA', tc: '#633806', name: 'Rahul Sharma', comm: [0, 0, 0, 1] }], hooter: true },
           { label: 'Level 3', cls: 'lb3', delay: 30, users: [{ init: 'SG', bg: '#FCEBEB', tc: '#791F1F', name: 'Sunita Gupta', comm: [1, 1, 1, 1] }], hooter: false },
         ] },
       { id: 2, name: 'Cooling tower water level critical', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 47m', lastTrigActive: true,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 1, 0, 0] }] },
         escLevels: [
-          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false },
+          { label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false },
           { label: 'Level 2', cls: 'lb2', delay: 10, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 0, 1, 1] }], hooter: true },
         ] },
       { id: 3, name: 'Compressor vibration anomaly', type: 'issue', equipment: 'pump', enabled: true, task: true, lastTrig: 'Active since 18m', lastTrigActive: true,
@@ -951,7 +960,7 @@
         ] },
       { id: 5, name: 'Conveyor belt speed deviation', type: 'issue', equipment: 'pump', enabled: true, task: false, lastTrig: 'Resolved 1h ago', lastTrigActive: false,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 6, name: 'Motor temperature high', type: 'issue', equipment: 'pump', enabled: true, task: true, lastTrig: 'Active since 3m', lastTrigActive: true,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 0, 1, 0] }] },
         escLevels: [
@@ -963,7 +972,7 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 5, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 8, name: 'Turbine RPM fluctuation', type: 'warning', equipment: 'blower', enabled: true, task: false, lastTrig: 'Resolved 3h ago', lastTrigActive: false,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift supervisor', comm: [1, 1, 0, 0] }] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 10, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 10, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 1, 0, 0] }], hooter: false }] },
       { id: 9, name: 'Ambient temperature rising', type: 'warning', equipment: 'blower', enabled: true, task: false, lastTrig: 'Active since 8m', lastTrigActive: true,
         notify: { users: [{ init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Ops monitor', comm: [1, 0, 0, 0] }] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 0, 0, 0] }], hooter: false }] },
@@ -975,7 +984,7 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 0, 1, 0] }], hooter: false }] },
       { id: 12, name: 'Lube oil level low warning', type: 'warning', equipment: 'pump', enabled: true, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
         notify: { users: [] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 15, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 13, name: 'Energy efficiency target met', type: 'achievement', equipment: 'blower', enabled: true, task: false, lastTrig: 'Achieved 6h ago', lastTrigActive: false,
         notify: { users: [{ init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Plant manager', comm: [1, 0, 1, 0] }] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 0, 0] }], hooter: false }] },
@@ -987,10 +996,10 @@
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'NK', bg: '#EEEDFE', tc: '#3C3489', name: 'Nikhil Kapoor', comm: [1, 1, 1, 0] }], hooter: false }] },
       { id: 16, name: 'Recalibration opportunity detected', type: 'improvement', equipment: 'valve', enabled: true, task: false, lastTrig: 'Detected 4h ago', lastTrigActive: false,
         notify: { users: [] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 17, name: 'Dust collector filter clog', type: 'warning', equipment: 'blower', enabled: false, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
         notify: { users: [] },
-        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#EAF3DE', tc: '#3B6D11', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 0, 0] }], hooter: false }] },
       { id: 18, name: 'Emergency stop circuit fault', type: 'incident', equipment: 'valve', enabled: false, task: false, lastTrig: 'Never triggered', lastTrigActive: false,
         notify: { users: [] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }], hooter: false }] },
@@ -1167,9 +1176,7 @@
       repeats: false,
     };
 
-    /* ── Progressive-disclosure filter dropdown ── */
-    let ddCurrentCat = null; // null = root list
-
+    /* ── Comprehensive filter dropdown ── */
     const FILTER_CATS = [
       { key: 'types',     label: 'Type of insight',  icon: '◆' },
       { key: 'equipment', label: 'Equipment',         icon: '⚙' },
@@ -1207,7 +1214,7 @@
       const dd = document.getElementById('filterDD');
       dd.classList.toggle('open', filtersOpen);
       document.getElementById('toggleFiltersBtn').classList.toggle('active-filter', filtersOpen);
-      if (filtersOpen) { ddCurrentCat = null; renderFilterDD(); }
+      if (filtersOpen) renderFilterDD();
     }
     document.addEventListener('click', () => {
       if (filtersOpen) {
@@ -1236,49 +1243,68 @@
       return '';
     }
 
+    function chipsHTML(opts, set, fnName, isNum) {
+      return opts.map(o => {
+        const sel = set.has(isNum ? o.v : o.v);
+        const arg = isNum ? o.v : `'${o.v}'`;
+        return `<button class="filter-dd-chip${sel?' selected':''}" onclick="${fnName}(${arg})">${o.l}</button>`;
+      }).join('');
+    }
+
     function renderFilterDD() {
       const dd = document.getElementById('filterDD');
       if (!dd) return;
-      if (ddCurrentCat === null) {
-        let html = `<div class="filter-dd-head"><div class="filter-dd-title">Filters</div>`;
-        if (countActiveFilters() > 0) html += `<button class="filter-dd-clear-cat" onclick="clearAllFilters()">Clear all</button>`;
-        html += `</div><div class="filter-dd-list">`;
-        FILTER_CATS.forEach(cat => {
-          const sum = catSummary(cat.key);
-          html += `<div class="filter-dd-cat" onclick="openFilterCat('${cat.key}')">
-            <div class="filter-dd-cat-icon">${cat.icon}</div>
-            <div class="filter-dd-cat-text">
-              <div class="filter-dd-cat-name">${cat.label}</div>
-              <div class="filter-dd-cat-summary${sum?' active':''}">${sum || 'Any'}</div>
-            </div>
-            <div class="filter-dd-cat-chev">›</div>
-          </div>`;
-        });
-        html += `</div>`;
-        dd.innerHTML = html;
-      } else {
-        const cat = FILTER_CATS.find(c => c.key === ddCurrentCat);
-        let body = '';
-        const sum = catSummary(ddCurrentCat);
-        if (ddCurrentCat === 'types')     body = TYPE_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.types.has(o.v)?'checked':''} onchange="ddToggleSet('types','${o.v}')"/><span>${o.l}</span></label>`).join('');
-        else if (ddCurrentCat === 'equipment') body = EQUIP_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.equipment.has(o.v)?'checked':''} onchange="ddToggleSet('equipment','${o.v}')"/><span>${o.l}</span></label>`).join('');
-        else if (ddCurrentCat === 'channels')  body = CHANNEL_OPTS.map(o => `<label class="filter-dd-opt"><input type="checkbox" ${filterState.channels.has(o.v)?'checked':''} onchange="ddToggleSetNum('channels',${o.v})"/><span>${o.l}</span></label>`).join('');
-        else if (ddCurrentCat === 'state')     body = STATE_OPTS.map(o => `<label class="filter-dd-opt"><input type="radio" name="ddstate" ${filterState.state===o.v?'checked':''} onchange="ddSetState('${o.v}')"/><span>${o.l}</span></label>`).join('');
-        else if (ddCurrentCat === 'user')      body = `<input class="filter-input" type="text" placeholder="Filter by user name…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)"/>`;
-        else if (ddCurrentCat === 'time')      body = `<div class="filter-row-2col"><input class="filter-input" type="number" min="0" placeholder="Min (min)" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)"/><input class="filter-input" type="number" min="0" placeholder="Max (min)" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)"/></div><div style="margin-top:8px;font-size:11px;color:var(--color-text-tertiary)">Match insights with at least one escalation level inside this delay range.</div>`;
-        else if (ddCurrentCat === 'repeats')   body = `<label class="filter-dd-opt"><input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/><span>Only insights with the same user across multiple levels</span></label>`;
-        const wrap = (ddCurrentCat === 'user' || ddCurrentCat === 'time') ? `<div class="filter-dd-body">${body}</div>` : `<div class="filter-dd-body"><div class="filter-dd-options">${body}</div></div>`;
-        dd.innerHTML = `<div class="filter-dd-head">
-            <button class="filter-dd-back" onclick="ddBack()">‹ Back</button>
-            <div class="filter-dd-title">${cat.label}</div>
-            ${sum ? `<button class="filter-dd-clear-cat" onclick="clearFilterCat('${cat.key}')">Clear</button>` : ''}
-          </div>${wrap}`;
-      }
+      const n = countActiveFilters();
+      const sec = (key, label, icon, body) => {
+        const sum = catSummary(key);
+        return `<div class="filter-dd-section">
+          <div class="filter-dd-section-head">
+            <span class="filter-dd-section-label"><span class="filter-dd-section-icon">${icon}</span>${label}</span>
+            ${sum ? `<button class="filter-dd-section-clear" onclick="clearFilterCat('${key}')">Clear</button>` : ''}
+          </div>
+          ${body}
+        </div>`;
+      };
+
+      const typesBody = `<div class="filter-dd-chips">${TYPE_OPTS.map(o => `<button class="filter-dd-chip${filterState.types.has(o.v)?' selected':''}" onclick="ddToggleSet('types','${o.v}')">${o.l}</button>`).join('')}</div>`;
+      const equipBody = `<div class="filter-dd-chips">${EQUIP_OPTS.map(o => `<button class="filter-dd-chip${filterState.equipment.has(o.v)?' selected':''}" onclick="ddToggleSet('equipment','${o.v}')">${o.l}</button>`).join('')}</div>`;
+      const stateBody = `<div class="filter-dd-chips">${STATE_OPTS.map(o => `<button class="filter-dd-chip${filterState.state===o.v?' selected':''}" onclick="ddSetState('${o.v}')">${o.l}</button>`).join('')}</div>`;
+      const userBody  = `<input class="filter-dd-input" type="text" placeholder="Type a name to filter…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)"/>`;
+      const chBody    = `<div class="filter-dd-chips">${CHANNEL_OPTS.map(o => `<button class="filter-dd-chip${filterState.channels.has(o.v)?' selected':''}" onclick="ddToggleSetNum('channels',${o.v})">${o.l}</button>`).join('')}</div>`;
+      const timeBody  = `<div class="filter-dd-row-2col">
+          <input class="filter-dd-input" type="number" min="0" placeholder="Min (min)" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)"/>
+          <input class="filter-dd-input" type="number" min="0" placeholder="Max (min)" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)"/>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--color-text-tertiary)">Show insights whose escalation delays fall inside this range.</div>`;
+      const repBody   = `<label class="filter-dd-toggle">
+          <input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/>
+          <span>
+            <span class="filter-dd-toggle-text">Only insights with repeat users</span>
+            <div class="filter-dd-toggle-hint">Same person on more than one escalation level</div>
+          </span>
+        </label>`;
+
+      dd.innerHTML = `
+        <div class="filter-dd-head">
+          <div class="filter-dd-title">Filters</div>
+          ${n > 0 ? `<button class="filter-dd-clear-all" onclick="clearAllFilters()">Clear all</button>` : ''}
+        </div>
+        <div class="filter-dd-body">
+          ${sec('types','Type of insight','◆',typesBody)}
+          ${sec('equipment','Equipment','⚙',equipBody)}
+          ${sec('state','Active / Inactive','●',stateBody)}
+          ${sec('user','Users','👤',userBody)}
+          ${sec('channels','Channel of communication','✉',chBody)}
+          ${sec('time','Escalation time window','⏱',timeBody)}
+          ${sec('repeats','Repeat users','↻',repBody)}
+        </div>
+        <div class="filter-dd-foot">
+          <span class="filter-dd-foot-info">${n === 0 ? 'No filters active' : `${n} filter${n>1?'s':''} active`}</span>
+          <button class="btn-primary" onclick="toggleFiltersDD(event)">Done</button>
+        </div>`;
       renderActivePills();
     }
 
-    function openFilterCat(k) { ddCurrentCat = k; renderFilterDD(); }
-    function ddBack() { ddCurrentCat = null; renderFilterDD(); }
     function ddToggleSet(key, val) {
       const set = filterState[key];
       if (set.has(val)) set.delete(val); else set.add(val);
@@ -1487,7 +1513,7 @@
 
     /* L2 bulk modals */
     function initialsOf(name) { return name.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
-    function randBg() { const opts = [['#EBF0F7','#193458'],['#EAF3DE','#3B6D11'],['#FAEEDA','#633806'],['#EEEDFE','#3C3489'],['#FCEBEB','#791F1F']]; return opts[Math.floor(Math.random()*opts.length)]; }
+    function randBg() { const opts = [['#EBF0F7','#193458'],['#DCE3EE','#193458'],['#B5C2D6','#0E1F36'],['#7B92B3','#FFFFFF'],['#4A6890','#FFFFFF']]; return opts[Math.floor(Math.random()*opts.length)]; }
 
     function openBulkAddUserModal() { if (selected.size === 0) return; document.getElementById('bulkAddSub').textContent = `Adds a user to ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkAddUserModal').classList.add('open'); }
     function closeBulkAddUser() { document.getElementById('bulkAddUserModal').classList.remove('open'); }
@@ -1781,7 +1807,7 @@
       document.getElementById('closeStatusText').innerHTML = 'Closed manually by <span class="close-val">you</span> · just now';
       document.getElementById('resolveCard').style.display = 'none';
       document.getElementById('closeHistory').insertAdjacentHTML('afterbegin',
-        `<div class="close-history-row"><span style="color:var(--color-text-secondary)">Latest closure</span><span class="close-val" style="color:#3B6D11;font-weight:500">Manual · you · just now</span></div>`);
+        `<div class="close-history-row"><span style="color:var(--color-text-secondary)">Latest closure</span><span class="close-val" style="color:#193458;font-weight:500">Manual · you · just now</span></div>`);
     }
 
     /* L3 mount */
