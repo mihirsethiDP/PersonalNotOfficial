@@ -1,1430 +1,616 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smart Formula Builder</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Smart Formula Builder · Insights+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.1/dist/xlsx.full.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --bg:#f6f7fb; --panel:#fff; --ink:#0f172a; --muted:#64748b; --line:#e5e7eb;
+    --brand:#4f46e5; --ok:#16a34a; --err:#dc2626; --code-bg:#0b1220; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  a{color:var(--brand);text-decoration:none}
+  .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+  .logo{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .logo .plus{color:var(--brand)}
+  .nav a.back{font-size:13px;color:var(--muted)}
+  .nav a.back:hover{color:var(--ink)}
+  .container{max-width:1100px;margin:0 auto;padding:18px 20px 60px}
 
-  :root {
-    --blue-dark:  #0C447C;
-    --blue-mid:   #1A6DB5;
-    --blue-light: #E6F1FB;
-    --green:      #1C7C54;
-    --green-light:#E6F5EF;
-    --red:        #C0392B;
-    --red-light:  #FDEDEC;
-    --amber:      #B7570A;
-    --amber-light:#FEF3E2;
-    --gray-50:    #F0F2F5;
-    --gray-100:   #E4E7EC;
-    --gray-200:   #CDD1D8;
-    --gray-400:   #9AA3AD;
-    --gray-600:   #5C6470;
-    --gray-800:   #2D3139;
-    --white:      #FFFFFF;
-    --radius:     8px;
-    --shadow:     0 1px 4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.05);
-  }
+  .keybar{display:flex;gap:8px;align-items:center;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:14px}
+  .keybar label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+  .keybar input{flex:1;border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:13px;outline:none}
+  .keybar input:focus{border-color:var(--brand)}
+  .keybar .status{font-size:12px;font-weight:500}
+  .keybar .status.ok{color:var(--ok)} .keybar .status.no{color:var(--muted)}
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-800);
-    min-height: 100vh;
-  }
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .tab{padding:9px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
 
-  /* ── Top Nav ── */
-  .topnav {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-100);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 52px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .topnav-left { display: flex; align-items: center; gap: 12px; }
-  .topnav-logo {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--blue-dark);
-    letter-spacing: -.3px;
-  }
-  .topnav-sep { color: var(--gray-200); font-size: 18px; }
-  .topnav-title { font-size: 14px; font-weight: 500; color: var(--gray-600); }
-  .back-link {
-    font-size: 13px;
-    color: var(--blue-mid);
-    text-decoration: none;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .back-link:hover { text-decoration: underline; }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .card h3{margin:0 0 10px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .card h3 .pill{font-size:10px;font-weight:600;padding:2px 7px;background:var(--brand);color:#fff;border-radius:99px;letter-spacing:.02em}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
 
-  /* ── Page shell ── */
-  .page { max-width: 1080px; margin: 0 auto; padding: 28px 20px 60px; }
+  textarea.primary{width:100%;min-height:84px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;outline:none;line-height:1.5}
+  textarea.primary:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 
-  .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 22px; font-weight: 700; color: var(--gray-800); }
-  .page-header p  { font-size: 14px; color: var(--gray-600); margin-top: 4px; line-height: 1.5; }
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;transition:all .15s}
+  .btn:hover{background:#f8fafc}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.primary:hover{background:#4338ca}
+  .btn.primary:disabled{opacity:.6;cursor:not-allowed}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+  .btn.ghost:hover{background:#f1f5f9;color:var(--ink)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-  /* ── Tabs ── */
-  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-100); margin-bottom: 28px; }
-  .tab-btn {
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--gray-600);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    cursor: pointer;
-    transition: color .15s, border-color .15s;
-  }
-  .tab-btn.active { color: var(--blue-dark); border-bottom-color: var(--blue-dark); }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+  .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* ── Cards ── */
-  .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-600);
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title .badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 99px;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-  .badge-open  { background: var(--green-light);  color: var(--green); }
-  .badge-close { background: var(--red-light);    color: var(--red); }
-  .badge-tip   { background: var(--amber-light);  color: var(--amber); }
+  .strip{display:flex;align-items:center;gap:10px;margin:14px 0 8px}
+  .strip h4{margin:0;font-size:13px;font-weight:600}
+  .strip .badge{font-size:11px;padding:2px 8px;border-radius:99px;background:#eef2ff;color:var(--brand);font-weight:500}
+  .strip .badge.close{background:#fef2f2;color:var(--err)}
+  .strip .grow{flex:1}
 
-  /* ── Form elements ── */
-  label { font-size: 13px; font-weight: 500; color: var(--gray-700, #3D4350); display: block; margin-bottom: 4px; }
-  input[type=text], input[type=number], select, textarea {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--gray-200);
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--gray-800);
-    background: var(--white);
-    outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--blue-mid);
-    box-shadow: 0 0 0 3px rgba(26,109,181,.12);
-  }
-  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .logic{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
+  .logic button{border:0;background:transparent;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted)}
+  .logic button.on{background:var(--brand);color:#fff}
 
-  .form-row { display: grid; gap: 12px; }
-  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
-  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .row{display:grid;grid-template-columns:1fr 60px 1fr 80px auto;gap:6px;margin-bottom:6px;align-items:center}
+  .row input,.row select{border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:13px;outline:none;width:100%;background:#fff}
+  .row input:focus,.row select:focus{border-color:var(--brand)}
+  .row .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:4px}
+  .row .x:hover{background:#fef2f2;color:var(--err)}
+  .add-row{font-size:12px;color:var(--brand);background:none;border:1px dashed var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
+  .add-row:hover{background:#eef2ff;border-color:var(--brand)}
+  .duration{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)}
+  .duration input{width:60px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px}
+  .duration select{border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px;background:#fff}
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: background .15s, border-color .15s, opacity .15s;
-  }
-  .btn-primary { background: var(--blue-dark); color: var(--white); border-color: var(--blue-dark); }
-  .btn-primary:hover { background: var(--blue-mid); border-color: var(--blue-mid); }
-  .btn-secondary { background: var(--white); color: var(--gray-800); border-color: var(--gray-200); }
-  .btn-secondary:hover { background: var(--gray-50); }
-  .btn-ghost { background: none; color: var(--blue-mid); border-color: transparent; padding: 6px 10px; }
-  .btn-ghost:hover { background: var(--blue-light); }
-  .btn-danger { background: none; color: var(--red); border-color: transparent; padding: 4px 8px; font-size: 12px; }
-  .btn-danger:hover { background: var(--red-light); }
-  .btn-green { background: var(--green); color: var(--white); border-color: var(--green); }
-  .btn-green:hover { opacity: .9; }
-  .btn:disabled { opacity: .45; cursor: not-allowed; }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:5px 10px;border:1px solid var(--line);border-radius:99px;font-size:12px;cursor:pointer;background:#fff;user-select:none;font-weight:500}
+  .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 
-  /* ── NLP Input ── */
-  .nlp-area { position: relative; }
-  .nlp-hint {
-    font-size: 12px;
-    color: var(--gray-400);
-    margin-top: 6px;
-    font-style: italic;
-  }
-  .nlp-parse-row { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
-  .nlp-parse-row textarea { flex: 1; }
+  .out{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .out .open{color:#86efac} .out .close{color:#fca5a5} .out .label{color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
 
-  .divider-or {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-400);
-    position: relative;
-    margin: 18px 0;
-  }
-  .divider-or::before, .divider-or::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 24px);
-    height: 1px;
-    background: var(--gray-100);
-  }
-  .divider-or::before { left: 0; }
-  .divider-or::after  { right: 0; }
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:#fafbff}
+  .drop:hover,.drop.over{border-color:var(--brand);background:#eef2ff}
+  .drop strong{color:var(--brand)}
 
-  /* ── Condition Builder ── */
-  .logic-toggle {
-    display: inline-flex;
-    border: 1px solid var(--gray-200);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-  .logic-toggle button {
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    border: none;
-    background: var(--white);
-    color: var(--gray-400);
-    cursor: pointer;
-    font-family: inherit;
-    transition: background .15s, color .15s;
-  }
-  .logic-toggle button.active { background: var(--blue-dark); color: var(--white); }
-
-  .condition-rows { display: flex; flex-direction: column; gap: 8px; }
-  .condition-row {
-    display: grid;
-    grid-template-columns: 1fr 100px 120px 80px auto;
-    gap: 8px;
-    align-items: center;
-  }
-  .condition-connector {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--blue-mid);
-    text-align: center;
-    padding: 2px 0;
-    letter-spacing: .5px;
-  }
-
-  .add-condition-btn {
-    margin-top: 10px;
-    font-size: 13px;
-    color: var(--blue-mid);
-    background: none;
-    border: 1px dashed var(--gray-200);
-    border-radius: 6px;
-    padding: 8px;
-    width: 100%;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background .15s, border-color .15s;
-  }
-  .add-condition-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); }
-
-  /* ── Duration row ── */
-  .duration-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--gray-100);
-    flex-wrap: wrap;
-  }
-  .duration-row label { margin: 0; white-space: nowrap; }
-  .duration-row input { width: 70px; }
-  .duration-row select { width: 110px; }
-
-  /* ── Formula Preview ── */
-  .formula-preview {
-    background: var(--gray-50);
-    border: 1px solid var(--gray-100);
-    border-radius: 6px;
-    padding: 14px 16px;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--gray-800);
-    word-break: break-all;
-    line-height: 1.6;
-    min-height: 44px;
-    position: relative;
-  }
-  .formula-preview.empty { color: var(--gray-400); font-style: italic; font-family: inherit; font-size: 13px; }
-  .formula-actions { display: flex; gap: 8px; margin-top: 8px; }
-
-  .token-IF    { color: #7B2D8B; font-weight: 600; }
-  .token-FN    { color: #0C447C; font-weight: 600; }
-  .token-TAG   { color: #1C7C54; }
-  .token-OP    { color: #B7570A; font-weight: 600; }
-  .token-VAL   { color: #C0392B; }
-
-  /* ── Closing suggestions ── */
-  .close-suggestions { display: flex; flex-direction: column; gap: 10px; }
-  .close-option {
-    border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-    position: relative;
-  }
-  .close-option:hover { border-color: var(--blue-mid); background: var(--blue-light); }
-  .close-option.selected { border-color: var(--blue-dark); background: var(--blue-light); }
-  .close-option-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-600);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .close-option-formula {
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    color: var(--gray-800);
-    word-break: break-all;
-  }
-  .close-option-desc {
-    font-size: 12px;
-    color: var(--gray-600);
-    margin-top: 4px;
-  }
-  .close-check {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-  }
-  .close-option.selected .close-check { background: var(--blue-dark); border-color: var(--blue-dark); color: white; }
-
-  /* ── Trigger type chips ── */
-  .type-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .type-chip {
-    padding: 7px 14px;
-    border-radius: 99px;
-    border: 1px solid var(--gray-200);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    background: var(--white);
-    color: var(--gray-800);
-    transition: all .15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: inherit;
-  }
-  .type-chip.selected { background: var(--blue-dark); color: var(--white); border-color: var(--blue-dark); }
-
-  /* ── Output panel ── */
-  .output-panel {
-    background: #1A1E2A;
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    margin-top: 8px;
-  }
-  .output-panel h3 { font-size: 13px; font-weight: 600; color: #8B95A5; margin-bottom: 14px; text-transform: uppercase; letter-spacing: .4px; }
-  .output-block { margin-bottom: 16px; }
-  .output-block-label { font-size: 11px; color: #5C6880; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
-  .output-formula {
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: #A8D8A8;
-    word-break: break-all;
-    line-height: 1.6;
-    background: rgba(255,255,255,.04);
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid rgba(255,255,255,.06);
-  }
-  .output-meta { font-size: 12px; color: #8B95A5; margin-top: 6px; }
-
-  /* ── Upload area ── */
-  .drop-zone {
-    border: 2px dashed var(--gray-200);
-    border-radius: var(--radius);
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-    position: relative;
-  }
-  .drop-zone:hover, .drop-zone.dragging { border-color: var(--blue-mid); background: var(--blue-light); }
-  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  .drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
-  .drop-zone-text { font-size: 14px; font-weight: 500; color: var(--gray-800); }
-  .drop-zone-sub  { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
-
-  /* ── Table ── */
-  .data-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--gray-100); margin-top: 16px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    background: var(--gray-50);
-    padding: 10px 14px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    color: var(--gray-600);
-    border-bottom: 1px solid var(--gray-100);
-    white-space: nowrap;
-  }
-  td { padding: 10px 14px; border-bottom: 1px solid var(--gray-50); color: var(--gray-800); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--gray-50); }
-  .td-formula {
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    color: var(--green);
-    max-width: 300px;
-    word-break: break-all;
-  }
-
-  /* ── Toasts ── */
-  #toast-container {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .toast {
-    background: var(--gray-800);
-    color: var(--white);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 4px 16px rgba(0,0,0,.2);
-    animation: slideIn .2s ease;
-  }
-  @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-  /* ── Misc ── */
-  .help-text { font-size: 12px; color: var(--gray-400); margin-top: 4px; line-height: 1.4; }
-  .section-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .section-actions .card-title { margin-bottom: 0; }
-  .empty-state { text-align: center; padding: 32px; color: var(--gray-400); font-size: 14px; }
-  .tag-pill {
-    display: inline-block;
-    background: var(--blue-light);
-    color: var(--blue-dark);
-    border-radius: 4px;
-    padding: 1px 6px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: 'Courier New', monospace;
-    margin: 1px;
-  }
-  .success-icon { color: var(--green); }
-  .warn-icon    { color: var(--amber); }
-  .error-icon   { color: var(--red); }
-
-  /* ── Responsive ── */
-  @media (max-width: 640px) {
-    .condition-row { grid-template-columns: 1fr 80px 80px 60px auto; }
-    .form-row.cols-2 { grid-template-columns: 1fr; }
-    .form-row.cols-3 { grid-template-columns: 1fr; }
-  }
+  table.results{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+  table.results th{text-align:left;padding:8px;background:#f1f5f9;font-weight:600;border-bottom:1px solid var(--line)}
+  table.results td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5}
+  table.results td:first-child,table.results th:first-child{font-family:inherit;font-size:12px}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .err-banner{background:#fef2f2;color:var(--err);border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px;word-break:break-word}
+  .hide{display:none!important}
 </style>
 </head>
 <body>
 
-<!-- ══ Top Nav ══ -->
-<nav class="topnav">
-  <div class="topnav-left">
-    <span class="topnav-logo">Insights+</span>
-    <span class="topnav-sep">|</span>
-    <span class="topnav-title">Smart Formula Builder</span>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">Insights<span class="plus">+</span></div>
+    <span style="color:var(--muted);font-size:13px">/ Smart Formula Builder</span>
+    <div style="flex:1"></div>
+    <a class="back" href="index.html">← Back to App</a>
   </div>
-  <a class="back-link" href="index.html">← Back to Insights+</a>
 </nav>
 
-<!-- ══ Page ══ -->
-<div class="page">
+<div class="container">
 
-  <div class="page-header">
-    <h1>Smart Formula Builder</h1>
-    <p>Build trigger opening &amp; closing formulas visually, or describe the condition in plain English. Upload an Excel sheet to generate triggers in bulk.</p>
+  <div class="keybar">
+    <label>Anthropic API key</label>
+    <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off"/>
+    <button class="btn" id="saveKey">Save</button>
+    <span class="status no" id="keyStatus">not set</span>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('manual')">Manual Builder</button>
-    <button class="tab-btn" onclick="switchTab('bulk')">Bulk Upload (Excel)</button>
+    <div class="tab active" data-tab="manual">Single Trigger</div>
+    <div class="tab" data-tab="bulk">Bulk Upload</div>
   </div>
 
-  <!-- ══════════════════════════════════
-       TAB: Manual Builder
-       ══════════════════════════════════ -->
-  <div id="tab-manual" class="tab-panel active">
-
-    <!-- Trigger Name -->
-    <div class="card">
-      <div class="form-row cols-2">
-        <div>
-          <label>Trigger Name</label>
-          <input type="text" id="trigger-name" placeholder="e.g. Filter Feed Pump Off With Flow" />
-        </div>
-        <div>
-          <label>Equipment / Tag Group</label>
-          <input type="text" id="trigger-equip" placeholder="e.g. Filtration, Aeration, Sludge" />
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Opening Condition ── -->
-    <div class="card">
-      <div class="card-title">Opening Condition <span class="badge badge-open">OPEN</span></div>
-
-      <!-- NLP input -->
-      <label>Describe in plain English <span style="font-weight:400;color:var(--gray-400)">(optional — click Parse to auto-fill rows)</span></label>
-      <div class="nlp-parse-row">
-        <textarea id="nlp-open" placeholder="e.g. Both filter feed pumps are off but flow rate is more than 0&#10;e.g. Pressure exceeds 85 bar for 10 minutes&#10;e.g. Either pump 1 or pump 2 is running and DO is less than 2"></textarea>
-        <button class="btn btn-secondary" onclick="parseNLP('open')">⚡ Parse</button>
-      </div>
-      <p class="nlp-hint">Tip: Use "and", "or", "but", "either…or", "both…and", "not", "is on/off", "exceeds", "less than", "equals"</p>
-
-      <div class="divider-or">OR build visually</div>
-
-      <!-- Logic toggle -->
-      <div class="logic-toggle" id="open-logic-toggle">
-        <button class="active" onclick="setLogic('open','AND',this)">AND — all must be true</button>
-        <button onclick="setLogic('open','OR',this)">OR — any one true</button>
-      </div>
-
-      <!-- Condition rows -->
-      <div class="condition-rows" id="open-rows"></div>
-      <button class="add-condition-btn" onclick="addRow('open')">+ Add Condition</button>
-
-      <!-- Duration -->
-      <div class="duration-row">
-        <label>Must be true for</label>
-        <input type="number" id="open-dur-val" min="0" value="0" oninput="rebuildFormula('open')" style="width:70px" />
-        <select id="open-dur-unit" onchange="rebuildFormula('open')">
-          <option value="min">minutes</option>
-          <option value="sec">seconds</option>
-          <option value="hr">hours</option>
-        </select>
-        <span style="font-size:12px;color:var(--gray-400)">(0 = instantaneous)</span>
-      </div>
-
-      <!-- Formula preview -->
-      <div style="margin-top:16px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Generated Formula</div>
-        <div class="formula-preview empty" id="open-formula-display">Add conditions above to generate formula</div>
-        <div class="formula-actions">
-          <button class="btn btn-sm btn-secondary" onclick="copyFormula('open')">Copy</button>
-          <button class="btn btn-sm btn-ghost" onclick="resetSection('open')">Clear</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Closing Condition ── -->
-    <div class="card">
-      <div class="section-actions">
-        <div class="card-title">Closing Condition <span class="badge badge-close">CLOSE</span></div>
-        <button class="btn btn-sm btn-secondary" id="auto-close-btn" onclick="autoGenerateClose()" disabled>⟳ Auto-generate from opening</button>
-      </div>
-
-      <!-- Auto-suggestions -->
-      <div id="close-suggestions-area" style="display:none;margin-bottom:16px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--gray-600)">Choose closing logic:</div>
-        <div class="close-suggestions" id="close-suggestions-list"></div>
-      </div>
-
-      <!-- NLP input -->
-      <label style="margin-top:8px">Describe in plain English <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
-      <div class="nlp-parse-row">
-        <textarea id="nlp-close" placeholder="e.g. Either pump turns on, or flow drops to 0"></textarea>
-        <button class="btn btn-secondary" onclick="parseNLP('close')">⚡ Parse</button>
-      </div>
-
-      <div class="divider-or">OR build visually</div>
-
-      <div class="logic-toggle" id="close-logic-toggle">
-        <button class="active" onclick="setLogic('close','AND',this)">AND — all must be true</button>
-        <button onclick="setLogic('close','OR',this)">OR — any one true</button>
-      </div>
-
-      <div class="condition-rows" id="close-rows"></div>
-      <button class="add-condition-btn" onclick="addRow('close')">+ Add Condition</button>
-
-      <div class="duration-row">
-        <label>Must be true for</label>
-        <input type="number" id="close-dur-val" min="0" value="0" oninput="rebuildFormula('close')" style="width:70px" />
-        <select id="close-dur-unit" onchange="rebuildFormula('close')">
-          <option value="min">minutes</option>
-          <option value="sec">seconds</option>
-          <option value="hr">hours</option>
-        </select>
-      </div>
-
-      <div style="margin-top:16px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Generated Formula</div>
-        <div class="formula-preview empty" id="close-formula-display">Add conditions above to generate formula</div>
-        <div class="formula-actions">
-          <button class="btn btn-sm btn-secondary" onclick="copyFormula('close')">Copy</button>
-          <button class="btn btn-sm btn-ghost" onclick="resetSection('close')">Clear</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Trigger Setup ── -->
-    <div class="card">
-      <div class="card-title">Trigger Setup</div>
-
-      <div style="margin-bottom:16px">
-        <label>Trigger Components</label>
-        <div class="type-chips" id="type-chips">
-          <button class="type-chip selected" onclick="toggleChip(this,'alert')">🔔 Alert</button>
-          <button class="type-chip" onclick="toggleChip(this,'communication')">✉ Communication</button>
-          <button class="type-chip" onclick="toggleChip(this,'task')">✅ Task</button>
-          <button class="type-chip" onclick="toggleChip(this,'hooter')">🔊 Hooter</button>
-          <button class="type-chip" onclick="toggleChip(this,'report')">📊 Report</button>
-        </div>
-      </div>
-
-      <div class="form-row cols-3">
-        <div>
-          <label>Check Frequency</label>
-          <input type="number" id="check-freq" min="1" value="1" placeholder="1" />
-          <p class="help-text">How often to evaluate (minutes)</p>
-        </div>
-        <div>
-          <label>Repeat Alert After (min)</label>
-          <input type="number" id="repeat-freq" min="0" value="0" placeholder="0 = no repeat" />
-          <p class="help-text">0 = alert once per trigger</p>
-        </div>
-        <div>
-          <label>Priority</label>
-          <select id="priority">
-            <option value="critical">Critical</option>
-            <option value="high">High</option>
-            <option value="medium" selected>Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Output ── -->
-    <div class="output-panel" id="output-panel" style="display:none">
-      <h3>Generated Trigger</h3>
-      <div class="output-block">
-        <div class="output-block-label">Opening Formula</div>
-        <div class="output-formula" id="out-open">—</div>
-      </div>
-      <div class="output-block">
-        <div class="output-block-label">Closing Formula</div>
-        <div class="output-formula" id="out-close">—</div>
-      </div>
-      <div class="output-meta" id="out-meta"></div>
-    </div>
-
-    <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="generateTrigger()">Generate Trigger</button>
-      <button class="btn btn-secondary" onclick="exportJSON()">Export JSON</button>
-      <button class="btn btn-secondary" onclick="resetAll()">Reset All</button>
-    </div>
-
-  </div><!-- /tab-manual -->
-
-  <!-- ══════════════════════════════════
-       TAB: Bulk Upload
-       ══════════════════════════════════ -->
-  <div id="tab-bulk" class="tab-panel">
+  <div id="tab-manual">
 
     <div class="card">
-      <div class="card-title">Upload Excel Sheet</div>
+      <h3>Describe the trigger <span class="pill">AI</span></h3>
+      <p class="hint">Plain English. Mention sensor, threshold, units, and duration. Closing logic is auto-inferred (refine below if needed).</p>
+      <textarea id="nlInput" class="primary" placeholder="e.g. Bar screen chamber level-1 (CS-1) > 600mm for more than 5 minutes&#10;or  Filter feed pumps 1 and 2 are off but flow rate is positive"></textarea>
+      <div class="btn-row">
+        <button class="btn primary" id="parseBtn">✨ Parse with AI</button>
+        <button class="btn ghost" id="clearBtn">Clear</button>
+      </div>
+      <div id="errBox" class="err-banner hide"></div>
+    </div>
 
-      <div class="drop-zone" id="drop-zone"
-           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)" />
-        <div class="drop-zone-icon">📄</div>
-        <div class="drop-zone-text">Drop your Excel file here, or click to browse</div>
-        <div class="drop-zone-sub">Supports .xlsx, .xls, .csv</div>
+    <div class="card">
+      <div class="strip">
+        <span class="badge">OPENING</span>
+        <h4>When trigger fires</h4>
+        <div class="grow"></div>
+        <div class="logic" id="logic-open">
+          <button data-l="AND" class="on">AND</button>
+          <button data-l="OR">OR</button>
+        </div>
+      </div>
+      <div id="rows-open"></div>
+      <button class="add-row" data-add="open">+ Add condition</button>
+      <div class="duration">
+        Sustained for
+        <input type="number" min="0" id="dur-open-val" value="0"/>
+        <select id="dur-open-unit"><option>sec</option><option selected>min</option><option>hr</option></select>
       </div>
 
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-secondary btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
-        <button class="btn btn-ghost btn-sm" onclick="loadSampleData()">Load Sample Data</button>
+      <div class="strip">
+        <span class="badge close">CLOSING</span>
+        <h4>When trigger resets</h4>
+        <div class="grow"></div>
+        <button class="btn ghost" id="autoClose" style="font-size:12px;padding:4px 8px">↻ Auto-invert</button>
+        <div class="logic" id="logic-close">
+          <button data-l="AND" class="on">AND</button>
+          <button data-l="OR">OR</button>
+        </div>
       </div>
-
-      <div style="margin-top:14px;padding:12px 14px;background:var(--amber-light);border-radius:6px;font-size:12px;color:var(--amber)">
-        <strong>Expected columns:</strong> Trigger Name | Equipment | Opening Logic | Closing Logic | Sensor Tags (comma-separated) | Frequency (min) | Priority | Components
+      <div id="rows-close"></div>
+      <button class="add-row" data-add="close">+ Add condition</button>
+      <div class="duration">
+        Sustained for
+        <input type="number" min="0" id="dur-close-val" value="0"/>
+        <select id="dur-close-unit"><option>sec</option><option selected>min</option><option>hr</option></select>
       </div>
     </div>
 
-    <!-- Parsed preview -->
-    <div class="card" id="bulk-preview-card" style="display:none">
-      <div class="section-actions">
-        <div class="card-title">Preview <span id="bulk-row-count" class="badge badge-tip">0 rows</span></div>
-        <button class="btn btn-green" onclick="generateAllTriggers()">⚡ Generate All Triggers</button>
-      </div>
-      <div class="data-table-wrap">
-        <table id="bulk-preview-table">
-          <thead id="bulk-thead"></thead>
-          <tbody id="bulk-tbody"></tbody>
-        </table>
+    <div class="card">
+      <h3>Component types</h3>
+      <p class="hint">What should fire when this trigger opens?</p>
+      <div class="chips" id="chips">
+        <div class="chip on" data-c="alert">🔔 Alert</div>
+        <div class="chip" data-c="communication">✉️ Communication</div>
+        <div class="chip" data-c="task">📋 Task</div>
+        <div class="chip" data-c="hooter">📢 Hooter</div>
+        <div class="chip" data-c="report">📊 Report</div>
       </div>
     </div>
 
-    <!-- Bulk results -->
-    <div class="card" id="bulk-results-card" style="display:none">
-      <div class="card-title">Generated Triggers <span id="bulk-result-count" class="badge badge-open">0</span></div>
-      <div id="bulk-results-list"></div>
-      <div style="margin-top:14px;display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="exportBulkJSON()">Export All as JSON</button>
-        <button class="btn btn-secondary" onclick="copyAllFormulas()">Copy All Formulas</button>
+    <div class="card">
+      <h3>Generated formulas</h3>
+      <div class="out" id="output"><span class="label">Add at least one condition.</span></div>
+      <div class="btn-row">
+        <button class="btn" id="copyBtn">📋 Copy</button>
+        <button class="btn" id="exportBtn">⬇ Export JSON</button>
       </div>
     </div>
+  </div>
 
-  </div><!-- /tab-bulk -->
+  <div id="tab-bulk" class="hide">
+    <div class="card">
+      <h3>Upload Excel <span class="pill">AI</span></h3>
+      <p class="hint">Columns: <b>name</b>, <b>opening</b>, <b>closing</b> (optional), <b>components</b> (optional, comma-separated). Each row is parsed by Claude.</p>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn" id="dlTpl">⬇ Download template</button>
+      </div>
+      <div class="drop" id="drop">
+        <div style="font-size:24px;margin-bottom:6px">📁</div>
+        <div><strong>Click to upload</strong> or drag &amp; drop .xlsx / .csv</div>
+      </div>
+      <input type="file" id="file" accept=".xlsx,.xls,.csv" style="display:none"/>
+      <div id="bulkStatus" class="hint" style="margin-top:10px"></div>
+      <div id="bulkOut"></div>
+    </div>
+  </div>
+</div>
 
-</div><!-- /page -->
-
-<!-- Toast container -->
-<div id="toast-container"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// State
-// ═══════════════════════════════════════════════════════════
 const state = {
-  open:  { logic: 'AND', rows: [], dur: { val: 0, unit: 'min' } },
-  close: { logic: 'AND', rows: [],  dur: { val: 0, unit: 'min' } },
+  open:  { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
+  close: { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
   chips: new Set(['alert']),
-  bulkData: [],
-  bulkResults: [],
+  bulk: [],
 };
+const UNITS = ['—','mm','m','cm','bar','kPa','psi','m³/h','L/s','L/min','°C','%','mg/L','NTU','pH','rpm','kW','A','V','Hz'];
+const OPS = ['=','!=','>','>=','<','<='];
 
-let rowId = 0;
+const keyInput = document.getElementById('apiKey');
+const keyStatus = document.getElementById('keyStatus');
+function loadKey(){
+  const k = localStorage.getItem('anthropic_api_key') || '';
+  keyInput.value = k;
+  if(k){ keyStatus.textContent='saved'; keyStatus.className='status ok'; }
+}
+document.getElementById('saveKey').onclick = () => {
+  const k = keyInput.value.trim();
+  if(!k){ localStorage.removeItem('anthropic_api_key'); keyStatus.textContent='not set'; keyStatus.className='status no'; toast('Cleared'); return; }
+  localStorage.setItem('anthropic_api_key', k);
+  keyStatus.textContent='saved'; keyStatus.className='status ok';
+  toast('API key saved locally');
+};
+loadKey();
 
-// ═══════════════════════════════════════════════════════════
-// Tabs
-// ═══════════════════════════════════════════════════════════
-function switchTab(id) {
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    const ids=['manual','bulk'];
-    b.classList.toggle('active', ids[i]===id);
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const id = t.dataset.tab;
+  document.getElementById('tab-manual').classList.toggle('hide', id!=='manual');
+  document.getElementById('tab-bulk').classList.toggle('hide', id!=='bulk');
+});
+
+function renderRows(section){
+  const host = document.getElementById('rows-'+section);
+  host.innerHTML = '';
+  state[section].rows.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.innerHTML = `
+      <input placeholder="Tag (e.g. Bar_Screen_Level_Sensor)" value="${esc(r.tag)}" data-f="tag"/>
+      <select data-f="op">${OPS.map(o=>`<option ${o===r.op?'selected':''}>${o}</option>`).join('')}</select>
+      <input placeholder="Value" value="${esc(r.val)}" data-f="val"/>
+      <select data-f="unit">${UNITS.map(u=>`<option ${u===r.unit?'selected':''}>${u}</option>`).join('')}</select>
+      <button class="x" title="Remove">×</button>`;
+    div.querySelectorAll('[data-f]').forEach(el => {
+      el.oninput = el.onchange = () => { r[el.dataset.f] = el.value; updateOutput(); };
+    });
+    div.querySelector('.x').onclick = () => { state[section].rows.splice(i,1); renderRows(section); updateOutput(); };
+    host.appendChild(div);
   });
-  document.querySelectorAll('.tab-panel').forEach(p=>{
-    p.classList.toggle('active', p.id==='tab-'+id);
+}
+function newRow(){ return {tag:'', op:'>', val:'', unit:'—'}; }
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+  const s = b.dataset.add; state[s].rows.push(newRow()); renderRows(s); updateOutput();
+});
+
+['open','close'].forEach(s => {
+  document.querySelectorAll(`#logic-${s} button`).forEach(b => b.onclick = () => {
+    state[s].logic = b.dataset.l;
+    document.querySelectorAll(`#logic-${s} button`).forEach(x=>x.classList.toggle('on', x===b));
+    updateOutput();
   });
-}
+});
 
-// ═══════════════════════════════════════════════════════════
-// Logic toggle
-// ═══════════════════════════════════════════════════════════
-function setLogic(section, val, btn) {
-  state[section].logic = val;
-  btn.closest('.logic-toggle').querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderRows(section);
-  rebuildFormula(section);
-}
+['open','close'].forEach(s => {
+  const v = document.getElementById(`dur-${s}-val`);
+  const u = document.getElementById(`dur-${s}-unit`);
+  v.oninput = () => { state[s].dur.val = +v.value || 0; updateOutput(); };
+  u.onchange = () => { state[s].dur.unit = u.value; updateOutput(); };
+});
 
-// ═══════════════════════════════════════════════════════════
-// Condition Rows
-// ═══════════════════════════════════════════════════════════
-const OPERATORS = ['=','!=','>','>=','<','<='];
-const UNITS     = ['—','bar','kPa','psi','m³/h','L/s','°C','%','mg/L','NTU','pH','rpm','kW','A','V'];
+document.querySelectorAll('#chips .chip').forEach(c => c.onclick = () => {
+  const k = c.dataset.c;
+  if(state.chips.has(k)) state.chips.delete(k); else state.chips.add(k);
+  c.classList.toggle('on');
+  updateOutput();
+});
 
-function addRow(section, data={}) {
-  const id = ++rowId;
-  state[section].rows.push({
-    id,
-    tag:  data.tag  || '',
-    op:   data.op   || '=',
-    val:  data.val  !== undefined ? data.val : '',
-    unit: data.unit || '—',
-  });
-  renderRows(section);
-  rebuildFormula(section);
-}
-
-function removeRow(section, id) {
-  state[section].rows = state[section].rows.filter(r=>r.id!==id);
-  renderRows(section);
-  rebuildFormula(section);
-}
-
-function updateRow(section, id, field, value) {
-  const r = state[section].rows.find(r=>r.id===id);
-  if (r) r[field] = value;
-  rebuildFormula(section);
-}
-
-function renderRows(section) {
-  const container = document.getElementById(section+'-rows');
-  const rows = state[section].rows;
-  const logic = state[section].logic;
-
-  if (!rows.length) { container.innerHTML = ''; return; }
-
-  let html = '';
-  rows.forEach((r, i) => {
-    if (i > 0) {
-      html += `<div class="condition-connector">${logic}</div>`;
-    }
-    const opOpts  = OPERATORS.map(o=>`<option value="${o}"${r.op===o?' selected':''}>${o}</option>`).join('');
-    const unitOpts = UNITS.map(u=>`<option value="${u}"${r.unit===u?' selected':''}>${u}</option>`).join('');
-    html += `
-      <div class="condition-row" data-id="${r.id}">
-        <input type="text" value="${esc(r.tag)}" placeholder="Sensor tag (e.g. Pump_1_ONOFF)"
-               onchange="updateRow('${section}',${r.id},'tag',this.value)"
-               oninput="updateRow('${section}',${r.id},'tag',this.value)" />
-        <select onchange="updateRow('${section}',${r.id},'op',this.value)">${opOpts}</select>
-        <input type="text" value="${esc(String(r.val))}" placeholder="Value"
-               onchange="updateRow('${section}',${r.id},'val',this.value)"
-               oninput="updateRow('${section}',${r.id},'val',this.value)" />
-        <select onchange="updateRow('${section}',${r.id},'unit',this.value)">${unitOpts}</select>
-        <button class="btn btn-danger" onclick="removeRow('${section}',${r.id})">✕</button>
-      </div>`;
-  });
-  container.innerHTML = html;
-}
-
-function esc(s) { return String(s).replace(/"/g,'&quot;'); }
-
-// ═══════════════════════════════════════════════════════════
-// Formula Generation
-// ═══════════════════════════════════════════════════════════
-function buildFormulaString(section) {
-  const { rows, logic, dur } = state[section];
-  if (!rows.length) return '';
-
-  const valid = rows.filter(r => r.tag.trim() && r.val !== '');
-  if (!valid.length) return '';
-
+function buildFormula(section){
+  const s = state[section];
+  const valid = s.rows.filter(r => r.tag.trim() && r.val.toString().trim());
+  if(!valid.length) return null;
   const parts = valid.map(r => {
     const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : '';
     return `${r.tag.trim()}${r.op}${r.val}${u}`;
   });
-
-  let inner;
-  if (parts.length === 1) {
-    inner = parts[0];
-  } else {
-    inner = `${logic}(${parts.join(', ')})`;
-  }
-
-  // Duration annotation
-  const dv = parseInt(document.getElementById(section+'-dur-val')?.value || 0);
-  const du = document.getElementById(section+'-dur-unit')?.value || 'min';
-  const durStr = dv > 0 ? ` [for ${dv} ${du}]` : '';
-
-  return `IF(${inner}, 1, 0)${durStr}`;
+  const inner = parts.length === 1 ? parts[0] : `${s.logic}(${parts.join(', ')})`;
+  const d = s.dur.val > 0 ? ` [for ${s.dur.val} ${s.dur.unit}]` : '';
+  return `IF(${inner}, 1, 0)${d}`;
+}
+function updateOutput(){
+  const o = buildFormula('open');
+  const c = buildFormula('close');
+  const out = document.getElementById('output');
+  if(!o && !c){ out.innerHTML = '<span class="label">Add at least one condition.</span>'; return; }
+  let h = '';
+  if(o) h += `<span class="label">Opening</span><span class="open">${esc(o)}</span>\n\n`;
+  if(c) h += `<span class="label">Closing</span><span class="close">${esc(c)}</span>\n\n`;
+  if(state.chips.size) h += `<span class="label">Components</span>${[...state.chips].join(', ')}`;
+  out.innerHTML = h;
 }
 
-function colorizeFormula(f) {
-  if (!f) return '';
-  return f
-    .replace(/\b(IF)\b/g, '<span class="token-IF">$1</span>')
-    .replace(/\b(AND|OR|NOT)\b/g, '<span class="token-FN">$1</span>')
-    .replace(/([A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)\s*(?=[=!<>])/g, '<span class="token-TAG">$1</span>')
-    .replace(/([=!<>]+)/g, '<span class="token-OP">$1</span>')
-    .replace(/(\b\d+(?:\.\d+)?)\b/g, '<span class="token-VAL">$1</span>');
-}
-
-function rebuildFormula(section) {
-  // sync duration state
-  const dv = document.getElementById(section+'-dur-val');
-  const du = document.getElementById(section+'-dur-unit');
-  if (dv) state[section].dur.val  = parseInt(dv.value)||0;
-  if (du) state[section].dur.unit = du.value;
-
-  const f = buildFormulaString(section);
-  const el = document.getElementById(section+'-formula-display');
-  if (!el) return;
-  if (f) {
-    el.classList.remove('empty');
-    el.innerHTML = colorizeFormula(f);
-  } else {
-    el.classList.add('empty');
-    el.textContent = 'Add conditions above to generate formula';
-  }
-
-  // enable auto-close button when opening has formula
-  if (section === 'open') {
-    document.getElementById('auto-close-btn').disabled = !f;
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// NLP Parser
-// ═══════════════════════════════════════════════════════════
-function parseNLP(section) {
-  const txt = document.getElementById('nlp-'+section).value.trim();
-  if (!txt) { toast('Enter a description first'); return; }
-
-  const parsed = nlpParse(txt);
-  if (!parsed.rows.length) {
-    toast('Could not parse conditions. Try the visual builder.');
-    return;
-  }
-
-  state[section].rows = [];
-  state[section].logic = parsed.logic;
-
-  // update logic toggle UI
-  const toggleBtns = document.querySelectorAll(`#${section}-logic-toggle button`);
-  toggleBtns.forEach(b => {
-    b.classList.toggle('active', b.textContent.startsWith(parsed.logic));
-  });
-
-  parsed.rows.forEach(r => addRowDirect(section, r));
-  renderRows(section);
-  rebuildFormula(section);
-  toast(`Parsed ${parsed.rows.length} condition${parsed.rows.length>1?'s':''}`);
-}
-
-function addRowDirect(section, data) {
-  const id = ++rowId;
-  state[section].rows.push({ id, ...data });
-}
-
-function nlpParse(text) {
-  const rows = [];
-  let logic = 'AND';
-  const t = text.toLowerCase();
-
-  // Detect top-level logic
-  // "either...or" / "or" = OR, default AND
-  if (/\beither\b|\b or \b/.test(t) && !/\bboth\b|\band\b|\bbut\b/.test(t)) logic = 'OR';
-  if (/\b(and|but|both)\b/.test(t)) logic = 'AND';
-  if (/\b(or)\b/.test(t) && /\b(and|but)\b/.test(t)) logic = 'AND'; // mixed → AND
-
-  // Tokenize by conjunctions
-  const segments = text
-    .replace(/\beither\b/gi, '')
-    .split(/\b(?:and|but|or|,)\b/i)
-    .map(s => s.trim())
-    .filter(s => s.length > 2);
-
-  segments.forEach(seg => {
-    const row = parseSegment(seg);
-    if (row) rows.push(row);
-  });
-
-  return { rows, logic };
-}
-
-function parseSegment(seg) {
-  const s = seg.toLowerCase().trim();
-  let tag = '', op = '=', val = '', unit = '—';
-
-  // Extract numeric value
-  const numMatch = s.match(/\b(\d+(?:\.\d+)?)\s*(bar|kpa|psi|m³\/h|l\/s|°c|%|mg\/l|ntu|ph|rpm|kw|a|v)?\b/i);
-  if (numMatch) {
-    val  = numMatch[1];
-    unit = numMatch[2] ? numMatch[2].toLowerCase() : '—';
-  }
-
-  // Detect ON/OFF
-  if (/\bis\s+on\b|\bturned?\s+on\b|\bstart(?:ed|s)?\b|\brunning\b/.test(s)) {
-    op = '='; val = '1';
-  } else if (/\bis\s+off\b|\bturned?\s+off\b|\bstopp(?:ed|s)?\b|\bnot\s+running\b/.test(s)) {
-    op = '='; val = '0';
-  }
-
-  // Detect comparison operators
-  if (/exceed|more\s+than|greater\s+than|above|over|higher\s+than/.test(s)) op = '>';
-  else if (/less\s+than|below|under|lower\s+than/.test(s))                   op = '<';
-  else if (/at\s+least|minimum|not\s+less\s+than/.test(s))                   op = '>=';
-  else if (/at\s+most|maximum|not\s+more\s+than/.test(s))                    op = '<=';
-  else if (/not\s+equal|not\s+=|different\s+from/.test(s))                   op = '!=';
-  else if (/equals?|is\s+equal/.test(s) && val)                              op = '=';
-
-  // Normalise unit names
-  const unitMap = {'kpa':'kPa','m3/h':'m³/h','l/s':'L/s','mg/l':'mg/L'};
-  if (unitMap[unit]) unit = unitMap[unit];
-  if (unit==='—' && val==='0') unit='—'; // keep clean
-
-  // Extract tag name heuristic: capitalised words or underscore_words
-  const tagMatch = seg.match(/([A-Z][A-Za-z0-9_]+(?: [A-Z][A-Za-z0-9_]+)*|[A-Za-z][a-z]+ [a-z]+ [a-z]+(?:_\d+)?)/);
-  if (tagMatch) {
-    tag = tagMatch[0].trim()
-      .replace(/\s+/g, '_')
-      .replace(/^(The|A|An|Both|Either)_/i, '');
-  }
-
-  if (!tag) {
-    // Fallback: grab first 2-3 meaningful words and convert to snake_case
-    const words = seg.replace(/[^a-z0-9 ]/gi,'').split(/\s+/)
-      .filter(w => !/^(is|are|the|a|an|both|either|and|or|but|not|of|for|with|than|more|less|above|below|over|under|greater|lower|higher|equal|on|off|running|stopped|turned|at|least|most|minimum|maximum|exceeds?|least|most)$/i.test(w))
-      .slice(0,3);
-    tag = words.join('_');
-  }
-
-  if (!tag) return null;
-  if (val === '' && op === '=') val = '0'; // default
-
-  return { tag, op, val, unit };
-}
-
-// ═══════════════════════════════════════════════════════════
-// Auto-generate closing condition
-// ═══════════════════════════════════════════════════════════
-function autoGenerateClose() {
-  const { rows, logic } = state.open;
-  if (!rows.length) return;
-
-  const valid = rows.filter(r => r.tag.trim() && r.val !== '');
-  if (!valid.length) return;
-
-  // Invert operator
-  function invertOp(op, val) {
-    const m = { '=': '!=', '!=': '=', '>': '<=', '>=': '<', '<': '>=', '<=': '>' };
-    // Special case: =0 → =1, =1 → =0
-    if (op === '=' && val === '0') return { op: '=', val: '1' };
-    if (op === '=' && val === '1') return { op: '=', val: '0' };
-    return { op: m[op] || op, val };
-  }
-
-  const inverted = valid.map(r => {
-    const { op, val } = invertOp(r.op, r.val);
-    return { ...r, op, val };
-  });
-
-  const closeLogic = logic === 'AND' ? 'OR' : 'AND';
-
-  // Option 1: Full inversion
-  const opt1Formula = buildFormulaFromRows(inverted, closeLogic);
-  // Option 2: Only status inversion (on/off tags)
-  const statusRows = inverted.filter(r => ['0','1'].includes(String(r.val)));
-  const opt2Formula = statusRows.length ? buildFormulaFromRows(statusRows, closeLogic) : null;
-  // Option 3: Only numeric inversion
-  const numRows = inverted.filter(r => !['0','1'].includes(String(r.val)));
-  const opt3Formula = numRows.length ? buildFormulaFromRows(numRows, closeLogic) : null;
-
-  const suggestions = document.getElementById('close-suggestions-list');
-  let html = '';
-
-  html += closeSuggestionHtml(opt1Formula, 'Option 1 — Full inverse', `Flips all ${valid.length} conditions. Closes when the overall state reverses.`, 0);
-  if (opt2Formula && opt2Formula !== opt1Formula) {
-    html += closeSuggestionHtml(opt2Formula, 'Option 2 — Status-only inverse', 'Closes only based on on/off status changes.', 1);
-  }
-  if (opt3Formula && opt3Formula !== opt1Formula) {
-    html += closeSuggestionHtml(opt3Formula, 'Option 3 — Numeric-only inverse', 'Closes only based on measured values returning to threshold.', 2);
-  }
-
-  suggestions.innerHTML = html;
-  document.getElementById('close-suggestions-area').style.display = 'block';
-  selectCloseOption(0, inverted, closeLogic, opt1Formula);
-}
-
-function closeSuggestionHtml(formula, label, desc, idx) {
-  return `
-    <div class="close-option${idx===0?' selected':''}" onclick="selectCloseOption(${idx})" data-idx="${idx}">
-      <div class="close-option-label">${label}</div>
-      <div class="close-option-formula">${formula}</div>
-      <div class="close-option-desc">${desc}</div>
-      <div class="close-check">${idx===0?'✓':''}</div>
-    </div>`;
-}
-
-let closeOptions = [];
-
-function buildFormulaFromRows(rows, logic) {
-  if (!rows.length) return '';
-  const parts = rows.map(r => {
-    const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : '';
-    return `${r.tag.trim()}${r.op}${r.val}${u}`;
-  });
-  const inner = parts.length === 1 ? parts[0] : `${logic}(${parts.join(', ')})`;
-  return `IF(${inner}, 1, 0)`;
-}
-
-function selectCloseOption(idx) {
-  document.querySelectorAll('.close-option').forEach((el,i) => {
-    el.classList.toggle('selected', i===idx);
-    el.querySelector('.close-check').textContent = i===idx ? '✓' : '';
-  });
-
-  // Load the selected option's formula into the close builder
-  const formulaEl = document.querySelectorAll('.close-option-formula')[idx];
-  if (!formulaEl) return;
-  const formula = formulaEl.textContent;
-
-  // Parse the formula back into rows
-  const inner = formula.replace(/^IF\(/, '').replace(/, 1, 0\)$/, '');
-  let logic = 'AND';
-  let condStr = inner;
-  const logicMatch = inner.match(/^(AND|OR)\((.+)\)$/s);
-  if (logicMatch) { logic = logicMatch[1]; condStr = logicMatch[2]; }
-
-  const parts = smartSplit(condStr);
-  state.close.rows = [];
-  state.close.logic = logic;
-
-  const toggleBtns = document.querySelectorAll('#close-logic-toggle button');
-  toggleBtns.forEach(b => b.classList.toggle('active', b.textContent.startsWith(logic)));
-
-  parts.forEach(p => {
-    const m = p.trim().match(/^([^=!<>]+?)\s*([=!<>]+)\s*(\S+?)(?:\s+(.+))?$/);
-    if (m) {
-      addRowDirect('close', { tag: m[1].trim(), op: m[2], val: m[3], unit: m[4] || '—' });
-    }
-  });
+const FLIP = {'=':'!=','!=':'=','>':'<=','>=':'<','<':'>=','<=':'>'};
+document.getElementById('autoClose').onclick = () => {
+  if(!state.open.rows.filter(r=>r.tag&&r.val).length){ toast('Add an opening condition first'); return; }
+  state.close.logic = state.open.logic === 'AND' ? 'OR' : 'AND';
+  state.close.rows = state.open.rows.map(r => ({...r, op: FLIP[r.op] || r.op}));
+  state.close.dur = {...state.open.dur};
+  document.querySelectorAll('#logic-close button').forEach(b => b.classList.toggle('on', b.dataset.l===state.close.logic));
+  document.getElementById('dur-close-val').value = state.close.dur.val;
+  document.getElementById('dur-close-unit').value = state.close.dur.unit;
   renderRows('close');
-  rebuildFormula('close');
-}
+  updateOutput();
+};
 
-function smartSplit(str) {
-  // Split comma-separated conditions respecting nested parens
-  const parts = []; let depth = 0; let cur = '';
-  for (const ch of str) {
-    if (ch==='(') depth++;
-    if (ch===')') depth--;
-    if (ch===',' && depth===0) { parts.push(cur.trim()); cur=''; continue; }
-    cur += ch;
-  }
-  if (cur.trim()) parts.push(cur.trim());
-  return parts;
-}
+const SYSTEM_PROMPT = `You parse plant-operations trigger descriptions into structured JSON.
 
-// ═══════════════════════════════════════════════════════════
-// Trigger type chips
-// ═══════════════════════════════════════════════════════════
-function toggleChip(btn, key) {
-  if (state.chips.has(key)) { state.chips.delete(key); btn.classList.remove('selected'); }
-  else { state.chips.add(key); btn.classList.add('selected'); }
-}
+Context: water/wastewater treatment plants (STP, ETP, WTP). Operators write opening conditions in plain English referencing sensors, pumps, valves, and process parameters.
 
-// ═══════════════════════════════════════════════════════════
-// Generate trigger output
-// ═══════════════════════════════════════════════════════════
-function generateTrigger() {
-  const openF  = buildFormulaString('open');
-  const closeF = buildFormulaString('close');
+TAG NAMING — convert human descriptions into snake_case sensor tag IDs:
+- "Bar screen chamber level-1 (CS-1)" → "Bar_Screen_Level_Sensor"
+- "Filter feed pump 1 on/off" → "Filter_Feed_Pump_1_ONOFF"
+- "Pump 2 status" → "Pump_2_ONOFF"
+- "Flow rate 1" → "Flow_Rate_1"
+- "Inlet pressure transmitter 101" → "PT_101"
+- "DO sensor 2" → "DO_Sensor_2"
+- "pH sensor at outlet" → "pH_Sensor_Outlet"
+- Strip parenthetical aliases unless they ARE the canonical tag.
+- Keep acronyms uppercase (ONOFF, PT, DO, ORP, MLSS, COD, BOD).
 
-  if (!openF) { toast('Add at least one opening condition'); return; }
-  if (!closeF) { toast('Add at least one closing condition'); return; }
+OPERATORS: =, !=, >, >=, <, <=
+- "is on" / "running" → =1
+- "is off" / "stopped" → =0
+- "above X" / "exceeds X" / "more than X" / "greater than X" → >X
+- "below" / "less than" → <
+- "at least" / "≥" → >=
+- "equals" / "is" with a number → =
 
-  document.getElementById('out-open').textContent  = openF;
-  document.getElementById('out-close').textContent = closeF;
-  document.getElementById('out-meta').textContent  =
-    `Name: ${document.getElementById('trigger-name').value || '(unnamed)'} | ` +
-    `Equipment: ${document.getElementById('trigger-equip').value || '—'} | ` +
-    `Components: ${[...state.chips].join(', ')} | ` +
-    `Check: every ${document.getElementById('check-freq').value} min | ` +
-    `Priority: ${document.getElementById('priority').value}`;
+VALUE & UNIT: extract number and unit separately. Common units: mm, m, cm, bar, kPa, psi, m³/h, L/s, L/min, °C, %, mg/L, NTU, pH, rpm, kW, A, V, Hz. If no unit, return "" (empty string).
 
-  document.getElementById('output-panel').style.display = 'block';
-  document.getElementById('output-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  toast('Trigger generated');
-}
+DURATION: phrases like "for more than 5 minutes", "sustained for 10 min", "after 30 seconds" → extract value and unit (sec/min/hr). If absent, return value=0, unit="min".
 
-function exportJSON() {
-  const openF  = buildFormulaString('open');
-  const closeF = buildFormulaString('close');
-  if (!openF || !closeF) { toast('Generate the trigger first'); return; }
+LOGIC: default AND. Use OR only when the user says "or", "either", "any of".
 
-  const obj = {
-    name:      document.getElementById('trigger-name').value || 'Unnamed Trigger',
-    equipment: document.getElementById('trigger-equip').value,
-    opening: {
-      formula: openF, logic: state.open.logic,
-      conditions: state.open.rows.map(r=>({tag:r.tag,operator:r.op,value:r.val,unit:r.unit})),
-      duration:   { value: state.open.dur.val, unit: state.open.dur.unit }
+CLOSING: if only opening is described, infer closing by inverting each operator and flipping AND↔OR. Keep tags, values, units, and duration the same.
+
+OUTPUT: respond with ONLY a valid JSON object matching the schema. No prose, no markdown fences.`;
+
+const SCHEMA = {
+  type:'object',
+  properties:{
+    opening:{
+      type:'object',
+      properties:{
+        logic:{type:'string', enum:['AND','OR']},
+        conditions:{
+          type:'array',
+          items:{ type:'object',
+            properties:{ tag:{type:'string'}, operator:{type:'string', enum:['=','!=','>','>=','<','<=']}, value:{type:'string'}, unit:{type:'string'} },
+            required:['tag','operator','value','unit']
+          }
+        },
+        duration:{ type:'object', properties:{ value:{type:'integer'}, unit:{type:'string', enum:['sec','min','hr']} }, required:['value','unit'] }
+      },
+      required:['logic','conditions','duration']
     },
-    closing: {
-      formula: closeF, logic: state.close.logic,
-      conditions: state.close.rows.map(r=>({tag:r.tag,operator:r.op,value:r.val,unit:r.unit})),
-      duration:   { value: state.close.dur.val, unit: state.close.dur.unit }
-    },
-    setup: {
-      components: [...state.chips],
-      checkFrequency: parseInt(document.getElementById('check-freq').value)||1,
-      repeatAfter:    parseInt(document.getElementById('repeat-freq').value)||0,
-      priority:       document.getElementById('priority').value,
+    closing:{
+      type:'object',
+      properties:{
+        logic:{type:'string', enum:['AND','OR']},
+        conditions:{
+          type:'array',
+          items:{ type:'object',
+            properties:{ tag:{type:'string'}, operator:{type:'string', enum:['=','!=','>','>=','<','<=']}, value:{type:'string'}, unit:{type:'string'} },
+            required:['tag','operator','value','unit']
+          }
+        },
+        duration:{ type:'object', properties:{ value:{type:'integer'}, unit:{type:'string', enum:['sec','min','hr']} }, required:['value','unit'] }
+      },
+      required:['logic','conditions','duration']
     }
+  },
+  required:['opening','closing']
+};
+
+async function callClaude(userText, closingHint){
+  const apiKey = localStorage.getItem('anthropic_api_key');
+  if(!apiKey) throw new Error('No API key. Set one in the bar at the top.');
+  const userMsg = closingHint
+    ? `OPENING: ${userText}\nCLOSING: ${closingHint}`
+    : userText;
+  const body = {
+    model:'claude-opus-4-7',
+    max_tokens:4096,
+    thinking:{type:'adaptive'},
+    system:SYSTEM_PROMPT,
+    messages:[{role:'user', content:userMsg}],
+    output_config:{ format:{ type:'json_schema', schema:SCHEMA } }
   };
-
-  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = (obj.name.replace(/\s+/g,'_') || 'trigger') + '.json';
-  a.click(); URL.revokeObjectURL(url);
-}
-
-function copyFormula(section) {
-  const f = buildFormulaString(section);
-  if (!f) { toast('No formula to copy'); return; }
-  navigator.clipboard.writeText(f).then(()=>toast('Copied!')).catch(()=>toast('Copy failed'));
-}
-
-function resetSection(section) {
-  state[section].rows  = [];
-  state[section].logic = 'AND';
-  document.getElementById('nlp-'+section).value = '';
-  document.getElementById(section+'-dur-val').value = 0;
-  document.querySelectorAll(`#${section}-logic-toggle button`).forEach((b,i)=>b.classList.toggle('active',i===0));
-  if (section==='close') {
-    document.getElementById('close-suggestions-area').style.display='none';
-  }
-  renderRows(section);
-  rebuildFormula(section);
-}
-
-function resetAll() {
-  resetSection('open'); resetSection('close');
-  document.getElementById('trigger-name').value  = '';
-  document.getElementById('trigger-equip').value = '';
-  document.getElementById('output-panel').style.display = 'none';
-  state.chips = new Set(['alert']);
-  document.querySelectorAll('.type-chip').forEach(c=>{
-    c.classList.toggle('selected', c.onclick.toString().includes("'alert'"));
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify(body)
   });
-}
-
-// ═══════════════════════════════════════════════════════════
-// Bulk Upload
-// ═══════════════════════════════════════════════════════════
-function handleDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('dragging'); }
-function handleDragLeave()  { document.getElementById('drop-zone').classList.remove('dragging'); }
-function handleDrop(e) {
-  e.preventDefault(); handleDragLeave();
-  const f = e.dataTransfer.files[0];
-  if (f) processFile(f);
-}
-function handleFileSelect(e) { const f = e.target.files[0]; if (f) processFile(f); }
-
-function processFile(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'binary' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
-      if (!json.length) { toast('File appears empty'); return; }
-      state.bulkData = json;
-      renderBulkPreview(json);
-    } catch(err) { toast('Could not parse file: ' + err.message); }
-  };
-  reader.readAsBinaryString(file);
-}
-
-function renderBulkPreview(data) {
-  if (!data.length) return;
-  const cols = Object.keys(data[0]);
-  const thead = document.getElementById('bulk-thead');
-  const tbody  = document.getElementById('bulk-tbody');
-
-  thead.innerHTML = '<tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
-  tbody.innerHTML = data.slice(0,20).map(row =>
-    '<tr>' + cols.map(c => `<td>${String(row[c]).slice(0,80)}</td>`).join('') + '</tr>'
-  ).join('');
-
-  document.getElementById('bulk-row-count').textContent = data.length + ' rows';
-  document.getElementById('bulk-preview-card').style.display = 'block';
-}
-
-function generateAllTriggers() {
-  if (!state.bulkData.length) return;
-  state.bulkResults = state.bulkData.map(row => generateBulkTrigger(row));
-  renderBulkResults();
-}
-
-function findCol(row, ...names) {
-  for (const n of names) {
-    const key = Object.keys(row).find(k => k.toLowerCase().replace(/[\s_]/g,'').includes(n.toLowerCase().replace(/[\s_]/g,'')));
-    if (key && row[key]) return String(row[key]).trim();
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error(`API ${res.status}: ${t.slice(0,400)}`);
   }
-  return '';
+  const data = await res.json();
+  const textBlock = (data.content||[]).find(b => b.type==='text');
+  if(!textBlock) throw new Error('No text in response');
+  let parsed;
+  try{ parsed = JSON.parse(textBlock.text); }
+  catch(e){
+    const m = textBlock.text.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('Could not parse JSON: '+textBlock.text.slice(0,200));
+    parsed = JSON.parse(m[0]);
+  }
+  return parsed;
 }
 
-function generateBulkTrigger(row) {
-  const name      = findCol(row,'trigger name','name','trigger');
-  const equip     = findCol(row,'equipment','equip','tag group');
-  const openLogic = findCol(row,'opening logic','opening','open condition','open');
-  const closLogic = findCol(row,'closing logic','closing','close condition','close');
-  const tags      = findCol(row,'sensor tags','tags','tag names','sensors');
-  const freq      = findCol(row,'frequency','freq','check frequency') || '1';
-  const priority  = findCol(row,'priority') || 'medium';
-  const comps     = findCol(row,'components','component') || 'alert';
-
-  // Try to parse formulas from the logic columns
-  let openFormula  = tryParseFormula(openLogic, tags);
-  let closeFormula = tryParseFormula(closLogic, tags);
-
-  return { name, equip, openFormula, closeFormula, freq, priority, comps, raw: { openLogic, closLogic } };
+function applyParsed(parsed){
+  const map = section => {
+    const src = parsed[section==='open'?'opening':'closing'];
+    state[section].logic = src.logic || 'AND';
+    state[section].rows = (src.conditions||[]).map(c => ({
+      tag: c.tag||'', op: c.operator||'>', val: String(c.value||''), unit: c.unit && c.unit.length ? c.unit : '—'
+    }));
+    state[section].dur = { val: src.duration?.value||0, unit: src.duration?.unit||'min' };
+  };
+  map('open'); map('close');
+  ['open','close'].forEach(s => {
+    document.querySelectorAll(`#logic-${s} button`).forEach(b => b.classList.toggle('on', b.dataset.l===state[s].logic));
+    document.getElementById(`dur-${s}-val`).value = state[s].dur.val;
+    document.getElementById(`dur-${s}-unit`).value = state[s].dur.unit;
+    renderRows(s);
+  });
+  updateOutput();
 }
 
-function tryParseFormula(text, tagsHint) {
-  if (!text) return '—';
-  // If it already looks like a formula, return as-is
-  if (/^IF\s*\(/i.test(text)) return text.trim();
-  // Try NLP parse
-  const { rows, logic } = nlpParse(text);
-  if (!rows.length) return `/* ${text} */`;
-  return buildFormulaFromRows(rows, logic);
+const parseBtn = document.getElementById('parseBtn');
+const errBox = document.getElementById('errBox');
+parseBtn.onclick = async () => {
+  const txt = document.getElementById('nlInput').value.trim();
+  if(!txt){ toast('Type something first'); return; }
+  errBox.classList.add('hide');
+  parseBtn.disabled = true;
+  parseBtn.innerHTML = '<span class="spinner"></span> Parsing...';
+  try{
+    const parsed = await callClaude(txt);
+    applyParsed(parsed);
+    toast('Parsed ✓');
+  }catch(e){
+    errBox.textContent = e.message;
+    errBox.classList.remove('hide');
+  }finally{
+    parseBtn.disabled = false;
+    parseBtn.innerHTML = '✨ Parse with AI';
+  }
+};
+
+document.getElementById('clearBtn').onclick = () => {
+  document.getElementById('nlInput').value='';
+  state.open.rows=[newRow()]; state.close.rows=[newRow()];
+  state.open.dur={val:0,unit:'min'}; state.close.dur={val:0,unit:'min'};
+  ['open','close'].forEach(s => {
+    document.getElementById(`dur-${s}-val`).value=0;
+    document.getElementById(`dur-${s}-unit`).value='min';
+    renderRows(s);
+  });
+  errBox.classList.add('hide');
+  updateOutput();
+};
+
+document.getElementById('copyBtn').onclick = async () => {
+  const o = buildFormula('open'), c = buildFormula('close');
+  if(!o && !c){ toast('Nothing to copy'); return; }
+  const txt = [o?`Opening: ${o}`:null, c?`Closing: ${c}`:null, state.chips.size?`Components: ${[...state.chips].join(', ')}`:null].filter(Boolean).join('\n');
+  await navigator.clipboard.writeText(txt);
+  toast('Copied');
+};
+document.getElementById('exportBtn').onclick = () => {
+  const data = { opening: serialize('open'), closing: serialize('close'), components: [...state.chips] };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download='trigger.json'; a.click();
+};
+function serialize(section){
+  const s = state[section];
+  return {
+    logic: s.logic,
+    formula: buildFormula(section),
+    conditions: s.rows.filter(r=>r.tag&&r.val).map(r=>({tag:r.tag, operator:r.op, value:r.val, unit:r.unit==='—'?'':r.unit})),
+    duration: s.dur
+  };
 }
 
-function renderBulkResults() {
-  const list = document.getElementById('bulk-results-list');
-  list.innerHTML = state.bulkResults.map((t,i) => `
-    <div style="border:1px solid var(--gray-100);border-radius:8px;padding:14px 16px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div>
-          <span style="font-weight:600;font-size:14px">${t.name||'Trigger '+(i+1)}</span>
-          ${t.equip ? `<span style="margin-left:8px;font-size:12px;color:var(--gray-400)">${t.equip}</span>` : ''}
-        </div>
-        <button class="btn btn-sm btn-secondary" onclick="copyBulkTrigger(${i})">Copy Formulas</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div>
-          <div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:4px">OPENING</div>
-          <div style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:8px 10px;border-radius:6px;word-break:break-all">${t.openFormula}</div>
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:4px">CLOSING</div>
-          <div style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:8px 10px;border-radius:6px;word-break:break-all">${t.closeFormula}</div>
-        </div>
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:var(--gray-400)">
-        Priority: ${t.priority} | Frequency: ${t.freq} min | Components: ${t.comps}
-      </div>
-    </div>
-  `).join('');
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+drop.onclick = () => fileInput.click();
+['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+fileInput.onchange = () => fileInput.files[0] && handleFile(fileInput.files[0]);
 
-  document.getElementById('bulk-result-count').textContent = state.bulkResults.length;
-  document.getElementById('bulk-results-card').style.display = 'block';
-  document.getElementById('bulk-results-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  toast(`Generated ${state.bulkResults.length} trigger${state.bulkResults.length>1?'s':''}`);
+async function handleFile(file){
+  if(!localStorage.getItem('anthropic_api_key')){ toast('Set API key first'); return; }
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, {type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+  if(!rows.length){ toast('Empty sheet'); return; }
+  document.getElementById('bulkStatus').textContent = `Loaded ${rows.length} rows. Parsing...`;
+  document.getElementById('bulkOut').innerHTML = '';
+  const results = [];
+  for(let i=0; i<rows.length; i++){
+    const r = rows[i];
+    document.getElementById('bulkStatus').textContent = `Parsing ${i+1}/${rows.length}: ${r.name||'(unnamed)'}`;
+    try{
+      const parsed = await callClaude(r.opening||'', r.closing||'');
+      results.push({
+        name: r.name || `Trigger ${i+1}`,
+        opening_formula: formulaFrom(parsed.opening),
+        closing_formula: formulaFrom(parsed.closing),
+        components: (r.components||'alert').split(',').map(s=>s.trim()).filter(Boolean),
+        raw: parsed
+      });
+    }catch(e){
+      results.push({ name: r.name || `Trigger ${i+1}`, error: e.message });
+    }
+  }
+  state.bulk = results;
+  renderBulk(results);
+  document.getElementById('bulkStatus').innerHTML = `<b>Done.</b> ${results.filter(r=>!r.error).length}/${results.length} parsed successfully.`;
 }
 
-function copyBulkTrigger(i) {
-  const t = state.bulkResults[i];
-  const text = `Opening: ${t.openFormula}\nClosing:  ${t.closeFormula}`;
-  navigator.clipboard.writeText(text).then(()=>toast('Copied!')).catch(()=>toast('Copy failed'));
+function formulaFrom(b){
+  if(!b || !b.conditions || !b.conditions.length) return '';
+  const parts = b.conditions.map(c => {
+    const u = c.unit ? ` ${c.unit}` : '';
+    return `${c.tag}${c.operator}${c.value}${u}`;
+  });
+  const inner = parts.length===1 ? parts[0] : `${b.logic}(${parts.join(', ')})`;
+  const d = b.duration?.value > 0 ? ` [for ${b.duration.value} ${b.duration.unit}]` : '';
+  return `IF(${inner}, 1, 0)${d}`;
 }
 
-function exportBulkJSON() {
-  if (!state.bulkResults.length) { toast('Generate triggers first'); return; }
-  const blob = new Blob([JSON.stringify(state.bulkResults, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a'); a.href=url; a.download='triggers.json'; a.click();
-  URL.revokeObjectURL(url);
+function renderBulk(rs){
+  const out = document.getElementById('bulkOut');
+  let h = '<table class="results"><thead><tr><th>Name</th><th>Opening</th><th>Closing</th><th>Components</th></tr></thead><tbody>';
+  rs.forEach(r => {
+    if(r.error){
+      h += `<tr><td>${esc(r.name)}</td><td colspan="3" style="color:var(--err)">${esc(r.error)}</td></tr>`;
+    } else {
+      h += `<tr><td>${esc(r.name)}</td><td>${esc(r.opening_formula)}</td><td>${esc(r.closing_formula)}</td><td>${r.components.join(', ')}</td></tr>`;
+    }
+  });
+  h += '</tbody></table>';
+  h += `<div class="btn-row"><button class="btn" id="dlBulk">⬇ Download JSON</button></div>`;
+  out.innerHTML = h;
+  document.getElementById('dlBulk').onclick = () => {
+    const blob = new Blob([JSON.stringify(rs,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download='triggers.json'; a.click();
+  };
 }
 
-function copyAllFormulas() {
-  if (!state.bulkResults.length) return;
-  const text = state.bulkResults.map(t =>
-    `${t.name}\n  Open:  ${t.openFormula}\n  Close: ${t.closeFormula}`
-  ).join('\n\n');
-  navigator.clipboard.writeText(text).then(()=>toast('All formulas copied!')).catch(()=>toast('Copy failed'));
-}
-
-// ═══════════════════════════════════════════════════════════
-// Excel Template Download
-// ═══════════════════════════════════════════════════════════
-function downloadTemplate() {
-  const ws = XLSX.utils.aoa_to_sheet([
-    ['Trigger Name','Equipment','Opening Logic','Closing Logic','Sensor Tags','Frequency (min)','Priority','Components'],
-    ['Filter Feed Pump Off With Flow','Filtration',
-     'Both filter feed pumps are off but flow rate is more than 0',
-     'Either pump turns on or flow drops to 0',
-     'Filter_Feed_Pump_1_ONOFF, Filter_Feed_Pump_2_ONOFF, Flow_Rate_1','5','high','alert, communication'],
-    ['Boiler Pressure Exceeded','Boiler',
-     'Pressure exceeds 85 bar',
-     'Pressure drops below 80 bar',
-     'PT_101','10','critical','alert, hooter'],
-    ['DO Low During Aeration','Aeration',
-     'DO is less than 2 mg/L and blower is running',
-     'DO rises above 3 or blower stops',
-     'DO_Sensor_1, Blower_1_ONOFF','15','medium','alert'],
-  ]);
+document.getElementById('dlTpl').onclick = () => {
+  const data = [
+    { name:'Bar screen high level', opening:'Bar screen chamber level-1 (CS-1) > 600mm for more than 5 minutes', closing:'', components:'alert,hooter' },
+    { name:'Pumps off but flow positive', opening:'Filter feed pumps 1 and 2 are off but flow rate 1 is greater than 0', closing:'', components:'alert,task' },
+  ];
+  const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Triggers');
-  XLSX.writeFile(wb, 'formula_builder_template.xlsx');
+  XLSX.writeFile(wb, 'trigger-template.xlsx');
+};
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
 }
 
-function loadSampleData() {
-  state.bulkData = [
-    { 'Trigger Name':'Filter Feed Pump Off With Flow','Equipment':'Filtration',
-      'Opening Logic':'Both filter feed pumps are off but flow rate is more than 0',
-      'Closing Logic':'Either pump turns on or flow drops to 0',
-      'Sensor Tags':'Filter_Feed_Pump_1_ONOFF, Filter_Feed_Pump_2_ONOFF, Flow_Rate_1','Frequency (min)':5,'Priority':'high','Components':'alert, communication' },
-    { 'Trigger Name':'Boiler Pressure Exceeded','Equipment':'Boiler',
-      'Opening Logic':'Pressure exceeds 85',
-      'Closing Logic':'Pressure is less than 80',
-      'Sensor Tags':'PT_101','Frequency (min)':10,'Priority':'critical','Components':'alert, hooter' },
-    { 'Trigger Name':'DO Deficiency','Equipment':'Aeration',
-      'Opening Logic':'DO is less than 2',
-      'Closing Logic':'DO is more than 3',
-      'Sensor Tags':'DO_Sensor_1','Frequency (min)':15,'Priority':'medium','Components':'alert' },
-  ];
-  renderBulkPreview(state.bulkData);
-  toast('Sample data loaded');
-}
-
-// ═══════════════════════════════════════════════════════════
-// Toast
-// ═══════════════════════════════════════════════════════════
-function toast(msg) {
-  const c = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = 'toast'; el.textContent = msg; c.appendChild(el);
-  setTimeout(()=>el.remove(), 2800);
-}
-
-// ═══════════════════════════════════════════════════════════
-// Init
-// ═══════════════════════════════════════════════════════════
-addRow('open');
-addRow('close');
+state.open.rows.push(newRow());
+state.close.rows.push(newRow());
+renderRows('open'); renderRows('close');
+updateOutput();
 </script>
 </body>
 </html>
