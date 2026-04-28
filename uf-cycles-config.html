@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UF Cycles · Configuration · Insights+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --color-text-primary: #1a1916;
+    --color-text-secondary: #5c5a52;
+    --color-text-tertiary: #9a9890;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f4f0;
+    --color-background-info: #EBF0F7;
+    --color-border-secondary: #d8d6ce;
+    --color-border-tertiary: #eceae2;
+    --border-radius-md: 6px;
+    --border-radius-lg: 10px;
+    --brand-900: #0E1F36;
+    --brand-800: #193458;
+    --brand-700: #2A4A75;
+    --brand-500: #4A6890;
+    --brand-300: #7B92B3;
+    --brand-200: #A8B6CC;
+    --brand-100: #DCE3EE;
+    --brand-50:  #EBF0F7;
+    --brand-25:  #F5F8FC;
+    --sev-warn-bg:    #FBF3E2;
+    --sev-warn-line:  #E8D29A;
+    --sev-warn-ink:   #6B4E0E;
+    --sev-warn-accent:#B98B1F;
+    --sev-alert-bg:   #FBEDE3;
+    --sev-alert-line: #E5B7A0;
+    --sev-alert-ink:  #7C2F0E;
+    --sev-alert-accent:#B5491D;
+    --sev-ok-bg:      #E8F1E9;
+    --sev-ok-line:    #B7D4BA;
+    --sev-ok-ink:     #2D5530;
+    --elev-1: 0 1px 2px rgba(14,31,54,0.04);
+    --elev-2: 0 4px 12px rgba(14,31,54,0.06);
+    --elev-3: 0 8px 24px rgba(14,31,54,0.10);
+    --ease-out: cubic-bezier(.16,.84,.32,1);
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: #edeae4; min-height: 100vh; padding: 24px 20px; color: var(--color-text-primary); font-size: 13px; }
+  .app-shell { max-width: 1280px; margin: 0 auto; background: var(--color-background-primary); border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 24px 28px; min-height: 640px; }
+
+  /* Header */
+  .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 20px; }
+  .header-left h1 { font-size: 18px; font-weight: 600; color: var(--brand-900); letter-spacing: -.01em; }
+  .header-left .subtitle { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+  .badge-internal { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 999px; background: var(--sev-warn-bg); border: 0.5px solid var(--sev-warn-line); color: var(--sev-warn-ink); font-size: 10.5px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; margin-left: 8px; }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* Buttons */
+  .btn { height: 32px; padding: 0 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--brand-800); font-size: 12px; font-weight: 500; font-family: var(--font-sans); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s var(--ease-out); }
+  .btn:hover { background: var(--brand-50); border-color: var(--brand-200); }
+  .btn-primary { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+  .btn-primary:hover { background: var(--brand-700); border-color: var(--brand-700); }
+  .btn-ghost { border-color: transparent; }
+  .btn-ghost:hover { background: var(--brand-50); border-color: var(--brand-100); }
+  .btn-icon { width: 28px; height: 28px; padding: 0; justify-content: center; }
+  .btn-sm { height: 26px; padding: 0 10px; font-size: 11.5px; }
+  .btn-danger { color: var(--sev-alert-ink); border-color: var(--sev-alert-line); background: var(--sev-alert-bg); }
+  .btn-danger:hover { background: #f6dccd; }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr) 320px; gap: 20px; align-items: flex-start; }
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+
+  /* Sidebar (asset list) */
+  .panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 14px; }
+  .panel-title { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .asset-list { display: flex; flex-direction: column; gap: 4px; }
+  .asset-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: var(--border-radius-md); cursor: pointer; border: 0.5px solid transparent; transition: all .15s var(--ease-out); }
+  .asset-item:hover { background: var(--brand-25); }
+  .asset-item.active { background: var(--brand-50); border-color: var(--brand-200); }
+  .asset-item.disabled { opacity: .5; cursor: not-allowed; }
+  .asset-name { font-size: 12.5px; font-weight: 500; color: var(--color-text-primary); }
+  .asset-meta { font-size: 10.5px; color: var(--color-text-tertiary); margin-top: 2px; }
+  .auto-pill { font-size: 9.5px; font-weight: 600; padding: 2px 6px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+  .auto-pill.auto { background: var(--sev-ok-bg); color: var(--sev-ok-ink); border: 0.5px solid var(--sev-ok-line); }
+  .auto-pill.cond { background: var(--brand-50); color: var(--brand-800); border: 0.5px solid var(--brand-200); }
+  .auto-pill.off  { background: #f1efe9; color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
+
+  /* Main config */
+  .main-col { display: flex; flex-direction: column; gap: 16px; }
+  .section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 18px; animation: fadeUp .22s var(--ease-out); }
+  .section h2 { font-size: 14px; font-weight: 600; color: var(--brand-900); margin-bottom: 4px; }
+  .section .hint { font-size: 11.5px; color: var(--color-text-secondary); margin-bottom: 14px; line-height: 1.5; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); }
+  .field label .req { color: var(--sev-alert-accent); }
+  .input, .select { height: 32px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 10px; font-size: 12px; background: #fff; color: var(--color-text-primary); outline: none; font-family: var(--font-sans); transition: border-color .15s var(--ease-out); }
+  .input:focus, .select:focus { border-color: var(--brand-800); box-shadow: 0 0 0 3px var(--brand-50); }
+  .input.mono { font-family: var(--font-mono); font-size: 11.5px; }
+  .input-suffix { position: relative; }
+  .input-suffix .suffix { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--color-text-tertiary); pointer-events: none; }
+
+  /* Phase hierarchy */
+  .cycle-tree { display: flex; flex-direction: column; gap: 0; }
+  .main-cycle-block { border: 1px solid var(--brand-200); border-radius: var(--border-radius-lg); background: var(--brand-25); padding: 14px; }
+  .main-cycle-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .main-cycle-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-700); }
+  .main-cycle-header h3 { font-size: 13px; font-weight: 600; color: var(--brand-900); flex: 1; }
+  .main-cycle-tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--brand-700); background: #fff; padding: 3px 8px; border-radius: 4px; border: 0.5px solid var(--brand-100); }
+  .phases-container { padding-left: 16px; border-left: 2px dashed var(--brand-200); margin-left: 4px; display: flex; flex-direction: column; gap: 10px; }
+  .phase-card { background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 12px; position: relative; transition: all .15s var(--ease-out); }
+  .phase-card::before { content: ''; position: absolute; left: -18px; top: 18px; width: 14px; height: 2px; background: var(--brand-200); }
+  .phase-card.expanded { box-shadow: var(--elev-2); border-color: var(--brand-200); }
+  .phase-head { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .phase-idx { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-50); color: var(--brand-800); font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid var(--brand-200); }
+  .phase-name { font-size: 12.5px; font-weight: 500; flex: 1; color: var(--color-text-primary); }
+  .phase-meta { display: flex; gap: 6px; align-items: center; }
+  .phase-tag { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-secondary); background: var(--color-background-secondary); padding: 2px 6px; border-radius: 4px; }
+  .chevron { color: var(--color-text-tertiary); transition: transform .2s var(--ease-out); }
+  .phase-card.expanded .chevron { transform: rotate(180deg); }
+  .phase-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 0.5px dashed var(--color-border-tertiary); }
+  .phase-card.expanded .phase-body { display: flex; flex-direction: column; gap: 12px; animation: fadeIn .2s var(--ease-out); }
+
+  /* Trigger toggle */
+  .seg { display: inline-flex; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 2px; gap: 2px; }
+  .seg button { background: transparent; border: 0; padding: 5px 12px; font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); border-radius: 4px; cursor: pointer; font-family: var(--font-sans); }
+  .seg button.active { background: #fff; color: var(--brand-900); box-shadow: var(--elev-1); }
+
+  /* Condition rows */
+  .cond-row { display: grid; grid-template-columns: 1fr 90px 80px auto; gap: 8px; align-items: end; }
+  .cond-group { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px; }
+  .cond-group-title { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .cond-group-title .pill { font-size: 9.5px; padding: 2px 6px; border-radius: 999px; background: #fff; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+  /* Right column — preview / tags / efficiency */
+  .preview-col { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 16px; }
+  .kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { background: var(--brand-25); border: 0.5px solid var(--brand-100); border-radius: var(--border-radius-md); padding: 10px; }
+  .kpi-label { font-size: 10.5px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+  .kpi-value { font-size: 16px; font-weight: 600; color: var(--brand-900); margin-top: 4px; font-family: var(--font-mono); }
+  .tag-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+  .tag-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--color-background-secondary); border-radius: 6px; border: 0.5px solid var(--color-border-tertiary); font-family: var(--font-mono); font-size: 11px; }
+  .tag-item .tag-type { font-family: var(--font-sans); font-size: 9.5px; color: var(--brand-700); background: var(--brand-50); padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
+  /* Alerts list */
+  .alert-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px dashed var(--color-border-tertiary); }
+  .alert-row:last-child { border-bottom: 0; }
+  .alert-row .alert-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .alert-row .alert-desc { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  /* Switch */
+  .switch { position: relative; width: 32px; height: 18px; background: var(--color-border-secondary); border-radius: 999px; cursor: pointer; transition: background .15s var(--ease-out); flex-shrink: 0; }
+  .switch.on { background: var(--brand-700); }
+  .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .18s var(--ease-out); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .switch.on::after { transform: translateX(14px); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--brand-900); color: #fff; padding: 12px 16px; border-radius: 8px; font-size: 12.5px; box-shadow: var(--elev-3); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(8px); transition: all .22s var(--ease-out); pointer-events: none; z-index: 100; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast .ok { width: 16px; height: 16px; border-radius: 50%; background: #2ECC71; display: inline-flex; align-items: center; justify-content: center; color: var(--brand-900); font-weight: 700; font-size: 10px; }
+
+  /* Inline note */
+  .note { font-size: 11px; color: var(--sev-warn-ink); background: var(--sev-warn-bg); border: 0.5px solid var(--sev-warn-line); border-left: 3px solid var(--sev-warn-accent); border-radius: 6px; padding: 8px 10px; line-height: 1.5; }
+
+  .row { display: flex; align-items: center; gap: 8px; }
+  .spacer { flex: 1; }
+  .dim { color: var(--color-text-tertiary); }
+  .divider { height: 0.5px; background: var(--color-border-tertiary); margin: 6px 0; }
+
+  /* checkbox style */
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-primary); cursor: pointer; user-select: none; }
+  .check input { width: 14px; height: 14px; accent-color: var(--brand-800); }
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>UF Cycles · Configuration <span class="badge-internal">Internal</span></h1>
+        <div class="subtitle">Define main cycles, phases, triggers, tags &amp; operational efficiency parameters per asset.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="loadDemo()">Load demo</button>
+        <button class="btn">Discard</button>
+        <button class="btn btn-primary" onclick="save()">Save configuration</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Asset list -->
+      <aside class="panel">
+        <div class="panel-title">Assets</div>
+        <div class="asset-list" id="assetList"></div>
+        <div class="divider" style="margin: 12px 0;"></div>
+        <div class="panel-title">Tracking window</div>
+        <div class="field">
+          <select class="select" id="windowSel">
+            <option value="hour">Hourly</option>
+            <option value="day" selected>Daily</option>
+            <option value="week">Weekly</option>
+            <option value="month">Monthly</option>
+            <option value="3mo">3 Months</option>
+            <option value="6mo">6 Months</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- MIDDLE: Main config -->
+      <div class="main-col">
+        <!-- Asset summary -->
+        <div class="section" id="assetSummary">
+          <div class="row">
+            <div>
+              <h2 id="assetTitle">UF · Ultrafiltration</h2>
+              <div class="hint" id="assetHint" style="margin-bottom:0;">Always automated. Configure backwash, forward flush and CEB cycles below.</div>
+            </div>
+            <div class="spacer"></div>
+            <span class="auto-pill auto" id="assetAuto">Automated</span>
+          </div>
+        </div>
+
+        <!-- Main cycle + phases -->
+        <div class="section">
+          <div class="row" style="margin-bottom:10px;">
+            <div>
+              <h2>Main cycle &amp; phases</h2>
+              <div class="hint" style="margin-bottom:0;">A main cycle groups multiple phases. Each main cycle and each phase generates its own time-value tag.</div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn btn-sm" onclick="addMain()">+ Main cycle</button>
+          </div>
+          <div class="cycle-tree" id="cycleTree"></div>
+        </div>
+
+        <!-- Operational efficiency parameters -->
+        <div class="section">
+          <h2>Operational efficiency parameters</h2>
+          <div class="hint">Targets used to evaluate cycles and trigger alerts when actual values fall below thresholds.</div>
+          <div class="grid-4">
+            <div class="field">
+              <label>% Uptime target</label>
+              <div class="input-suffix"><input class="input" type="number" value="60" id="kpiUptime" /><span class="suffix">%</span></div>
+            </div>
+            <div class="field">
+              <label>% Cleaning time</label>
+              <div class="input-suffix"><input class="input" type="number" value="20" id="kpiClean" /><span class="suffix">%</span></div>
+            </div>
+            <div class="field">
+              <label>% Standby</label>
+              <div class="input-suffix"><input class="input" type="number" value="20" id="kpiStandby" /><span class="suffix">%</span></div>
+            </div>
+            <div class="field">
+              <label>Production efficiency</label>
+              <div class="input-suffix"><input class="input" type="number" value="85" id="kpiProd" /><span class="suffix">%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delta tracking -->
+        <div class="section">
+          <h2>Pre/post cycle delta tracking</h2>
+          <div class="hint">Sensor readings captured before &amp; after each phase / full cycle. Differences are stored against the auto-generated cycle tag.</div>
+          <div class="grid-4">
+            <label class="check"><input type="checkbox" checked /> Pressure (ΔP)</label>
+            <label class="check"><input type="checkbox" checked /> ORP</label>
+            <label class="check"><input type="checkbox" checked /> TDS</label>
+            <label class="check"><input type="checkbox" checked /> Flow rate</label>
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="section">
+          <h2>Alerts</h2>
+          <div class="hint">Drives notifications based on the auto-generated cycle tags &amp; efficiency targets.</div>
+          <div class="alert-row">
+            <div>
+              <div class="alert-title">Cycle skip detected</div>
+              <div class="alert-desc">A scheduled main cycle did not start within its window.</div>
+            </div>
+            <div class="switch on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alert-row">
+            <div>
+              <div class="alert-title">Cycle time &lt; set time</div>
+              <div class="alert-desc">Actual phase duration ended earlier than its configured set time.</div>
+            </div>
+            <div class="switch on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alert-row">
+            <div>
+              <div class="alert-title">% Uptime below target</div>
+              <div class="alert-desc">Triggers when running-hour uptime drops under the operational target.</div>
+            </div>
+            <div class="switch on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alert-row">
+            <div>
+              <div class="alert-title">Δ Pressure / ORP / TDS out of band</div>
+              <div class="alert-desc">Pre vs post-cycle delta exceeds configured tolerance.</div>
+            </div>
+            <div class="switch" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Live preview -->
+      <aside class="preview-col">
+        <div class="panel">
+          <div class="panel-title">Cycle KPIs (computed)</div>
+          <div class="kpi-row">
+            <div class="kpi"><div class="kpi-label">% Uptime</div><div class="kpi-value">68.4</div></div>
+            <div class="kpi"><div class="kpi-label">% Cleaning</div><div class="kpi-value">19.1</div></div>
+            <div class="kpi"><div class="kpi-label">% Standby</div><div class="kpi-value">12.5</div></div>
+            <div class="kpi"><div class="kpi-label">Prod. eff.</div><div class="kpi-value">87.2</div></div>
+          </div>
+          <div class="note" style="margin-top:10px;">Formula: <span style="font-family:var(--font-mono);">total_cycle_duration / total_running_hours × 100</span> — recalculated per tracking window.</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Auto-generated tags</div>
+          <div class="tag-list" id="tagList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Visualization placement</div>
+          <label class="check" style="margin-bottom:8px;"><input type="checkbox" checked /> Show as "Filter Cycle" tab on viz screen</label>
+          <label class="check" style="margin-bottom:8px;"><input type="checkbox" checked /> Show label on equipment (double-click → cycle logs)</label>
+          <label class="check"><input type="checkbox" /> Add to plant-level page list dropdown</label>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="ok">✓</span><span id="toastMsg">Configuration saved</span></div>
+
+<script>
+  // ---------- State ----------
+  const ASSETS = [
+    { id: 'uf',   name: 'UF · Ultrafiltration',  meta: 'Always automated', mode: 'auto', enabled: true,
+      hint: 'Always automated. Configure backwash, forward flush and CEB cycles below.' },
+    { id: 'sbr',  name: 'SBR · Sequential Batch Reactor', meta: 'Always automated', mode: 'auto', enabled: true,
+      hint: 'Always automated. Phases: Fill → React → Settle → Decant → Idle.' },
+    { id: 'mbr',  name: 'MBR · Membrane Bioreactor', meta: 'Always automated', mode: 'auto', enabled: true,
+      hint: 'Always automated. Configure permeation / relax / backwash sequences.' },
+    { id: 'ro',   name: 'RO · Reverse Osmosis',  meta: 'If automated', mode: 'cond', enabled: true,
+      hint: 'Cycle tracking applies only when the RO skid runs in automated mode.' },
+    { id: 'acf',  name: 'ACF · Activated Carbon Filter', meta: 'If automated', mode: 'cond', enabled: true,
+      hint: 'Cycle tracking applies only if ACF backwash is automated.' },
+    { id: 'mgf',  name: 'MGF · Multi-Grade Filter', meta: 'If automated', mode: 'cond', enabled: true, hint: 'Cycle tracking applies only if MGF backwash is automated.' },
+    { id: 'dmf',  name: 'DMF · Dual-Media Filter', meta: 'If automated', mode: 'cond', enabled: true, hint: 'Cycle tracking applies only if DMF backwash is automated.' },
+    { id: 'gmf',  name: 'GMF · Gravity Media Filter', meta: 'If automated', mode: 'cond', enabled: true, hint: 'Cycle tracking applies only if GMF backwash is automated.' }
+  ];
+
+  const tagSafe = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+
+  function newPhase(name='New phase', trigger='time', minutes=30){
+    return {
+      id: 'p_'+Math.random().toString(36).slice(2,7),
+      name, trigger,                         // 'time' | 'sensor'
+      setTime: minutes, setUnit: 'min',
+      startCond: { tag:'Valve1_ONOFF', op:'=', val:'1' },
+      startCond2:{ tag:'Valve2_ONOFF', op:'=', val:'0' },
+      endCond:   { tag:'Valve1_ONOFF', op:'=', val:'0' },
+      endCond2:  { tag:'Valve2_ONOFF', op:'=', val:'1' },
+      expanded: false
+    };
+  }
+  function newMain(name='Main backwash cycle', phases=null){
+    return {
+      id: 'm_'+Math.random().toString(36).slice(2,7),
+      name,
+      phases: phases || [ newPhase('Drain', 'sensor', 5), newPhase('Air scour', 'time', 3), newPhase('Backwash', 'sensor', 8), newPhase('Rinse', 'time', 4) ]
+    };
+  }
+
+  let activeAsset = 'uf';
+  const state = {};
+  ASSETS.forEach(a => { state[a.id] = { mains: [ newMain() ] }; });
+
+  // ---------- Render ----------
+  function renderAssetList(){
+    const el = document.getElementById('assetList');
+    el.innerHTML = '';
+    ASSETS.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'asset-item' + (a.id === activeAsset ? ' active' : '') + (!a.enabled ? ' disabled' : '');
+      item.onclick = () => { activeAsset = a.id; renderAll(); };
+      item.innerHTML = `
+        <div>
+          <div class="asset-name">${a.name}</div>
+          <div class="asset-meta">${a.meta}</div>
+        </div>
+        <span class="auto-pill ${a.mode}">${a.mode==='auto'?'Auto':a.mode==='cond'?'Cond.':'Off'}</span>`;
+      el.appendChild(item);
+    });
+  }
+
+  function renderAssetSummary(){
+    const a = ASSETS.find(x=>x.id===activeAsset);
+    document.getElementById('assetTitle').textContent = a.name;
+    document.getElementById('assetHint').textContent = a.hint;
+    const pill = document.getElementById('assetAuto');
+    pill.className = 'auto-pill ' + a.mode;
+    pill.textContent = a.mode==='auto' ? 'Automated' : 'Conditional';
+  }
+
+  function condRow(prefix, c, mainId, phaseId, key){
+    return `
+      <div class="cond-row">
+        <div class="field"><label>${prefix} tag</label>
+          <input class="input mono" value="${c.tag}" onchange="updateCond('${mainId}','${phaseId}','${key}','tag',this.value)"/></div>
+        <div class="field"><label>Operator</label>
+          <select class="select" onchange="updateCond('${mainId}','${phaseId}','${key}','op',this.value)">
+            ${['=','!=','>','<','>=','<='].map(o=>`<option ${o===c.op?'selected':''}>${o}</option>`).join('')}
+          </select></div>
+        <div class="field"><label>Value</label>
+          <input class="input mono" value="${c.val}" onchange="updateCond('${mainId}','${phaseId}','${key}','val',this.value)"/></div>
+      </div>`;
+  }
+
+  function renderTree(){
+    const root = document.getElementById('cycleTree');
+    const s = state[activeAsset];
+    root.innerHTML = '';
+    s.mains.forEach((m, mi) => {
+      const tag = `${activeAsset}_${tagSafe(m.name)}_duration`;
+      const block = document.createElement('div');
+      block.className = 'main-cycle-block';
+      block.style.marginBottom = mi < s.mains.length-1 ? '14px' : '0';
+      block.innerHTML = `
+        <div class="main-cycle-header">
+          <span class="dot"></span>
+          <input class="input" style="flex:1; background:#fff;" value="${m.name}" onchange="renameMain('${m.id}', this.value)" />
+          <span class="main-cycle-tag">${tag}</span>
+          <button class="btn btn-sm" onclick="addPhase('${m.id}')">+ Phase</button>
+          <button class="btn btn-sm btn-danger" onclick="removeMain('${m.id}')">Remove</button>
+        </div>
+        <div class="phases-container" id="phases-${m.id}"></div>`;
+      root.appendChild(block);
+      const pc = block.querySelector('#phases-'+m.id);
+      m.phases.forEach((p, pi) => pc.appendChild(renderPhase(m.id, p, pi)));
+    });
+    renderTags();
+  }
+
+  function renderPhase(mainId, p, idx){
+    const wrap = document.createElement('div');
+    wrap.className = 'phase-card' + (p.expanded ? ' expanded' : '');
+    const tag = `${activeAsset}_${tagSafe(p.name)}_phase_duration`;
+    wrap.innerHTML = `
+      <div class="phase-head" onclick="togglePhase('${mainId}','${p.id}')">
+        <span class="phase-idx">${idx+1}</span>
+        <div class="phase-name">${p.name}</div>
+        <div class="phase-meta">
+          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Time':'Sensor'}</span>
+          <span class="phase-tag">${tag}</span>
+          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="phase-body">
+        <div class="grid-3">
+          <div class="field"><label>Phase name <span class="req">*</span></label>
+            <input class="input" value="${p.name}" onchange="renamePhase('${mainId}','${p.id}',this.value)"/></div>
+          <div class="field"><label>Trigger type</label>
+            <div class="seg">
+              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time-based</button>
+              <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor / valve</button>
+            </div></div>
+          <div class="field"><label>Set time (target duration) <span class="req">*</span></label>
+            <div class="row">
+              <div class="input-suffix" style="flex:1;">
+                <input class="input" type="number" min="0" value="${p.setTime}" onchange="updatePhase('${mainId}','${p.id}','setTime',+this.value)"/>
+                <span class="suffix">${p.setUnit}</span>
+              </div>
+              <select class="select" style="width:90px;" onchange="updatePhase('${mainId}','${p.id}','setUnit',this.value)">
+                <option ${p.setUnit==='min'?'selected':''}>min</option>
+                <option ${p.setUnit==='hr'?'selected':''}>hr</option>
+                <option ${p.setUnit==='sec'?'selected':''}>sec</option>
+              </select>
+            </div></div>
+        </div>
+
+        ${p.trigger==='time' ? `
+          <div class="note">Phase will run for the configured duration. Actual elapsed time will be compared against this set time and exposed via <span style="font-family:var(--font-mono);">${tag}</span>.</div>
+        ` : `
+          <div class="cond-group">
+            <div class="cond-group-title">Start condition <span class="pill">AND</span></div>
+            ${condRow('Start', p.startCond, mainId, p.id, 'startCond')}
+            <div style="height:8px;"></div>
+            ${condRow('Start', p.startCond2, mainId, p.id, 'startCond2')}
+          </div>
+          <div class="cond-group">
+            <div class="cond-group-title">End condition <span class="pill">AND</span></div>
+            ${condRow('End', p.endCond, mainId, p.id, 'endCond')}
+            <div style="height:8px;"></div>
+            ${condRow('End', p.endCond2, mainId, p.id, 'endCond2')}
+          </div>
+          <div class="note">Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF=1 &amp; Valve2_ONOFF=0</span> starts the phase; the inverse ends it and triggers the next phase.</div>
+        `}
+
+        <div class="row">
+          <div class="spacer"></div>
+          <button class="btn btn-sm btn-danger" onclick="removePhase('${mainId}','${p.id}')">Delete phase</button>
+        </div>
+      </div>`;
+    return wrap;
+  }
+
+  function renderTags(){
+    const list = document.getElementById('tagList');
+    const s = state[activeAsset];
+    list.innerHTML = '';
+    s.mains.forEach(m => {
+      const mt = `${activeAsset}_${tagSafe(m.name)}_duration`;
+      const startT = `${activeAsset}_${tagSafe(m.name)}_start_time`;
+      const endT = `${activeAsset}_${tagSafe(m.name)}_end_time`;
+      [['MAIN',mt],['MAIN',startT],['MAIN',endT]].forEach(([t,name]) => {
+        list.insertAdjacentHTML('beforeend', `<div class="tag-item"><span>${name}</span><span class="tag-type">${t}</span></div>`);
+      });
+      m.phases.forEach(p => {
+        const pt = `${activeAsset}_${tagSafe(p.name)}_phase_duration`;
+        list.insertAdjacentHTML('beforeend', `<div class="tag-item"><span>${pt}</span><span class="tag-type">PHASE</span></div>`);
+      });
+    });
+  }
+
+  function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); }
+
+  // ---------- Mutations ----------
+  function findPhase(mainId, phaseId){
+    const m = state[activeAsset].mains.find(x=>x.id===mainId);
+    return [m, m && m.phases.find(p=>p.id===phaseId)];
+  }
+  window.togglePhase = (mid, pid) => { const [,p]=findPhase(mid,pid); p.expanded=!p.expanded; renderTree(); };
+  window.setTrigger = (mid, pid, t) => { const [,p]=findPhase(mid,pid); p.trigger=t; renderTree(); };
+  window.updatePhase = (mid, pid, k, v) => { const [,p]=findPhase(mid,pid); p[k]=v; renderTree(); };
+  window.renamePhase = (mid, pid, n) => { const [,p]=findPhase(mid,pid); p.name=n||'Untitled phase'; renderTree(); };
+  window.updateCond = (mid, pid, key, k, v) => { const [,p]=findPhase(mid,pid); p[key][k]=v; };
+  window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); };
+  window.addPhase = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); const np = newPhase('Phase '+(m.phases.length+1)); np.expanded=true; m.phases.push(np); renderTree(); };
+  window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled main cycle'; renderTree(); };
+  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); if(!state[activeAsset].mains.length) state[activeAsset].mains.push(newMain('Main cycle')); renderTree(); };
+  window.addMain = () => { state[activeAsset].mains.push(newMain('Main cycle '+(state[activeAsset].mains.length+1), [newPhase('Phase 1','time',10)])); renderTree(); };
+
+  function loadDemo(){
+    state['uf'] = { mains: [
+      { id:'m_demo1', name:'UF Backwash', phases:[
+        Object.assign(newPhase('Top drain','sensor',2), { expanded:false }),
+        Object.assign(newPhase('Air scour','time',3)),
+        Object.assign(newPhase('Bottom backwash','sensor',5)),
+        Object.assign(newPhase('Forward flush','time',2))
+      ]},
+      { id:'m_demo2', name:'UF CEB · Acid', phases:[ newPhase('Dose acid','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ]}
+    ]};
+    activeAsset='uf'; renderAll(); toast('Demo configuration loaded');
+  }
+  function save(){ toast('Configuration saved · '+Object.values(state).reduce((n,a)=>n+a.mains.length,0)+' main cycles · '+Object.values(state).reduce((n,a)=>n+a.mains.reduce((m,mc)=>m+mc.phases.length,0),0)+' phases'); }
+  function toast(m){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+  window.loadDemo = loadDemo; window.save = save;
+
+  renderAll();
+</script>
+</body>
+</html>
