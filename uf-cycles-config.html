@@ -188,6 +188,44 @@
   /* checkbox style */
   .check { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-primary); cursor: pointer; user-select: none; }
   .check input { width: 14px; height: 14px; accent-color: var(--brand-800); }
+
+  /* Main cycle collapse */
+  .main-cycle-toggle { width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; color: var(--brand-700); background: #fff; border: 0.5px solid var(--brand-100); cursor: pointer; flex-shrink: 0; transition: transform .2s var(--ease-out); }
+  .main-cycle-block.collapsed .main-cycle-toggle { transform: rotate(-90deg); }
+  .main-cycle-body { display: flex; flex-direction: column; gap: 12px; }
+  .main-cycle-block.collapsed .main-cycle-body { display: none; }
+  .main-cycle-summary { font-size: 11px; color: var(--color-text-secondary); margin-left: 30px; margin-top: -6px; margin-bottom: 8px; }
+  .main-cycle-block.collapsed .main-cycle-summary { margin-bottom: 0; }
+
+  /* Set time inline group (replaces buggy suffix) */
+  .duration-group { display: flex; gap: 6px; }
+  .duration-group .input { flex: 1; min-width: 0; }
+  .duration-group .select { width: 86px; flex-shrink: 0; }
+
+  /* Empty state */
+  .empty-state { padding: 28px 20px; text-align: center; border: 1.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-lg); background: var(--brand-25); }
+  .empty-state .es-icon { width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 0.5px solid var(--brand-100); margin: 0 auto 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--brand-700); }
+  .empty-state h3 { font-size: 13px; font-weight: 600; color: var(--brand-900); margin-bottom: 4px; }
+  .empty-state p { font-size: 11.5px; color: var(--color-text-secondary); max-width: 380px; margin: 0 auto 14px; line-height: 1.5; }
+  .empty-state .row { justify-content: center; }
+
+  /* Template menu */
+  .menu-wrap { position: relative; display: inline-block; }
+  .menu { position: absolute; top: calc(100% + 6px); right: 0; min-width: 220px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); padding: 6px; z-index: 20; display: none; animation: fadeUp .18s var(--ease-out); }
+  .menu.open { display: block; }
+  .menu-title { font-size: 10px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; padding: 6px 10px 4px; }
+  .menu-item { display: flex; flex-direction: column; padding: 8px 10px; border-radius: 4px; cursor: pointer; }
+  .menu-item:hover { background: var(--brand-50); }
+  .menu-item .mi-title { font-size: 12.5px; font-weight: 500; color: var(--color-text-primary); }
+  .menu-item .mi-desc { font-size: 10.5px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  /* Tracker rows */
+  .tracker-row { display: grid; grid-template-columns: minmax(0, 1.4fr) 130px minmax(0, 1fr) 60px 32px; gap: 8px; align-items: end; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); }
+  .tracker-row + .tracker-row { margin-top: 8px; }
+  @media (max-width: 900px) { .tracker-row { grid-template-columns: 1fr 1fr; } .tracker-row > *:last-child { grid-column: 2; justify-self: end; } }
+  .tracker-empty { font-size: 11.5px; color: var(--color-text-tertiary); padding: 12px; text-align: center; border: 1px dashed var(--color-border-tertiary); border-radius: var(--border-radius-md); }
+  .icon-btn { width: 32px; height: 32px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .icon-btn:hover { background: var(--sev-alert-bg); color: var(--sev-alert-ink); border-color: var(--sev-alert-line); }
 </style>
 </head>
 <body>
@@ -211,17 +249,9 @@
         <div class="panel-title">Assets</div>
         <div class="asset-list" id="assetList"></div>
         <div class="divider" style="margin: 12px 0;"></div>
-        <div class="panel-title">Tracking window</div>
-        <div class="field">
-          <select class="select" id="windowSel">
-            <option value="hour">Hourly</option>
-            <option value="day" selected>Daily</option>
-            <option value="week">Weekly</option>
-            <option value="month">Monthly</option>
-            <option value="3mo">3 Months</option>
-            <option value="6mo">6 Months</option>
-            <option value="custom">Custom…</option>
-          </select>
+        <div class="panel-title">Tracking</div>
+        <div style="font-size:11.5px; color:var(--color-text-secondary); line-height:1.5;">
+          Cycles are tracked <b>live</b> as they run. Each phase opens and closes against its trigger and writes to its tag in real time.
         </div>
       </aside>
 
@@ -241,13 +271,17 @@
 
         <!-- Main cycle + phases -->
         <div class="section">
-          <div class="row" style="margin-bottom:10px;">
+          <div class="row" style="margin-bottom:14px;">
             <div>
-              <h2>Main cycle &amp; phases</h2>
-              <div class="hint" style="margin-bottom:0;">A main cycle groups multiple phases. Each main cycle and each phase generates its own time-value tag.</div>
+              <h2>Cycles</h2>
+              <div class="hint" style="margin-bottom:0;">A cycle is made up of steps that run in order. Each cycle and each step gets its own time tag automatically.</div>
             </div>
             <div class="spacer"></div>
-            <button class="btn btn-sm" onclick="addMain()">+ Main cycle</button>
+            <div class="menu-wrap" id="tplWrap">
+              <button class="btn btn-sm" onclick="toggleTpl(event)">Start from template ▾</button>
+              <div class="menu" id="tplMenu"></div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="addMain()">+ New cycle</button>
           </div>
           <div class="cycle-tree" id="cycleTree"></div>
         </div>
@@ -276,16 +310,17 @@
           </div>
         </div>
 
-        <!-- Delta tracking -->
+        <!-- What to track -->
         <div class="section">
-          <h2>Pre/post cycle delta tracking</h2>
-          <div class="hint">Sensor readings captured before &amp; after each phase / full cycle. Differences are stored against the auto-generated cycle tag.</div>
-          <div class="grid-4">
-            <label class="check"><input type="checkbox" checked /> Pressure (ΔP)</label>
-            <label class="check"><input type="checkbox" checked /> ORP</label>
-            <label class="check"><input type="checkbox" checked /> TDS</label>
-            <label class="check"><input type="checkbox" checked /> Flow rate</label>
+          <div class="row" style="margin-bottom:6px;">
+            <div>
+              <h2>What to track</h2>
+              <div class="hint" style="margin-bottom:0;">Pick any sensor, tag, or efficiency parameter. Set how it should be measured against the cycle &amp; what triggers an alert.</div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn btn-sm" onclick="addTracker()">+ Add parameter</button>
           </div>
+          <div id="trackerList" style="margin-top:8px;"></div>
         </div>
 
         <!-- Alerts -->
@@ -315,8 +350,8 @@
           </div>
           <div class="alert-row">
             <div>
-              <div class="alert-title">Δ Pressure / ORP / TDS out of band</div>
-              <div class="alert-desc">Pre vs post-cycle delta exceeds configured tolerance.</div>
+              <div class="alert-title">Tracked parameter out of band</div>
+              <div class="alert-desc">Any parameter in <i>What to track</i> breaches its tolerance or threshold.</div>
             </div>
             <div class="switch" onclick="this.classList.toggle('on')"></div>
           </div>
@@ -373,10 +408,10 @@
 
   const tagSafe = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
 
-  function newPhase(name='New phase', trigger='time', minutes=30){
+  function newPhase(name='New step', trigger='time', minutes=10){
     return {
       id: 'p_'+Math.random().toString(36).slice(2,7),
-      name, trigger,                         // 'time' | 'sensor'
+      name, trigger,
       setTime: minutes, setUnit: 'min',
       startCond: { tag:'Valve1_ONOFF', op:'=', val:'1' },
       startCond2:{ tag:'Valve2_ONOFF', op:'=', val:'0' },
@@ -385,17 +420,57 @@
       expanded: false
     };
   }
-  function newMain(name='Main backwash cycle', phases=null){
+  function newMain(name='New cycle', phases=null){
     return {
       id: 'm_'+Math.random().toString(36).slice(2,7),
       name,
-      phases: phases || [ newPhase('Drain', 'sensor', 5), newPhase('Air scour', 'time', 3), newPhase('Backwash', 'sensor', 8), newPhase('Rinse', 'time', 4) ]
+      collapsed: false,
+      phases: phases || []
     };
   }
+  function newTracker(){
+    return { id:'t_'+Math.random().toString(36).slice(2,7), name:'', mode:'delta', tag:'', min:'', max:'', alert:true };
+  }
+
+  // Templates — quick-starts for common cycles. Keys are user-facing labels.
+  const TEMPLATES = {
+    uf: [
+      { label: 'UF Backwash', desc: '4 steps · drain → air scour → backwash → rinse',
+        build: () => newMain('UF Backwash', [
+          Object.assign(newPhase('Top drain','sensor',2), { expanded:false }),
+          newPhase('Air scour','time',3),
+          newPhase('Bottom backwash','sensor',5),
+          newPhase('Forward flush','time',2)
+        ])},
+      { label: 'UF CEB · Acid', desc: '3 steps · dose → soak → rinse',
+        build: () => newMain('UF CEB · Acid', [ newPhase('Dose acid','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ])},
+      { label: 'UF CEB · Caustic', desc: '3 steps · dose → soak → rinse',
+        build: () => newMain('UF CEB · Caustic', [ newPhase('Dose caustic','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ])}
+    ],
+    sbr: [
+      { label: 'SBR Sequence', desc: 'Fill → React → Settle → Decant → Idle',
+        build: () => newMain('SBR Sequence', [
+          newPhase('Fill','sensor',30), newPhase('React','time',120), newPhase('Settle','time',45),
+          newPhase('Decant','sensor',30), newPhase('Idle','time',15)
+        ])}
+    ],
+    mbr: [
+      { label: 'MBR Permeation cycle', desc: 'Permeate → Relax → Backwash',
+        build: () => newMain('MBR Permeation', [ newPhase('Permeate','time',9), newPhase('Relax','time',1), newPhase('Backwash','sensor',1) ])}
+    ],
+    ro: [
+      { label: 'RO CIP', desc: 'Low-pressure flush → CIP → Rinse',
+        build: () => newMain('RO CIP', [ newPhase('LP flush','time',10), newPhase('CIP recirculation','time',60), newPhase('Rinse','sensor',15) ])}
+    ],
+    acf: [{ label: 'ACF Backwash', desc: 'Backwash → Rinse', build: () => newMain('ACF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
+    mgf: [{ label: 'MGF Backwash', desc: 'Backwash → Rinse', build: () => newMain('MGF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
+    dmf: [{ label: 'DMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('DMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
+    gmf: [{ label: 'GMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('GMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}]
+  };
 
   let activeAsset = 'uf';
   const state = {};
-  ASSETS.forEach(a => { state[a.id] = { mains: [ newMain() ] }; });
+  ASSETS.forEach(a => { state[a.id] = { mains: [], trackers: [] }; });
 
   // ---------- Render ----------
   function renderAssetList(){
@@ -442,20 +517,46 @@
     const root = document.getElementById('cycleTree');
     const s = state[activeAsset];
     root.innerHTML = '';
+
+    if (!s.mains.length) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <div class="es-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <h3>No cycles yet</h3>
+          <p>Build a cycle from scratch, or pick a template to get started in one click. You can rename, add steps, and tweak triggers afterwards.</p>
+          <div class="row">
+            <button class="btn" onclick="toggleTpl(event, true)">Start from template</button>
+            <button class="btn btn-primary" onclick="addMain()">+ New cycle</button>
+          </div>
+        </div>`;
+      renderTags();
+      return;
+    }
+
     s.mains.forEach((m, mi) => {
       const tag = `${activeAsset}_${tagSafe(m.name)}_duration`;
       const block = document.createElement('div');
-      block.className = 'main-cycle-block';
+      block.className = 'main-cycle-block' + (m.collapsed ? ' collapsed' : '');
       block.style.marginBottom = mi < s.mains.length-1 ? '14px' : '0';
+      const stepsLabel = m.phases.length === 0 ? 'No steps yet' : (m.phases.length + ' step' + (m.phases.length===1?'':'s'));
       block.innerHTML = `
         <div class="main-cycle-header">
+          <button class="main-cycle-toggle" onclick="toggleMain('${m.id}')" aria-label="Collapse">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
           <span class="dot"></span>
-          <input class="input" style="flex:1; background:#fff;" value="${m.name}" onchange="renameMain('${m.id}', this.value)" />
-          <span class="main-cycle-tag">${tag}</span>
-          <button class="btn btn-sm" onclick="addPhase('${m.id}')">+ Phase</button>
+          <input class="input" style="background:#fff;" value="${m.name}" onchange="renameMain('${m.id}', this.value)" />
+          <span class="main-cycle-tag" title="${tag}">${tag}</span>
+          <button class="btn btn-sm" onclick="addPhase('${m.id}')">+ Step</button>
           <button class="btn btn-sm btn-danger" onclick="removeMain('${m.id}')">Remove</button>
         </div>
-        <div class="phases-container" id="phases-${m.id}"></div>`;
+        <div class="main-cycle-summary">${stepsLabel}${m.collapsed && m.phases.length ? ' · click to expand' : ''}</div>
+        <div class="main-cycle-body">
+          <div class="phases-container" id="phases-${m.id}"></div>
+          ${m.phases.length === 0 ? `<div class="tracker-empty">No steps in this cycle yet. Click <b>+ Step</b> to add the first one.</div>` : ''}
+        </div>`;
       root.appendChild(block);
       const pc = block.querySelector('#phases-'+m.id);
       m.phases.forEach((p, pi) => pc.appendChild(renderPhase(m.id, p, pi)));
@@ -472,55 +573,52 @@
         <span class="phase-idx">${idx+1}</span>
         <div class="phase-name">${p.name}</div>
         <div class="phase-meta">
-          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Time':'Sensor'}</span>
-          <span class="phase-tag">${tag}</span>
+          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Timed':'On signal'}</span>
+          <span class="phase-tag" title="${tag}">${p.setTime}${p.setUnit}</span>
           <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
       </div>
       <div class="phase-body">
         <div class="grid-3">
-          <div class="field"><label>Phase name <span class="req">*</span></label>
+          <div class="field"><label>Step name <span class="req">*</span></label>
             <input class="input" value="${p.name}" onchange="renamePhase('${mainId}','${p.id}',this.value)"/></div>
-          <div class="field"><label>Trigger type</label>
+          <div class="field"><label>Starts by</label>
             <div class="seg">
-              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time-based</button>
+              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time</button>
               <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor / valve</button>
             </div></div>
-          <div class="field"><label>Set time (target duration) <span class="req">*</span></label>
-            <div class="row">
-              <div class="input-suffix" style="flex:1;">
-                <input class="input" type="number" min="0" value="${p.setTime}" onchange="updatePhase('${mainId}','${p.id}','setTime',+this.value)"/>
-                <span class="suffix">${p.setUnit}</span>
-              </div>
-              <select class="select" style="width:90px;" onchange="updatePhase('${mainId}','${p.id}','setUnit',this.value)">
-                <option ${p.setUnit==='min'?'selected':''}>min</option>
-                <option ${p.setUnit==='hr'?'selected':''}>hr</option>
-                <option ${p.setUnit==='sec'?'selected':''}>sec</option>
+          <div class="field"><label>Target duration <span class="req">*</span></label>
+            <div class="duration-group">
+              <input class="input" type="number" min="0" value="${p.setTime}" onchange="updatePhase('${mainId}','${p.id}','setTime',+this.value)"/>
+              <select class="select" onchange="updatePhase('${mainId}','${p.id}','setUnit',this.value)">
+                <option value="sec" ${p.setUnit==='sec'?'selected':''}>sec</option>
+                <option value="min" ${p.setUnit==='min'?'selected':''}>min</option>
+                <option value="hr"  ${p.setUnit==='hr' ?'selected':''}>hr</option>
               </select>
             </div></div>
         </div>
 
         ${p.trigger==='time' ? `
-          <div class="note">Phase will run for the configured duration. Actual elapsed time will be compared against this set time and exposed via <span style="font-family:var(--font-mono);">${tag}</span>.</div>
+          <div class="note">This step runs for the target duration. Actual time is compared to it and written to <span style="font-family:var(--font-mono);">${tag}</span>.</div>
         ` : `
           <div class="cond-group">
-            <div class="cond-group-title">Start condition <span class="pill">AND</span></div>
+            <div class="cond-group-title">Starts when <span class="pill">all true</span></div>
             ${condRow('Start', p.startCond, mainId, p.id, 'startCond')}
             <div style="height:8px;"></div>
             ${condRow('Start', p.startCond2, mainId, p.id, 'startCond2')}
           </div>
           <div class="cond-group">
-            <div class="cond-group-title">End condition <span class="pill">AND</span></div>
+            <div class="cond-group-title">Ends when <span class="pill">all true</span></div>
             ${condRow('End', p.endCond, mainId, p.id, 'endCond')}
             <div style="height:8px;"></div>
             ${condRow('End', p.endCond2, mainId, p.id, 'endCond2')}
           </div>
-          <div class="note">Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF=1 &amp; Valve2_ONOFF=0</span> starts the phase; the inverse ends it and triggers the next phase.</div>
+          <div class="note">e.g. <span style="font-family:var(--font-mono);">Valve1_ONOFF=1 &amp; Valve2_ONOFF=0</span> opens the step; the inverse closes it and the next step begins.</div>
         `}
 
         <div class="row">
           <div class="spacer"></div>
-          <button class="btn btn-sm btn-danger" onclick="removePhase('${mainId}','${p.id}')">Delete phase</button>
+          <button class="btn btn-sm btn-danger" onclick="removePhase('${mainId}','${p.id}')">Delete step</button>
         </div>
       </div>`;
     return wrap;
@@ -544,7 +642,55 @@
     });
   }
 
-  function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); }
+  function renderTrackers(){
+    const list = document.getElementById('trackerList');
+    const s = state[activeAsset];
+    if (!s.trackers.length) {
+      list.innerHTML = `<div class="tracker-empty">Nothing being tracked yet. Click <b>+ Add parameter</b> to track a sensor reading, a delta, or an efficiency value.</div>`;
+      return;
+    }
+    list.innerHTML = '';
+    s.trackers.forEach(t => {
+      const showThresh = t.mode === 'threshold' || t.mode === 'efficiency';
+      const showDelta  = t.mode === 'delta';
+      const row = document.createElement('div');
+      row.className = 'tracker-row';
+      row.innerHTML = `
+        <div class="field"><label>Parameter / tag</label>
+          <input class="input mono" placeholder="e.g. UF_Inlet_Pressure" value="${t.name}" onchange="updateTracker('${t.id}','name',this.value)"/></div>
+        <div class="field"><label>How to measure</label>
+          <select class="select" onchange="updateTracker('${t.id}','mode',this.value)">
+            <option value="delta" ${t.mode==='delta'?'selected':''}>Δ Before vs after</option>
+            <option value="threshold" ${t.mode==='threshold'?'selected':''}>Threshold band</option>
+            <option value="efficiency" ${t.mode==='efficiency'?'selected':''}>Efficiency target</option>
+          </select></div>
+        <div class="field"><label>${showDelta ? 'Tolerance (Δ)' : 'Min — Max'}</label>
+          ${showDelta
+            ? `<input class="input" placeholder="±10" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>`
+            : `<div class="duration-group">
+                 <input class="input" placeholder="Min" value="${t.min}" onchange="updateTracker('${t.id}','min',this.value)"/>
+                 <input class="input" placeholder="Max" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>
+               </div>`}
+        </div>
+        <div class="field"><label>Alert</label>
+          <div class="switch ${t.alert?'on':''}" onclick="updateTracker('${t.id}','alert',${!t.alert})" style="margin-top:6px;"></div>
+        </div>
+        <button class="icon-btn" onclick="removeTracker('${t.id}')" aria-label="Remove" title="Remove">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m1 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6"/></svg>
+        </button>`;
+      list.appendChild(row);
+    });
+  }
+
+  function renderTemplateMenu(){
+    const menu = document.getElementById('tplMenu');
+    const tpls = TEMPLATES[activeAsset] || [];
+    if (!tpls.length) { menu.innerHTML = `<div class="menu-title">No templates</div><div style="padding:8px 10px; font-size:11.5px; color:var(--color-text-secondary);">Build your own with <b>+ New cycle</b>.</div>`; return; }
+    menu.innerHTML = `<div class="menu-title">Templates for ${ASSETS.find(a=>a.id===activeAsset).name.split(' · ')[0]}</div>` +
+      tpls.map((t,i) => `<div class="menu-item" onclick="useTemplate(${i})"><div class="mi-title">${t.label}</div><div class="mi-desc">${t.desc}</div></div>`).join('');
+  }
+
+  function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); renderTrackers(); renderTemplateMenu(); }
 
   // ---------- Mutations ----------
   function findPhase(mainId, phaseId){
@@ -559,19 +705,43 @@
   window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); };
   window.addPhase = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); const np = newPhase('Phase '+(m.phases.length+1)); np.expanded=true; m.phases.push(np); renderTree(); };
   window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled main cycle'; renderTree(); };
-  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); if(!state[activeAsset].mains.length) state[activeAsset].mains.push(newMain('Main cycle')); renderTree(); };
-  window.addMain = () => { state[activeAsset].mains.push(newMain('Main cycle '+(state[activeAsset].mains.length+1), [newPhase('Phase 1','time',10)])); renderTree(); };
+  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); renderTree(); };
+  window.addMain = () => { const np = newPhase('Step 1','time',10); np.expanded=true; const m = newMain('Cycle '+(state[activeAsset].mains.length+1), [np]); m.collapsed=false; state[activeAsset].mains.push(m); renderTree(); };
+  window.toggleMain = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.collapsed=!m.collapsed; renderTree(); };
+
+  // Template menu
+  window.toggleTpl = (e, openOnly) => {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('tplMenu');
+    if (openOnly) menu.classList.add('open'); else menu.classList.toggle('open');
+  };
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('tplWrap');
+    if (wrap && !wrap.contains(e.target)) document.getElementById('tplMenu').classList.remove('open');
+  });
+  window.useTemplate = (i) => {
+    const tpl = TEMPLATES[activeAsset][i];
+    if (!tpl) return;
+    state[activeAsset].mains.push(tpl.build());
+    document.getElementById('tplMenu').classList.remove('open');
+    renderTree();
+    toast('Added "'+tpl.label+'" — edit anything you like.');
+  };
+
+  // Trackers
+  window.addTracker = () => { state[activeAsset].trackers.push(newTracker()); renderTrackers(); };
+  window.updateTracker = (id, k, v) => { const t = state[activeAsset].trackers.find(x=>x.id===id); if(!t) return; t[k]=v; if(k==='mode'||k==='alert') renderTrackers(); };
+  window.removeTracker = (id) => { state[activeAsset].trackers = state[activeAsset].trackers.filter(x=>x.id!==id); renderTrackers(); };
 
   function loadDemo(){
-    state['uf'] = { mains: [
-      { id:'m_demo1', name:'UF Backwash', phases:[
-        Object.assign(newPhase('Top drain','sensor',2), { expanded:false }),
-        Object.assign(newPhase('Air scour','time',3)),
-        Object.assign(newPhase('Bottom backwash','sensor',5)),
-        Object.assign(newPhase('Forward flush','time',2))
-      ]},
-      { id:'m_demo2', name:'UF CEB · Acid', phases:[ newPhase('Dose acid','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ]}
-    ]};
+    state['uf'] = {
+      mains: [ TEMPLATES.uf[0].build(), TEMPLATES.uf[1].build() ],
+      trackers: [
+        Object.assign(newTracker(), { name:'UF_Inlet_Pressure',  mode:'delta',      max:'0.3', alert:true }),
+        Object.assign(newTracker(), { name:'UF_Permeate_Flow',   mode:'threshold',  min:'4',   max:'8', alert:true }),
+        Object.assign(newTracker(), { name:'UF_Recovery_Pct',    mode:'efficiency', min:'85',  max:'',  alert:true })
+      ]
+    };
     activeAsset='uf'; renderAll(); toast('Demo configuration loaded');
   }
   function save(){ toast('Configuration saved · '+Object.values(state).reduce((n,a)=>n+a.mains.length,0)+' main cycles · '+Object.values(state).reduce((n,a)=>n+a.mains.reduce((m,mc)=>m+mc.phases.length,0),0)+' phases'); }
