@@ -83,6 +83,77 @@
     .ux-hint.error .ux-hint-icon { color: var(--sev-alert-accent); }
     .ux-hint.info .ux-hint-icon { color: var(--brand-500); }
 
+    /* Static filter bar with progressive disclosure */
+    .filter-static-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .filter-search { flex: 1 1 220px; min-width: 200px; height: 36px; }
+    .filter-group { position: relative; }
+    .filter-pop-btn { height: 36px; padding: 0 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: #fff; color: var(--color-text-secondary); font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-sans); transition: background .14s var(--ease-out), border-color .14s var(--ease-out); }
+    .filter-pop-btn:hover { background: var(--brand-50); border-color: var(--brand-200); color: var(--brand-800); }
+    .filter-pop-btn.active { background: var(--brand-50); border-color: var(--brand-200); color: var(--brand-800); }
+    .filter-pop-count { font-size: 11px; color: var(--color-text-tertiary); }
+    .filter-pop-btn.active .filter-pop-count { color: var(--brand-700); font-weight: 500; }
+    .filter-clear { color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
+    .filter-clear:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
+    .filter-pop { position: absolute; top: 42px; left: 0; min-width: 240px; max-width: 320px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); z-index: 60; padding: 10px; display: none; animation: fadeUp .18s var(--ease-out); }
+    .filter-pop.open { display: block; }
+    .filter-pop-section { margin-bottom: 10px; }
+    .filter-pop-section:last-child { margin-bottom: 0; }
+    .filter-pop-section-title { font-size: 10px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .filter-pop-row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: 4px; cursor: pointer; transition: background .12s; font-size: 12.5px; color: var(--color-text-primary); }
+    .filter-pop-row:hover { background: var(--brand-25); }
+    .filter-pop-row input[type="checkbox"] { accent-color: var(--brand-800); cursor: pointer; }
+    .filter-pop-row .fp-meta { margin-left: auto; font-size: 11px; color: var(--color-text-tertiary); }
+    .filter-pop-actions { display: flex; gap: 6px; padding-top: 8px; margin-top: 8px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .filter-pop-actions button { flex: 1; height: 28px; border-radius: 4px; font-size: 11.5px; cursor: pointer; font-family: var(--font-sans); border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); }
+    .filter-pop-actions button.fp-apply { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+    .filter-pop-plant-action { padding: 8px; border-top: 0.5px solid var(--color-border-tertiary); margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .filter-pop-plant-action button { height: 30px; border-radius: 5px; font-size: 11.5px; cursor: pointer; font-family: var(--font-sans); border: 0.5px solid; }
+    .fp-toggle-on  { background: var(--brand-50); color: var(--brand-800); border-color: var(--brand-200); }
+    .fp-toggle-on:hover  { background: var(--brand-100); }
+    .fp-toggle-off { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
+    .fp-toggle-off:hover { background: #F7DBC8; }
+
+    /* Master user control modal */
+    .muc-search-row { display: flex; gap: 6px; margin-bottom: 10px; }
+    .muc-input { flex: 1; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; outline: none; font-family: var(--font-sans); }
+    .muc-input:focus { border-color: var(--brand-500); }
+    .muc-suggest { background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); margin-bottom: 10px; max-height: 140px; overflow-y: auto; }
+    .muc-suggest-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; font-size: 12.5px; transition: background .12s; }
+    .muc-suggest-item:hover { background: var(--brand-25); }
+    .muc-suggest-item:not(:last-child) { border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .muc-suggest-meta { margin-left: auto; font-size: 11px; color: var(--color-text-tertiary); }
+    .muc-results { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; max-height: 320px; overflow-y: auto; }
+    .muc-empty { text-align: center; color: var(--color-text-tertiary); font-size: 12.5px; padding: 24px 12px; }
+    .muc-insight-card { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; margin-bottom: 8px; animation: fadeUp .2s var(--ease-out); }
+    .muc-insight-card:last-child { margin-bottom: 0; }
+    .muc-insight-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .muc-insight-name { font-size: 12.5px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+    .muc-insight-plant { font-size: 11px; color: var(--color-text-tertiary); }
+    .muc-level-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 8px; font-size: 11px; margin-right: 4px; margin-bottom: 4px; }
+    .muc-level-tag.removable { padding-right: 4px; }
+    .muc-level-tag-x { width: 14px; height: 14px; border-radius: 50%; background: rgba(0,0,0,0.08); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; line-height: 1; transition: background .12s; }
+    .muc-level-tag-x:hover { background: rgba(0,0,0,0.18); }
+    .muc-add-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 6px; align-items: center; }
+    .muc-add-select { height: 28px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-size: 11.5px; padding: 0 6px; font-family: var(--font-sans); background: #fff; }
+    .muc-add-btn { height: 28px; padding: 0 10px; border-radius: 4px; font-size: 11.5px; cursor: pointer; border: 0.5px solid var(--brand-200); background: var(--brand-50); color: var(--brand-800); font-family: var(--font-sans); transition: background .14s; }
+    .muc-add-btn:hover { background: var(--brand-100); }
+    .muc-bulk-row { display: flex; gap: 8px; padding: 10px 0 0; border-top: 0.5px solid var(--color-border-tertiary); margin-top: 10px; }
+
+    /* Add Insight modal */
+    .ai-form { display: flex; flex-direction: column; gap: 10px; }
+    .ai-row { display: flex; flex-direction: column; gap: 4px; }
+    .ai-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
+    .ai-input, .ai-select { height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; font-family: var(--font-sans); background: #fff; outline: none; }
+    .ai-input:focus, .ai-select:focus { border-color: var(--brand-500); }
+    .ai-textarea { min-height: 60px; padding: 8px 12px; resize: vertical; }
+    .ai-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ai-grid-3 { display: grid; grid-template-columns: 1.4fr 50px 1fr 60px; gap: 6px; }
+    .ai-type-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .ai-type-chip { padding: 8px 6px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: #fff; font-size: 11.5px; text-align: center; cursor: pointer; font-family: var(--font-sans); transition: all .14s; }
+    .ai-type-chip:hover { background: var(--brand-25); }
+    .ai-type-chip.selected { background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-800); font-weight: 500; }
+    .ai-esc-mini { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
     /* Doherty threshold — undo toast */
     .undo-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: #0E1F36; color: #ffffff; border-radius: 10px; padding: 10px 12px 10px 16px; box-shadow: 0 8px 24px rgba(14,31,54,0.28); display: none; align-items: center; gap: 14px; font-size: 13px; z-index: 9999; max-width: 560px; opacity: 0; transition: opacity 0.18s ease, transform 0.22s ease; }
     .undo-toast.open { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -282,11 +353,15 @@
     #view-l2 .pill-imp { background: #EBF0F7; color: #193458; border: 0.5px solid #A8B6CC; }
     #view-l2 .filter-btn { height: 34px; font-size: 12px; }
     #view-l2 .search-input { height: 34px; }
-    #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 90px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
-    #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 90px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .1s; cursor: pointer; }
+    #view-l2 .table-head { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 1fr 90px 60px; background: var(--color-background-secondary); padding: 9px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; gap: 10px; }
+    #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 1fr 90px 60px; padding: 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .14s var(--ease-out), border-color .14s var(--ease-out), transform .14s var(--ease-out), box-shadow .14s var(--ease-out); cursor: pointer; gap: 10px; border-left: 3px solid transparent; }
     #view-l2 .insight-row:last-child { border-bottom: none; }
-    #view-l2 .insight-row:hover { background: var(--color-background-secondary); }
-    #view-l2 .insight-row.selected { background: #EBF0F7; }
+    #view-l2 .insight-row:hover { background: var(--brand-25); border-left-color: var(--brand-500); box-shadow: var(--elev-1); transform: translateX(1px); }
+    #view-l2 .insight-row:hover .row-chevron { color: var(--brand-700); transform: translateX(2px); }
+    #view-l2 .insight-row.selected { background: var(--brand-50); border-left-color: var(--brand-800); }
+    #view-l2 .row-plant { font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: center; gap: 6px; }
+    #view-l2 .row-plant-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-500); flex-shrink: 0; }
+    #view-l2 .row-chevron { transition: color .14s var(--ease-out), transform .14s var(--ease-out); }
     #view-l2 .iname { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; position: relative; }
     #view-l2 .iname-text { flex: 1; }
     #view-l2 .iname-meta { font-size: 10px; color: var(--color-text-tertiary); font-weight: 400; margin-left: 6px; }
@@ -331,6 +406,18 @@
     #view-l3 .insight-title { font-size: 22px; font-weight: 600; color: var(--color-text-primary); line-height: 1.25; letter-spacing: -0.01em; }
     #view-l3 .section-label { font-size: 10px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .08em; margin: 18px 2px 8px; }
     #view-l3 .section-label:first-child { margin-top: 0; }
+    /* Collapsibles */
+    #view-l3 details.card { padding: 0; transition: box-shadow .18s var(--ease-out); }
+    #view-l3 details.card[open] { box-shadow: var(--elev-2); }
+    #view-l3 details.card summary { list-style: none; cursor: pointer; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 8px; user-select: none; border-radius: var(--border-radius-lg); transition: background .14s var(--ease-out); }
+    #view-l3 details.card summary::-webkit-details-marker { display: none; }
+    #view-l3 details.card summary:hover { background: var(--brand-25); }
+    #view-l3 details.card[open] summary { border-bottom: 0.5px solid var(--color-border-tertiary); border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: var(--brand-25); }
+    #view-l3 details.card .summary-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); display: flex; align-items: center; gap: 10px; }
+    #view-l3 details.card .summary-meta { font-size: 11.5px; color: var(--color-text-secondary); margin-left: 4px; font-weight: 400; }
+    #view-l3 details.card .summary-chev { transition: transform .2s var(--ease-out); color: var(--color-text-tertiary); }
+    #view-l3 details.card[open] .summary-chev { transform: rotate(90deg); color: var(--brand-700); }
+    #view-l3 details.card .details-body { padding: 14px 18px 16px; animation: fadeUp .22s var(--ease-out); }
     #view-l3 .insight-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     #view-l3 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 500; }
     #view-l3 .b-inc { background: var(--sev-alert-bg); color: var(--sev-alert-ink); border: 0.5px solid var(--sev-alert-line); }
@@ -437,101 +524,66 @@
     <button class="nav-btn" id="navForward" onclick="navForward()" title="Forward" aria-label="Forward">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <span class="nav-current">Page <b id="navCurrent">L1 — Plants</b></span>
+    <span class="nav-current">Page <b id="navCurrent">Insights</b></span>
   </div>
   <div class="app-shell">
 
-    <!-- ══════════════════ L1 — Plant list ══════════════════ -->
-    <div id="view-l1" class="view active">
+    <!-- ══════════════════ L2 — Insights (homepage) ══════════════════ -->
+    <div id="view-l2" class="view active">
       <div class="page">
         <div class="top-bar">
-          <div style="display:flex;align-items:center;gap:12px">
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
             <span class="page-title">Insights</span>
-            <div class="stat-pills">
-              <span class="pill pill-total">100 Total</span>
-              <span class="pill pill-active">70 Active</span>
-              <span class="pill pill-inactive">30 Inactive</span>
-            </div>
+            <span id="l2InsightCount" style="font-size:12.5px;color:var(--color-text-secondary)"></span>
           </div>
-          <div style="font-size:12px;color:var(--color-text-secondary)">Plant-level configuration</div>
-        </div>
-
-        <div class="search-row">
-          <input class="search-input" placeholder="Search plants…" type="text" />
-          <button class="filter-btn">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2h11M3 6.5h7M5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            Filter
-          </button>
-          <button class="filter-btn">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            Add plant
-          </button>
-        </div>
-
-        <div class="bulk-bar hidden" id="l1BulkBar">
-          <span class="bulk-bar-count" id="l1BulkCount">0 plants selected</span>
-          <div style="flex:1"></div>
-          <button class="btn-sm btn-sm-success" onclick="l1BulkEnable()">Enable all insights</button>
-          <button class="btn-sm btn-sm-danger" onclick="l1BulkDisable()">Disable all insights</button>
-          <button class="btn-sm btn-sm-blue" onclick="openBulkPlantEscModal()">Manage escalation users…</button>
-          <button class="btn-sm" onclick="l1ClearSelection()">Clear</button>
-        </div>
-
-        <div class="table-wrap">
-          <div class="table-head">
-            <div><input type="checkbox" id="l1SelectAll" onchange="l1ToggleAll(this)" style="cursor:pointer;accent-color:#193458"/></div>
-            <span class="th">Plant</span>
-            <span class="th">Location</span>
-            <span class="th">Insights</span>
-            <span class="th">Status</span>
-            <span class="th">All Insights</span>
-            <span class="th">Escalation</span>
-          </div>
-          <div id="l1Rows"></div>
-        </div>
-        <div style="margin-top:12px;font-size:12px;color:var(--color-text-tertiary)">Showing 5 of 100 plants · Select plants with the checkbox for bulk actions · Click a row to view insights</div>
-      </div>
-    </div>
-
-    <!-- ══════════════════ L2 — Insights list ══════════════════ -->
-    <div id="view-l2" class="view">
-      <div class="page">
-        <div class="breadcrumb">
-          <a onclick="showView('l1')">Insights</a>
-          <span class="breadcrumb-sep">›</span>
-          <span style="color:var(--color-text-primary);font-weight:500" id="l2PlantName">Alpha Manufacturing Unit</span>
-        </div>
-
-        <div class="top-bar">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <span class="plant-title" id="l2PlantTitle">Alpha Manufacturing Unit</span>
-            <div class="stat-pills">
-              <span class="pill pill-inc">2 incident</span>
-              <span class="pill pill-issue">4 issue</span>
-              <span class="pill pill-warn">6 warning</span>
-              <span class="pill pill-ach">3 achievement</span>
-              <span class="pill pill-imp">2 improvement</span>
-            </div>
-          </div>
-          <div>
-            <button class="filter-btn">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <div style="display:flex;gap:8px">
+            <button class="filter-btn" onclick="openMasterUserModal()" title="Find a user across every insight and add or remove them">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 12c.6-2 2.4-3.2 4.5-3.2s3.9 1.2 4.5 3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Manage user
+            </button>
+            <button class="btn-primary" onclick="openAddInsightModal()" title="Create a new insight">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:4px;vertical-align:-1px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Add insight
             </button>
           </div>
         </div>
 
-        <div class="search-row">
-          <input class="search-input" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
-          <div class="filter-dd-wrap">
-            <button class="filter-btn" id="toggleFiltersBtn" onclick="toggleFiltersDD(event)">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M2 6h8M4 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Filters <span id="activeFilterCount" class="filter-btn-count" style="display:none">0</span>
+        <!-- Static filter bar with progressive disclosure -->
+        <div class="filter-static-bar" id="filterStaticBar">
+          <input class="search-input filter-search" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="plant" onclick="toggleFilterPop('plant', this)">
+              <span>Plant</span>
+              <span class="filter-pop-count" id="fpc-plant">All</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <div class="filter-dd" id="filterDD" onclick="event.stopPropagation()">
-              <!-- rendered by renderFilterDD() -->
-            </div>
+            <div class="filter-pop" id="fp-plant"></div>
           </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="type" onclick="toggleFilterPop('type', this)">
+              <span>Type</span>
+              <span class="filter-pop-count" id="fpc-type">All</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-type"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="state" onclick="toggleFilterPop('state', this)">
+              <span>State</span>
+              <span class="filter-pop-count" id="fpc-state">All</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-state"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="more" onclick="toggleFilterPop('more', this)">
+              <span>More</span>
+              <span class="filter-pop-count" id="fpc-more">0</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-more"></div>
+          </div>
+          <button class="filter-pop-btn filter-clear" onclick="clearAllFilters()" id="filterClearBtn" style="display:none">Clear all</button>
         </div>
 
         <div class="filter-active-pills" id="filterActivePills"></div>
@@ -541,8 +593,7 @@
           <div style="flex:1"></div>
           <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable</button>
           <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable</button>
-          <button class="btn-sm btn-sm-blue" onclick="openBulkAddUserModal()">Add user…</button>
-          <button class="btn-sm" onclick="openBulkRemoveUserModal()">Remove user…</button>
+          <button class="btn-sm btn-sm-blue" onclick="openMasterUserModal()">Manage user…</button>
           <button class="btn-sm" onclick="openBulkTimingModal()">Edit timing…</button>
           <button class="btn-sm" onclick="openBulkAddLevelModal()">Add level…</button>
           <button class="btn-sm" onclick="clearSelection()">Clear</button>
@@ -552,6 +603,7 @@
           <div class="table-head">
             <div><input type="checkbox" id="selectAll" onchange="toggleAll(this)" style="cursor:pointer;accent-color:#193458"/></div>
             <span class="th">Insight</span>
+            <span class="th">Plant</span>
             <span class="th">Live status</span>
             <span class="th">Last triggered</span>
             <span class="th">State</span>
@@ -559,7 +611,7 @@
           </div>
           <div id="rowsContainer"></div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Select rows for bulk actions</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open · Use <b>Manage user</b> to find anyone across every insight at once</div>
       </div>
     </div>
 
@@ -569,7 +621,7 @@
         <div class="breadcrumb">
           <a onclick="showView('l1')">Insights</a>
           <span class="breadcrumb-sep">›</span>
-          <a onclick="showView('l2')">Alpha Manufacturing Unit</a>
+          <a onclick="showView('l2')">Insights</a>
           <span class="breadcrumb-sep">›</span>
           <span style="color:var(--color-text-primary);font-weight:500">Boiler pressure threshold exceeded</span>
         </div>
@@ -592,37 +644,23 @@
           </div>
         </div>
 
-        <!-- Resolve banner -->
-        <div class="resolve-card" id="resolveCard">
-          <div class="resolve-title">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3.5M7 9.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-            This insight is currently active
-          </div>
-          <div class="resolve-note">Resolution can be triggered by a sensor value crossing the closing threshold, manually acknowledged by an authorised user, or automatically resolved after a configured time window.</div>
-          <div class="resolve-actions">
-            <button class="rbtn rbtn-data">Input sensor data</button>
-            <button class="rbtn rbtn-ack" onclick="manualClose()">Acknowledge &amp; close manually</button>
-            <button class="rbtn rbtn-time">Auto-close after time</button>
-          </div>
-        </div>
-
         <div class="layout">
           <!-- LEFT -->
           <div>
             <div class="section-label">Overview</div>
-            <!-- Description -->
+            <!-- Description (always-open card) -->
             <div class="card card-primary">
               <div class="card-title">Description</div>
               <div class="desc-text">Monitors the primary boiler steam pressure and triggers when pressure exceeds the safe operating range. This insight evaluates readings from pressure transducer PT-101 on a 30-second rolling average. Sustained high pressure can indicate a faulty safety valve, blocked steam line, or excessive heat input and must be resolved before returning the boiler to normal operation.</div>
             </div>
 
-            <div class="section-label">Trigger logic</div>
-            <!-- Conditions — now editable -->
-            <div class="card">
-              <div class="card-title">
-                <span>Opening &amp; closing conditions</span>
-                <button class="card-title-action" id="editCondBtn" onclick="toggleConditionEdit()">Edit</button>
-              </div>
+            <!-- Conditions (collapsible) -->
+            <details class="card" open>
+              <summary>
+                <span class="summary-title"><span class="summary-chev">›</span>Opening &amp; closing conditions <span class="summary-meta">PT-101 ≥ 12.5 bar &nbsp;→&nbsp; PT-101 &lt; 11.0 bar</span></span>
+                <button class="card-title-action" id="editCondBtn" onclick="event.preventDefault();event.stopPropagation();toggleConditionEdit()">Edit</button>
+              </summary>
+              <div class="details-body">
               <div class="condition-grid">
                 <div class="cond-block cond-open" id="condOpen">
                   <div class="cond-view">
@@ -672,14 +710,15 @@
                 <button onclick="saveConditions()" style="border-color:#193458;color:#ffffff;background:#193458">Save</button>
                 <button onclick="cancelConditions()" style="border-color:var(--color-border-secondary);color:var(--color-text-secondary);background:transparent">Cancel</button>
               </div>
-            </div>
-
-            <div class="section-label">History</div>
-            <!-- Closure / resolution history -->
-            <div class="card close-card">
-              <div class="card-title">
-                <span>Closure &amp; resolution history</span>
               </div>
+            </details>
+
+            <!-- History (collapsible) -->
+            <details class="card">
+              <summary>
+                <span class="summary-title"><span class="summary-chev">›</span>Closure &amp; resolution history <span class="summary-meta" id="historySummary">3 events</span></span>
+              </summary>
+              <div class="details-body">
               <div class="close-info" id="closeInfoBanner">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span id="closeStatusText">Currently active — not yet resolved</span>
@@ -698,30 +737,34 @@
                   <span class="close-val" style="color:var(--color-text-primary);font-weight:500">Auto-resolved by sensor · 2 days ago</span>
                 </div>
               </div>
-            </div>
+              </div>
+            </details>
 
-            <div class="section-label">Details</div>
-            <!-- Details -->
-            <div class="card">
-              <div class="card-title">Details</div>
+            <!-- Details (collapsible) -->
+            <details class="card">
+              <summary>
+                <span class="summary-title"><span class="summary-chev">›</span>Details <span class="summary-meta">Sensor, readings, timestamps</span></span>
+              </summary>
+              <div class="details-body">
               <div class="detail-row"><span class="detail-key">Sensor</span><span class="detail-val">PT-101 · Pressure transducer</span></div>
               <div class="detail-row"><span class="detail-key">Equipment</span><span class="detail-val">Boiler (Tank)</span></div>
               <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
               <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
               <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM · Manual by Priya Kumar</span></div>
               <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
-            </div>
+              </div>
+            </details>
           </div>
 
-          <!-- RIGHT — escalation -->
+          <!-- RIGHT — escalation (collapsible) -->
           <div>
-            <div class="section-label">Escalation matrix</div>
-            <div class="card" style="padding:0;overflow:hidden">
-              <div style="padding:12px 16px 10px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
-                <span style="font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em">Escalation</span>
-                <span style="font-size:11px;color:var(--color-text-tertiary)">Inherits from plant · overrides below</span>
-              </div>
-              <div style="padding:12px 14px" id="l3EscalationContainer">
+            <details class="card" open style="padding:0;overflow:hidden">
+              <summary>
+                <span class="summary-title"><span class="summary-chev">›</span>Escalation matrix</span>
+                <span style="font-size:11px;color:var(--color-text-tertiary)">overrides plant default</span>
+              </summary>
+              <div class="details-body" style="padding:12px 14px">
+              <div id="l3EscalationContainer">
                 <!-- Escalation levels rendered by JS -->
               </div>
               <div style="padding:0 14px 14px">
@@ -744,7 +787,7 @@
                   <b>Notify</b> fires immediately on trigger · <b>Standard</b> levels fire on a time-based delay · <b>Custom</b> groups are insight-only · <b>One-off</b> levels are manually fired for rare events.
                 </div>
               </div>
-            </div>
+            </details>
           </div>
         </div>
       </div>
@@ -780,144 +823,103 @@
     </div>
   </div>
 
-  <!-- ══════════════════ L1 plant escalation modal ══════════════════ -->
-  <div class="modal-bg" id="escModal">
-    <div class="modal">
+  <!-- ══════════════════ Master User Control modal ══════════════════ -->
+  <div class="modal-bg" id="masterUserModal">
+    <div class="modal" style="width:620px">
       <div class="modal-head">
         <div>
-          <div class="modal-title" id="modalPlantName">Alpha Manufacturing Unit</div>
-          <div class="modal-sub">Escalation configuration · applies to all insights in this plant</div>
+          <div class="modal-title">Manage user across insights</div>
+          <div class="modal-sub">Find a user, see every insight & level they're on, then add or remove with one click</div>
         </div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeMasterUserModal()">✕</button>
       </div>
-      <div class="modal-body" id="escModalBody">
-        <!-- Filled by JS -->
+      <div class="modal-body">
+        <div class="muc-search-row">
+          <input class="muc-input" id="mucInput" placeholder="Type a name (e.g. Rahul Sharma)…" oninput="renderMasterUserSuggestions()"/>
+        </div>
+        <div id="mucSuggest"></div>
+        <div id="mucResults" class="muc-results">
+          <div class="muc-empty">Start typing to find a user — we'll show every insight and level they're configured on.</div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-        <button class="btn-primary">Save changes</button>
+      <div class="modal-footer" id="mucFooter" style="display:none">
+        <span id="mucScope" style="font-size:12px;color:var(--color-text-secondary);flex:1"></span>
+        <button class="btn-danger" onclick="masterRemoveAll()">Remove from all</button>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════ L1 Bulk Plant Escalation modal ══════════════════ -->
-  <div class="modal-bg" id="bulkPlantEscModal">
-    <div class="modal">
+  <!-- ══════════════════ Add Insight modal ══════════════════ -->
+  <div class="modal-bg" id="addInsightModal">
+    <div class="modal" style="width:560px">
       <div class="modal-head">
         <div>
-          <div class="modal-title">Manage escalation users · bulk</div>
-          <div class="modal-sub" id="bulkPlantSub">Action applies to all insights across selected plants</div>
+          <div class="modal-title">Add a new insight</div>
+          <div class="modal-sub">Define what to monitor, when it triggers, and who gets notified</div>
         </div>
-        <button class="modal-close" onclick="closeBulkPlantEsc()">✕</button>
+        <button class="modal-close" onclick="closeAddInsightModal()">✕</button>
       </div>
       <div class="modal-body">
-        <div class="modal-section">
-          <div class="modal-section-label">Action</div>
-          <div class="filter-chips-row" id="bulkPlantAction">
-            <span class="fchip selected" data-val="add">Add user</span>
-            <span class="fchip" data-val="remove">Remove user</span>
+        <div class="ai-form">
+          <div class="ai-row">
+            <span class="ai-label">Insight name</span>
+            <input class="ai-input" id="aiName" placeholder="e.g. Boiler pressure threshold exceeded"/>
           </div>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-label">Apply to level</div>
-          <select class="modal-select" id="bulkPlantLevel">
-            <option value="notify">Notify (immediate)</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-          </select>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-label">User</div>
-          <input class="modal-input" id="bulkPlantUser" placeholder="Search user by name…"/>
-        </div>
-        <div class="modal-section" id="bulkPlantCommSection">
-          <div class="modal-section-label">Communication methods</div>
-          <div class="comm-checks-row">
-            <label class="comm-check"><input type="checkbox" checked class="bp-comm" value="0"/> Email</label>
-            <label class="comm-check"><input type="checkbox" class="bp-comm" value="1"/> SMS</label>
-            <label class="comm-check"><input type="checkbox" class="bp-comm" value="2"/> WhatsApp</label>
-            <label class="comm-check"><input type="checkbox" class="bp-comm" value="3"/> Call</label>
+          <div class="ai-grid-2">
+            <div class="ai-row">
+              <span class="ai-label">Plant</span>
+              <select class="ai-select" id="aiPlant"></select>
+            </div>
+            <div class="ai-row">
+              <span class="ai-label">Equipment</span>
+              <select class="ai-select" id="aiEquipment">
+                <option value="tank">Tank</option>
+                <option value="pump">Pump</option>
+                <option value="valve">Valve</option>
+                <option value="blower">Blower</option>
+              </select>
+            </div>
           </div>
+          <div class="ai-row">
+            <span class="ai-label">Severity type</span>
+            <div class="ai-type-grid" id="aiTypeGrid">
+              <div class="ai-type-chip" data-val="incident">Incident</div>
+              <div class="ai-type-chip" data-val="issue">Issue</div>
+              <div class="ai-type-chip selected" data-val="warning">Warning</div>
+              <div class="ai-type-chip" data-val="achievement">Achievement</div>
+              <div class="ai-type-chip" data-val="improvement">Improvement</div>
+            </div>
+          </div>
+          <div class="ai-row">
+            <span class="ai-label">Opening condition</span>
+            <div class="ai-grid-3">
+              <input class="ai-input" id="aiSensor" placeholder="Sensor (e.g. PT-101)"/>
+              <select class="ai-select" id="aiOp"><option>≥</option><option>&gt;</option><option>≤</option><option>&lt;</option><option>=</option></select>
+              <input class="ai-input" id="aiValue" type="number" step="0.1" placeholder="Value"/>
+              <input class="ai-input" id="aiUnit" placeholder="Unit"/>
+            </div>
+          </div>
+          <div class="ai-row">
+            <span class="ai-label">Closing condition</span>
+            <input class="ai-input" id="aiClose" placeholder="e.g. PT-101 < 11.0 bar sustained 120s"/>
+          </div>
+          <div class="ai-row">
+            <span class="ai-label">Notify (fires immediately)</span>
+            <input class="ai-input" id="aiNotifyUser" placeholder="User name to notify on trigger (optional)"/>
+          </div>
+          <div class="ai-row">
+            <span class="ai-label">First escalation level</span>
+            <div class="ai-grid-2">
+              <input class="ai-input" id="aiL1User" placeholder="User name (optional)"/>
+              <input class="ai-input" id="aiL1Delay" type="number" min="0" value="0" placeholder="Delay (min)"/>
+            </div>
+          </div>
+          <div class="ai-esc-mini">More escalation levels, custom groups, and one-off rules can be added from the insight detail page after it's created.</div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-ghost" onclick="closeBulkPlantEsc()">Cancel</button>
-        <button class="btn-primary" onclick="applyBulkPlantEsc()">Apply to selected</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════ L2 Bulk Add User modal ══════════════════ -->
-  <div class="modal-bg" id="bulkAddUserModal">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <div class="modal-title">Add user to escalation · bulk</div>
-          <div class="modal-sub" id="bulkAddSub">Add a user to selected insights</div>
-        </div>
-        <button class="modal-close" onclick="closeBulkAddUser()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-section">
-          <div class="modal-section-label">Apply to level</div>
-          <select class="modal-select" id="bulkAddLevel">
-            <option value="notify">Notify (immediate)</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-          </select>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-label">User name</div>
-          <input class="modal-input" id="bulkAddUserName" placeholder="Enter user name…"/>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-label">Communication methods</div>
-          <div class="comm-checks-row">
-            <label class="comm-check"><input type="checkbox" checked class="ba-comm" value="0"/> Email</label>
-            <label class="comm-check"><input type="checkbox" class="ba-comm" value="1"/> SMS</label>
-            <label class="comm-check"><input type="checkbox" class="ba-comm" value="2"/> WhatsApp</label>
-            <label class="comm-check"><input type="checkbox" class="ba-comm" value="3"/> Call</label>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-ghost" onclick="closeBulkAddUser()">Cancel</button>
-        <button class="btn-primary" onclick="applyBulkAddUser()">Add to selected insights</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════ L2 Bulk Remove User modal ══════════════════ -->
-  <div class="modal-bg" id="bulkRemoveUserModal">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <div class="modal-title">Remove user from escalation · bulk</div>
-          <div class="modal-sub" id="bulkRemoveSub">Remove a user from selected insights</div>
-        </div>
-        <button class="modal-close" onclick="closeBulkRemoveUser()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-section">
-          <div class="modal-section-label">Remove from level</div>
-          <select class="modal-select" id="bulkRemoveLevel">
-            <option value="any">Any level</option>
-            <option value="notify">Notify (immediate)</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-          </select>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-label">User name (exact match)</div>
-          <input class="modal-input" id="bulkRemoveUserName" placeholder="Enter user name…"/>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-ghost" onclick="closeBulkRemoveUser()">Cancel</button>
-        <button class="btn-danger" onclick="applyBulkRemoveUser()">Remove from selected</button>
+        <button class="btn-ghost" onclick="closeAddInsightModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitAddInsight()">Create insight</button>
       </div>
     </div>
   </div>
@@ -1000,14 +1002,13 @@
 
   <script>
     /* ════════════════════ Shared ════════════════════ */
-    const viewLabels = { l1: 'L1 — Plants', l2: 'L2 — Insights', l3: 'L3 — Insight detail' };
-    let navHistory = ['l1'];
+    const viewLabels = { l2: 'Insights', l3: 'Insight detail' };
+    let navHistory = ['l2'];
     let navFuture = [];
     function _renderView(id) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + id).classList.add('active');
       window.scrollTo(0, 0);
-      if (id === 'l1') renderL1Rows();
       if (id === 'l2') renderRows();
       if (id === 'l3') renderL3Escalation();
       document.getElementById('navCurrent').textContent = viewLabels[id];
@@ -1040,27 +1041,7 @@
       { id: 'epsilon', name: 'Epsilon Packaging Hub', location: 'Chennai, TN', insights: 14, active: 13, off: 1, allOn: true, statusDot: 'dot-green' },
     ];
 
-    const plantEscConfig = {
-      notify: {
-        users: [
-          { init: 'OM', bg: '#E0DFDB', tc: '#1a1916', name: 'Operations monitor', comm: [1, 0, 1, 0] },
-          { init: 'SH', bg: '#E0DFDB', tc: '#1a1916', name: 'Shift Supervisor', comm: [1, 1, 1, 0] },
-        ],
-      },
-      levels: [
-        { label: 'Level 1', cls: 'lb1', delay: 0, subtitle: 'Immediate alert', users: [
-          { init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] },
-          { init: 'PK', bg: '#DCE3EE', tc: '#193458', name: 'Priya Kumar', comm: [1, 0, 1, 0] },
-        ], hooter: false },
-        { label: 'Level 2', cls: 'lb2', delay: 15, subtitle: 'Supervisor escalation', users: [
-          { init: 'AM', bg: '#FAEEDA', tc: '#633806', name: 'Amit Mehta', comm: [1, 1, 1, 0] },
-          { init: 'RS', bg: '#FAEEDA', tc: '#633806', name: 'Rahul Sharma', comm: [0, 0, 0, 1] },
-        ], hooter: true },
-        { label: 'Level 3', cls: 'lb3', delay: 30, subtitle: 'Management escalation', users: [
-          { init: 'SG', bg: '#FCEBEB', tc: '#791F1F', name: 'Sunita Gupta', comm: [1, 1, 1, 1] },
-        ], hooter: false },
-      ],
-    };
+    const MAX_ESC_LEVELS = 5; // Miller's law cap on escalation depth
 
     const insights = [
       { id: 1, name: 'Boiler pressure threshold exceeded', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 2h 14m', lastTrigActive: true,
@@ -1132,271 +1113,16 @@
         notify: { users: [] },
         escLevels: [{ label: 'Level 1', cls: 'lb1', delay: 0, users: [{ init: 'RS', bg: '#EBF0F7', tc: '#193458', name: 'Rahul Sharma', comm: [1, 1, 0, 0] }], hooter: false }] },
     ];
+    /* Distribute insights across plants for the global view */
+    const _plantAssign = ['alpha','alpha','alpha','beta','beta','beta','gamma','gamma','delta','delta','delta','epsilon','alpha','beta','delta','epsilon','gamma','beta'];
+    insights.forEach((r,i) => { r.plant = _plantAssign[i] || 'alpha'; });
+    /* Per-plant master switch (drives global Activate/Deactivate) */
+    const plantMaster = Object.fromEntries(plants.map(p => [p.id, p.allOn]));
 
     const commLabels = ['✉', '✆', 'W', '☏'];
     const typeLabels = { warning: 'Warning', issue: 'Issue', incident: 'Incident', achievement: 'Achievement', improvement: 'Improvement' };
 
-    /* ════════════════════ L1 ════════════════════ */
-    const l1Selected = new Set();
-
-    function renderL1Rows() {
-      const c = document.getElementById('l1Rows');
-      c.innerHTML = plants.map(p => {
-        const isSel = l1Selected.has(p.id);
-        const toggleChecked = p.allOn ? 'checked' : '';
-        const lbl = p.allOn ? 'On' : 'Off';
-        const badges = p.allOn
-          ? `<span class="badge badge-a">${p.active} active</span><span class="badge badge-i">${p.off} off</span>`
-          : `<span class="badge badge-i">All off</span>`;
-        return `<div class="plant-row${isSel?' selected':''}" onclick="openPlant('${p.id}')">
-          <div onclick="event.stopPropagation()"><input type="checkbox" ${isSel?'checked':''} onchange="l1ToggleRow('${p.id}',this)" style="cursor:pointer;accent-color:#193458"/></div>
-          <div class="plant-name"><span class="plant-dot ${p.statusDot}"></span>${p.name}</div>
-          <div class="cell">${p.location}</div>
-          <div class="cell" style="font-weight:500;color:var(--color-text-primary)">${p.insights}</div>
-          <div class="badge-wrap">${badges}</div>
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" ${toggleChecked} onchange="togglePlantAll('${p.id}',this)"><span class="slider"></span></label>
-            <span style="font-size:12px;color:var(--color-text-secondary)">${lbl}</span>
-          </div>
-          <div onclick="event.stopPropagation()">
-            <button class="esc-btn" onclick="openEscModal('${p.id}')">
-              <div class="esc-icon"><span></span><span></span><span></span></div>Levels
-            </button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    function l1ToggleRow(id, cb) {
-      if (cb.checked) l1Selected.add(id); else l1Selected.delete(id);
-      updateL1BulkBar(); renderL1Rows();
-    }
-    function l1ToggleAll(cb) {
-      if (cb.checked) plants.forEach(p => l1Selected.add(p.id));
-      else l1Selected.clear();
-      updateL1BulkBar(); renderL1Rows();
-    }
-    function updateL1BulkBar() {
-      const bar = document.getElementById('l1BulkBar');
-      const cnt = document.getElementById('l1BulkCount');
-      if (l1Selected.size > 0) { bar.classList.remove('hidden'); cnt.textContent = l1Selected.size + ' plant' + (l1Selected.size>1?'s':'') + ' selected'; }
-      else bar.classList.add('hidden');
-    }
-    function l1ClearSelection() { l1Selected.clear(); document.getElementById('l1SelectAll').checked = false; updateL1BulkBar(); renderL1Rows(); }
-    function l1BulkEnable() {
-      l1Selected.forEach(id => { const p = plants.find(x => x.id === id); if (p) { p.allOn = true; if (p.active === 0) { p.active = p.insights; p.off = 0; } p.statusDot = 'dot-green'; } });
-      renderL1Rows();
-    }
-    function l1BulkDisable() {
-      l1Selected.forEach(id => { const p = plants.find(x => x.id === id); if (p) { p.allOn = false; p.off = p.insights; p.active = 0; p.statusDot = 'dot-red'; } });
-      renderL1Rows();
-    }
-    function togglePlantAll(id, cb) {
-      const p = plants.find(x => x.id === id);
-      if (!p) return;
-      p.allOn = cb.checked;
-      if (cb.checked) { if (p.active === 0) { p.active = p.insights; p.off = 0; } p.statusDot = 'dot-green'; }
-      else { p.off = p.insights; p.active = 0; p.statusDot = 'dot-red'; }
-      renderL1Rows();
-    }
-    function openPlant(id) {
-      const p = plants.find(x => x.id === id);
-      document.getElementById('l2PlantName').textContent = p.name;
-      document.getElementById('l2PlantTitle').textContent = p.name;
-      showView('l2');
-    }
-
-    /* L1 escalation modal — fully interactive */
-    const MAX_ESC_LEVELS = 5; // Miller's law: keep under 7±2 to limit cognitive load
-    function openEscModal(id) {
-      const p = plants.find(x => x.id === id);
-      document.getElementById('modalPlantName').textContent = p.name;
-      renderEscModalBody();
-      document.getElementById('escModal').classList.add('open');
-    }
-    function plantUXHints() {
-      const out = [];
-      // Empty level (defense in depth)
-      const emptyLevels = plantEscConfig.levels.filter(l => l.users.length === 0).map(l => l.label);
-      if (emptyLevels.length) out.push({ t: 'error', m: `${emptyLevels.join(', ')} has no recipients — escalation will silently fail at this stage.` });
-      // Duplicate users on consecutive levels
-      for (let i = 1; i < plantEscConfig.levels.length; i++) {
-        const a = new Set(plantEscConfig.levels[i-1].users.map(u => u.name));
-        const dup = plantEscConfig.levels[i].users.filter(u => a.has(u.name)).map(u => u.name);
-        if (dup.length) { out.push({ t: 'warn', m: `${dup.join(', ')} appears on both ${plantEscConfig.levels[i-1].label} and ${plantEscConfig.levels[i].label}. Add only if a different channel is needed.` }); break; }
-      }
-      // Monotonic delays
-      for (let i = 1; i < plantEscConfig.levels.length; i++) {
-        if (!plantEscConfig.levels[i].oneOff && plantEscConfig.levels[i].delay <= plantEscConfig.levels[i-1].delay) {
-          out.push({ t: 'error', m: `${plantEscConfig.levels[i].label} delay (${plantEscConfig.levels[i].delay}m) must be greater than ${plantEscConfig.levels[i-1].label} (${plantEscConfig.levels[i-1].delay}m).` }); break;
-        }
-      }
-      // Notify empty
-      if (plantEscConfig.notify.users.length === 0) out.push({ t: 'warn', m: 'Notify level has no users — no one is alerted on trigger.' });
-      // Level count cap
-      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
-      if (standardCount > MAX_ESC_LEVELS) out.push({ t: 'warn', m: `${standardCount} standard escalation levels — consider consolidating to ≤ ${MAX_ESC_LEVELS} (Miller's law) to keep responders aligned.` });
-      // Hick's law — alarm fatigue: cap channels per user at 2
-      const fatigued = [];
-      const allUsers = [...plantEscConfig.notify.users, ...plantEscConfig.levels.flatMap(l => l.users)];
-      allUsers.forEach(u => { if ((u.comm||[]).reduce((a,b)=>a+b,0) >= 3 && !fatigued.includes(u.name)) fatigued.push(u.name); });
-      if (fatigued.length) out.push({ t: 'warn', m: `${fatigued.join(', ')} ${fatigued.length>1?'have':'has'} 3+ channels enabled — pick one primary channel per user (Hick's law) to cut decision time during incidents.` });
-      return out;
-    }
-    function renderEscModalBody() {
-      const body = document.getElementById('escModalBody');
-      let html = '';
-      // UX hints
-      const hints = plantUXHints();
-      if (hints.length) html += hints.map(h => `<div class="ux-hint ${h.t==='error'?'error':(h.t==='info'?'info':'')}"><span class="ux-hint-icon">${h.t==='error'?'⚠':'ⓘ'}</span><span>${h.m}</span></div>`).join('') + '<div style="height:14px"></div>';
-
-      // Notify
-      html += `<div class="esc-level-modal">
-        <div class="esc-level-head-modal">
-          <span class="lbadge lbn">Notify</span>
-          <span style="font-size:12px;color:var(--color-text-secondary)">Immediate — fires as soon as trigger opens</span>
-          <span class="level-delay-label">0 min</span>
-        </div>
-        <div class="user-list-modal">
-          ${plantEscConfig.notify.users.map((u, ui) => renderPlantUserItem(u, 'notify', ui)).join('')}
-        </div>
-        <div class="add-user-row" style="margin-top:8px">
-          <input class="add-user-input" placeholder="Add user to notify…" id="plantAddInputNotify"/>
-          <button class="add-user-btn" onclick="addPlantUser('notify')">Add</button>
-        </div>
-      </div><hr class="divider">`;
-
-      // Levels
-      plantEscConfig.levels.forEach((lv, i) => {
-        const subtitle = lv.oneOff ? 'One-off custom · manual fire only' : (lv.cls === 'lbc' ? 'Custom group · plant-wide' : (lv.subtitle || 'Time-based escalation'));
-        const delayCell = lv.oneOff
-          ? `<span class="level-delay-label">Manual</span>`
-          : `<span class="level-delay-label">+ <input class="delay-input" type="number" min="0" value="${lv.delay}" onchange="updatePlantDelay(${i}, this.value)"/> min</span>`;
-        html += `<div class="esc-level-modal">
-          <div class="esc-level-head-modal">
-            <span class="lbadge ${lv.cls}">${lv.label}</span>
-            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">${subtitle}</span>
-            ${delayCell}
-            <button class="edit-btn-sm" onclick="removePlantLevel(${i})" title="Delete level">×</button>
-          </div>
-          <div class="user-list-modal">${lv.users.map((u, ui) => renderPlantUserItem(u, i, ui)).join('')}</div>
-          <div class="add-user-row" style="margin-top:8px">
-            <input class="add-user-input" placeholder="Add user…" id="plantAddInput${i}"/>
-            <button class="add-user-btn" onclick="addPlantUser(${i})">Add</button>
-          </div>
-          <label class="hooter-row-modal" style="cursor:pointer">
-            <div style="font-size:16px;${lv.hooter?'':'opacity:.4'}">🔔</div>
-            <span style="font-size:12px;color:var(--color-text-secondary);flex:1">Hooter alarm at this level</span>
-            <label class="toggle" style="width:30px;height:16px"><input type="checkbox" ${lv.hooter?'checked':''} onchange="togglePlantHooter(${i}, this)"><span class="slider"></span></label>
-          </label>
-        </div>${i < plantEscConfig.levels.length - 1 ? '<hr class="divider">' : ''}`;
-      });
-
-      // Add buttons
-      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
-      const cap = standardCount >= MAX_ESC_LEVELS;
-      html += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
-        <button class="add-level-btn-modal" onclick="addPlantLevel()" ${cap?'disabled style="opacity:.5;cursor:not-allowed"':''} title="${cap?'Max '+MAX_ESC_LEVELS+' levels':'Add a standard time-based escalation level'}">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          Standard level
-        </button>
-        <button class="add-level-btn-modal" onclick="addPlantCustomLevel()" style="border-color:var(--brand-200);color:var(--brand-800)" title="Custom group — plant-wide named escalation">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          Custom group
-        </button>
-        <button class="add-level-btn-modal" onclick="addPlantOneOffLevel()" style="border-color:var(--sev-warn-line);color:var(--sev-warn-accent)" title="One-off custom — manually-fired for rare events">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          One-off
-        </button>
-      </div>`;
-
-      body.innerHTML = html;
-    }
-    function renderPlantUserItem(u, levelIdx, userIdx) {
-      const idx = levelIdx === 'notify' ? "'notify'" : levelIdx;
-      return `<div class="user-item-modal">
-        <div class="user-avatar" style="background:${u.bg};color:${u.tc}">${u.init}</div>
-        <span class="user-name">${u.name}</span>
-        <div class="comm-icons">
-          ${u.comm.map((on, i) => `<div class="comm-icon ${on?'comm-on':'comm-off'}" style="cursor:pointer" onclick="togglePlantComm(${idx},${userIdx},${i})">${commLabels[i]}</div>`).join('')}
-        </div>
-        <button class="remove-user-modal" onclick="removePlantUser(${idx},${userIdx})" title="Remove user">×</button>
-      </div>`;
-    }
-    function addPlantUser(levelIdx) {
-      const inp = document.getElementById(levelIdx === 'notify' ? 'plantAddInputNotify' : ('plantAddInput' + levelIdx));
-      const name = inp.value.trim();
-      if (!name) return;
-      const [bg, tc] = randBg();
-      const user = { init: initialsOf(name), bg, tc, name, comm: [1, 0, 0, 0] };
-      if (levelIdx === 'notify') plantEscConfig.notify.users.push(user);
-      else plantEscConfig.levels[levelIdx].users.push(user);
-      renderEscModalBody();
-    }
-    function removePlantUser(levelIdx, userIdx) {
-      if (levelIdx === 'notify') plantEscConfig.notify.users.splice(userIdx, 1);
-      else plantEscConfig.levels[levelIdx].users.splice(userIdx, 1);
-      renderEscModalBody();
-    }
-    function togglePlantComm(levelIdx, userIdx, commIdx) {
-      const list = levelIdx === 'notify' ? plantEscConfig.notify.users : plantEscConfig.levels[levelIdx].users;
-      list[userIdx].comm[commIdx] = list[userIdx].comm[commIdx] ? 0 : 1;
-      renderEscModalBody();
-    }
-    function updatePlantDelay(i, v) {
-      const d = parseInt(v, 10);
-      if (!isNaN(d) && d >= 0) plantEscConfig.levels[i].delay = d;
-      renderEscModalBody();
-    }
-    function togglePlantHooter(i, cb) { plantEscConfig.levels[i].hooter = cb.checked; renderEscModalBody(); }
-    function removePlantLevel(i) { plantEscConfig.levels.splice(i, 1); renderEscModalBody(); }
-    function addPlantLevel() {
-      const standardCount = plantEscConfig.levels.filter(l => !l.oneOff && l.cls !== 'lbc').length;
-      if (standardCount >= MAX_ESC_LEVELS) return;
-      const nextNum = standardCount + 1;
-      const clsMap = ['lb1','lb2','lb3','lbc','lbc'];
-      const lastDelay = plantEscConfig.levels.filter(l => !l.oneOff).reduce((m, l) => Math.max(m, l.delay), 0);
-      plantEscConfig.levels.push({ label: 'Level ' + nextNum, cls: clsMap[Math.min(nextNum-1, 4)], delay: lastDelay + 15, subtitle: 'Time-based escalation', users: [], hooter: false });
-      renderEscModalBody();
-    }
-    function addPlantCustomLevel() {
-      const lastDelay = plantEscConfig.levels.filter(l => !l.oneOff).reduce((m, l) => Math.max(m, l.delay), 0);
-      plantEscConfig.levels.push({ label: 'Custom', cls: 'lbc', delay: lastDelay + 15, subtitle: 'Custom group · plant-wide', users: [], hooter: false });
-      renderEscModalBody();
-    }
-    function addPlantOneOffLevel() {
-      plantEscConfig.levels.push({ label: 'One-off', cls: 'lbc', delay: 0, oneOff: true, subtitle: 'One-off · manual fire', users: [], hooter: false });
-      renderEscModalBody();
-    }
-    function closeModal() { document.getElementById('escModal').classList.remove('open'); }
-    document.getElementById('escModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-
-    /* L1 bulk plant escalation modal */
-    function openBulkPlantEscModal() {
-      if (l1Selected.size === 0) return;
-      document.getElementById('bulkPlantSub').textContent = `Applies to ${l1Selected.size} plant${l1Selected.size>1?'s':''} · affects all insights in those plants`;
-      document.getElementById('bulkPlantEscModal').classList.add('open');
-    }
-    function closeBulkPlantEsc() { document.getElementById('bulkPlantEscModal').classList.remove('open'); }
-    document.getElementById('bulkPlantEscModal').addEventListener('click', function(e) { if (e.target === this) closeBulkPlantEsc(); });
-    document.querySelectorAll('#bulkPlantAction .fchip').forEach(c => {
-      c.addEventListener('click', () => {
-        document.querySelectorAll('#bulkPlantAction .fchip').forEach(x => x.classList.remove('selected'));
-        c.classList.add('selected');
-        const isAdd = c.dataset.val === 'add';
-        document.getElementById('bulkPlantCommSection').style.display = isAdd ? 'block' : 'none';
-      });
-    });
-    function applyBulkPlantEsc() {
-      const action = document.querySelector('#bulkPlantAction .fchip.selected').dataset.val;
-      const user = document.getElementById('bulkPlantUser').value.trim();
-      const level = document.getElementById('bulkPlantLevel').value;
-      if (!user) { alert('Enter a user name'); return; }
-      alert(`${action === 'add' ? 'Added' : 'Removed'} ${user} ${action==='add'?'to':'from'} ${level === 'notify' ? 'Notify' : 'Level '+level} across ${l1Selected.size} selected plant${l1Selected.size>1?'s':''} (${Array.from(l1Selected).join(', ')}).`);
-      closeBulkPlantEsc();
-    }
-
-    /* ════════════════════ L2 ════════════════════ */
+    /* ════════════════════ L2 — global insights view ════════════════════ */
     const selected = new Set();
     let currentFilter = 'all';
     let filtersOpen = false;
@@ -1404,6 +1130,7 @@
       types: new Set(),
       equipment: new Set(),
       channels: new Set(),
+      plants: new Set(),
       state: 'all',
       user: '',
       timeMin: null,
@@ -1443,156 +1170,177 @@
       { v: 'inactive', l: 'Inactive' },
     ];
 
-    function toggleFiltersDD(e) {
-      if (e) e.stopPropagation();
-      filtersOpen = !filtersOpen;
-      const dd = document.getElementById('filterDD');
-      dd.classList.toggle('open', filtersOpen);
-      document.getElementById('toggleFiltersBtn').classList.toggle('active-filter', filtersOpen);
-      if (filtersOpen) renderFilterDD();
+    /* Static filter bar — progressive disclosure popovers */
+    let _openPop = null;
+    function toggleFilterPop(key, btn) {
+      const pop = document.getElementById('fp-' + key);
+      const wasOpen = pop.classList.contains('open');
+      // Close any other
+      document.querySelectorAll('.filter-pop.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.filter-pop-btn.active').forEach(b => b.classList.remove('active'));
+      if (!wasOpen) {
+        renderFilterPop(key);
+        pop.classList.add('open');
+        btn.classList.add('active');
+        _openPop = key;
+      } else {
+        _openPop = null;
+      }
     }
-    document.addEventListener('click', () => {
-      if (filtersOpen) {
-        filtersOpen = false;
-        document.getElementById('filterDD')?.classList.remove('open');
-        document.getElementById('toggleFiltersBtn')?.classList.remove('active-filter');
+    document.addEventListener('click', (e) => {
+      if (!_openPop) return;
+      const pop = document.getElementById('fp-' + _openPop);
+      if (pop && !pop.contains(e.target) && !e.target.closest(`[data-filter="${_openPop}"]`)) {
+        pop.classList.remove('open');
+        document.querySelectorAll('.filter-pop-btn.active').forEach(b => b.classList.remove('active'));
+        _openPop = null;
       }
     });
 
-    function catSummary(key) {
-      switch (key) {
-        case 'types':     return filterState.types.size ? [...filterState.types].map(v => TYPE_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
-        case 'equipment': return filterState.equipment.size ? [...filterState.equipment].map(v => EQUIP_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
-        case 'channels':  return filterState.channels.size ? [...filterState.channels].map(v => CHANNEL_OPTS.find(o=>o.v===v)?.l).join(', ') : '';
-        case 'state':     return filterState.state !== 'all' ? STATE_OPTS.find(o=>o.v===filterState.state)?.l : '';
-        case 'user':      return filterState.user || '';
-        case 'time': {
-          const a = filterState.timeMin, b = filterState.timeMax;
-          if (a !== '' && a != null && b !== '' && b != null) return `${a}–${b} min`;
-          if (a !== '' && a != null) return `≥ ${a} min`;
-          if (b !== '' && b != null) return `≤ ${b} min`;
-          return '';
-        }
-        case 'repeats':   return filterState.repeats ? 'On' : '';
-      }
-      return '';
-    }
-
-    function chipsHTML(opts, set, fnName, isNum) {
-      return opts.map(o => {
-        const sel = set.has(isNum ? o.v : o.v);
-        const arg = isNum ? o.v : `'${o.v}'`;
-        return `<button class="filter-dd-chip${sel?' selected':''}" onclick="${fnName}(${arg})">${o.l}</button>`;
-      }).join('');
-    }
-
-    function renderFilterDD() {
-      const dd = document.getElementById('filterDD');
-      if (!dd) return;
-      const n = countActiveFilters();
-      const sec = (key, label, icon, body) => {
-        const sum = catSummary(key);
-        return `<div class="filter-dd-section">
-          <div class="filter-dd-section-head">
-            <span class="filter-dd-section-label"><span class="filter-dd-section-icon">${icon}</span>${label}</span>
-            ${sum ? `<button class="filter-dd-section-clear" onclick="clearFilterCat('${key}')">Clear</button>` : ''}
+    function renderFilterPop(key) {
+      const pop = document.getElementById('fp-' + key);
+      if (!pop) return;
+      let html = '';
+      if (key === 'plant') {
+        html = `<div class="filter-pop-section">
+            <div class="filter-pop-section-title">Filter by plant</div>
+            ${plants.map(p => {
+              const checked = filterState.plants.has(p.id);
+              const cnt = insights.filter(r => r.plant === p.id).length;
+              return `<label class="filter-pop-row">
+                <input type="checkbox" ${checked?'checked':''} onchange="ddTogglePlant('${p.id}')"/>
+                <span class="row-plant-dot"></span>
+                <span>${p.name}</span>
+                <span class="fp-meta">${cnt}</span>
+              </label>`;
+            }).join('')}
           </div>
-          ${body}
+          <div class="filter-pop-plant-action">
+            <button class="fp-toggle-on" onclick="plantBulkToggle(true)" title="Enable every insight in the filtered plants">Activate plants</button>
+            <button class="fp-toggle-off" onclick="plantBulkToggle(false)" title="Disable every insight in the filtered plants">Deactivate plants</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--color-text-tertiary);padding:6px 4px 0;line-height:1.5">Pick one or more plants to scope the list. The Activate / Deactivate buttons flip every insight in those plants in one click.</div>`;
+      } else if (key === 'type') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">Severity type</div>
+          ${TYPE_OPTS.map(o => `<label class="filter-pop-row">
+            <input type="checkbox" ${filterState.types.has(o.v)?'checked':''} onchange="ddToggleSet('types','${o.v}')"/>
+            <span class="status-badge s-${o.v}" style="font-size:10.5px;padding:2px 7px"><span class="s-dot"></span>${o.l}</span>
+          </label>`).join('')}
         </div>`;
-      };
-
-      const typesBody = `<div class="filter-dd-chips">${TYPE_OPTS.map(o => `<button class="filter-dd-chip${filterState.types.has(o.v)?' selected':''}" onclick="ddToggleSet('types','${o.v}')">${o.l}</button>`).join('')}</div>`;
-      const equipBody = `<div class="filter-dd-chips">${EQUIP_OPTS.map(o => `<button class="filter-dd-chip${filterState.equipment.has(o.v)?' selected':''}" onclick="ddToggleSet('equipment','${o.v}')">${o.l}</button>`).join('')}</div>`;
-      const stateBody = `<div class="filter-dd-chips">${STATE_OPTS.map(o => `<button class="filter-dd-chip${filterState.state===o.v?' selected':''}" onclick="ddSetState('${o.v}')">${o.l}</button>`).join('')}</div>`;
-      const userBody  = `<input class="filter-dd-input" type="text" placeholder="Type a name to filter…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)"/>`;
-      const chBody    = `<div class="filter-dd-chips">${CHANNEL_OPTS.map(o => `<button class="filter-dd-chip${filterState.channels.has(o.v)?' selected':''}" onclick="ddToggleSetNum('channels',${o.v})">${o.l}</button>`).join('')}</div>`;
-      const timeBody  = `<div class="filter-dd-row-2col">
-          <input class="filter-dd-input" type="number" min="0" placeholder="Min (min)" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)"/>
-          <input class="filter-dd-input" type="number" min="0" placeholder="Max (min)" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)"/>
-        </div>
-        <div style="margin-top:6px;font-size:11px;color:var(--color-text-tertiary)">Show insights whose escalation delays fall inside this range.</div>`;
-      const repBody   = `<label class="filter-dd-toggle">
-          <input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/>
-          <span>
-            <span class="filter-dd-toggle-text">Only insights with repeat users</span>
-            <div class="filter-dd-toggle-hint">Same person on more than one escalation level</div>
-          </span>
-        </label>`;
-
-      dd.innerHTML = `
-        <div class="filter-dd-head">
-          <div class="filter-dd-title">Filters</div>
-          ${n > 0 ? `<button class="filter-dd-clear-all" onclick="clearAllFilters()">Clear all</button>` : ''}
-        </div>
-        <div class="filter-dd-body">
-          ${sec('types','Type of insight','◆',typesBody)}
-          ${sec('equipment','Equipment','⚙',equipBody)}
-          ${sec('state','Active / Inactive','●',stateBody)}
-          ${sec('user','Users','👤',userBody)}
-          ${sec('channels','Channel of communication','✉',chBody)}
-          ${sec('time','Escalation time window','⏱',timeBody)}
-          ${sec('repeats','Repeat users','↻',repBody)}
-        </div>
-        <div class="filter-dd-foot">
-          <span class="filter-dd-foot-info">${n === 0 ? 'No filters active' : `${n} filter${n>1?'s':''} active`}</span>
-          <button class="btn-primary" onclick="toggleFiltersDD(event)">Done</button>
+      } else if (key === 'state') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">State</div>
+          ${STATE_OPTS.map(o => `<label class="filter-pop-row">
+            <input type="radio" name="fp-state" ${filterState.state===o.v?'checked':''} onchange="ddSetState('${o.v}')" style="accent-color:var(--brand-800)"/>
+            <span>${o.l}</span>
+          </label>`).join('')}
         </div>`;
-      renderActivePills();
+      } else if (key === 'more') {
+        html = `<div class="filter-pop-section">
+            <div class="filter-pop-section-title">Equipment</div>
+            ${EQUIP_OPTS.map(o => `<label class="filter-pop-row">
+              <input type="checkbox" ${filterState.equipment.has(o.v)?'checked':''} onchange="ddToggleSet('equipment','${o.v}')"/>
+              <span>${o.l}</span>
+            </label>`).join('')}
+          </div>
+          <div class="filter-pop-section">
+            <div class="filter-pop-section-title">User</div>
+            <input class="ai-input" type="text" placeholder="Filter by user name…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)" style="width:100%;height:30px;font-size:12px"/>
+          </div>
+          <div class="filter-pop-section">
+            <div class="filter-pop-section-title">Channel</div>
+            ${CHANNEL_OPTS.map(o => `<label class="filter-pop-row">
+              <input type="checkbox" ${filterState.channels.has(o.v)?'checked':''} onchange="ddToggleSetNum('channels',${o.v})"/>
+              <span>${o.l}</span>
+            </label>`).join('')}
+          </div>
+          <div class="filter-pop-section">
+            <div class="filter-pop-section-title">Escalation time window (min)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <input class="ai-input" type="number" min="0" placeholder="Min" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)" style="height:30px;font-size:12px"/>
+              <input class="ai-input" type="number" min="0" placeholder="Max" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)" style="height:30px;font-size:12px"/>
+            </div>
+          </div>
+          <div class="filter-pop-section">
+            <label class="filter-pop-row">
+              <input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/>
+              <span>Only repeat users (same person on multiple levels)</span>
+            </label>
+          </div>`;
+      }
+      pop.innerHTML = html;
     }
 
     function ddToggleSet(key, val) {
       const set = filterState[key];
       if (set.has(val)) set.delete(val); else set.add(val);
-      renderRows(); renderFilterDD();
+      renderRows(); renderFilterPop(_openPop);
     }
     function ddToggleSetNum(key, val) {
       const set = filterState[key];
       if (set.has(val)) set.delete(val); else set.add(val);
-      renderRows(); renderFilterDD();
+      renderRows(); renderFilterPop(_openPop);
     }
-    function ddSetState(v) { filterState.state = v; renderRows(); renderFilterDD(); }
-    function ddSetUser(v) { filterState.user = v; renderRows(); renderActivePills(); updateFilterCountBadge(); }
+    function ddTogglePlant(id) {
+      if (filterState.plants.has(id)) filterState.plants.delete(id);
+      else filterState.plants.add(id);
+      renderRows(); renderFilterPop('plant');
+    }
+    function ddSetState(v) { filterState.state = v; renderRows(); renderFilterPop(_openPop); }
+    function ddSetUser(v)  { filterState.user = v;  renderRows(); updateFilterCountBadge(); }
     function ddSetTime(which, v) {
       if (which === 'min') filterState.timeMin = v;
       else filterState.timeMax = v;
-      renderRows(); renderActivePills(); updateFilterCountBadge();
+      renderRows(); updateFilterCountBadge();
     }
-    function ddToggleRepeats(on) { filterState.repeats = on; renderRows(); renderFilterDD(); }
+    function ddToggleRepeats(on) { filterState.repeats = on; renderRows(); renderFilterPop(_openPop); }
 
-    function clearFilterCat(k) {
-      if (k === 'types') filterState.types.clear();
-      else if (k === 'equipment') filterState.equipment.clear();
-      else if (k === 'channels') filterState.channels.clear();
-      else if (k === 'state') filterState.state = 'all';
-      else if (k === 'user') filterState.user = '';
-      else if (k === 'time') { filterState.timeMin = ''; filterState.timeMax = ''; }
-      else if (k === 'repeats') filterState.repeats = false;
-      renderRows(); renderFilterDD();
+    /* Plant master-switch (global activate/deactivate per plant) */
+    function plantBulkToggle(on) {
+      const pickedPlants = filterState.plants.size > 0 ? [...filterState.plants] : plants.map(p => p.id);
+      pickedPlants.forEach(pid => {
+        plantMaster[pid] = on;
+        insights.filter(r => r.plant === pid).forEach(r => r.enabled = on);
+      });
+      renderRows();
+      const label = filterState.plants.size > 0
+        ? `${pickedPlants.length} plant${pickedPlants.length>1?'s':''}`
+        : 'every plant';
+      showUndoToast({
+        msg: `${on?'Activated':'Deactivated'} all insights in ${label}.`,
+        onUndo: () => { pickedPlants.forEach(pid => { plantMaster[pid] = !on; insights.filter(r => r.plant === pid).forEach(r => r.enabled = !on); }); renderRows(); }
+      });
     }
 
     function renderActivePills() {
       const wrap = document.getElementById('filterActivePills');
       if (!wrap) return;
       const pills = [];
+      filterState.plants.forEach(v => { const p = plants.find(x => x.id === v); pills.push({ k: 'plants', v, l: 'Plant: ' + (p?.name||v) }); });
       filterState.types.forEach(v => pills.push({ k: 'types', v, l: 'Type: ' + (TYPE_OPTS.find(o=>o.v===v)?.l) }));
       filterState.equipment.forEach(v => pills.push({ k: 'equipment', v, l: 'Equip: ' + (EQUIP_OPTS.find(o=>o.v===v)?.l) }));
       filterState.channels.forEach(v => pills.push({ k: 'channels', v, l: 'Channel: ' + (CHANNEL_OPTS.find(o=>o.v===v)?.l) }));
       if (filterState.state !== 'all') pills.push({ k: 'state', v: filterState.state, l: 'State: ' + (STATE_OPTS.find(o=>o.v===filterState.state)?.l) });
       if (filterState.user) pills.push({ k: 'user', v: filterState.user, l: 'User: ' + filterState.user });
-      const t = catSummary('time');
-      if (t) pills.push({ k: 'time', v: '', l: 'Time: ' + t });
+      const a = filterState.timeMin, b = filterState.timeMax;
+      const tStr = (a !== '' && a != null && b !== '' && b != null) ? `${a}–${b} min`
+                 : (a !== '' && a != null) ? `≥ ${a} min`
+                 : (b !== '' && b != null) ? `≤ ${b} min` : '';
+      if (tStr) pills.push({ k: 'time', v: '', l: 'Time: ' + tStr });
       if (filterState.repeats) pills.push({ k: 'repeats', v: true, l: 'Repeat users' });
       wrap.innerHTML = pills.map(p => `<span class="filter-active-pill">${p.l}<button onclick="removePill('${p.k}','${String(p.v).replace(/'/g,"\\'")}')">×</button></span>`).join('');
     }
     function removePill(k, v) {
-      if (k === 'types') filterState.types.delete(v);
+      if (k === 'plants') filterState.plants.delete(v);
+      else if (k === 'types') filterState.types.delete(v);
       else if (k === 'equipment') filterState.equipment.delete(v);
       else if (k === 'channels') filterState.channels.delete(parseInt(v,10));
       else if (k === 'state') filterState.state = 'all';
       else if (k === 'user') filterState.user = '';
       else if (k === 'time') { filterState.timeMin = ''; filterState.timeMax = ''; }
       else if (k === 'repeats') filterState.repeats = false;
-      renderRows(); renderFilterDD();
+      renderRows();
     }
 
     function countActiveFilters() {
@@ -1600,7 +1348,18 @@
       n += filterState.types.size;
       n += filterState.equipment.size;
       n += filterState.channels.size;
+      n += filterState.plants.size;
       if (filterState.state !== 'all') n++;
+      if (filterState.user) n++;
+      if (filterState.timeMin !== null && filterState.timeMin !== '' && !isNaN(parseInt(filterState.timeMin,10))) n++;
+      if (filterState.timeMax !== null && filterState.timeMax !== '' && !isNaN(parseInt(filterState.timeMax,10))) n++;
+      if (filterState.repeats) n++;
+      return n;
+    }
+    function _moreCount() {
+      let n = 0;
+      n += filterState.equipment.size;
+      n += filterState.channels.size;
       if (filterState.user) n++;
       if (filterState.timeMin !== null && filterState.timeMin !== '' && !isNaN(parseInt(filterState.timeMin,10))) n++;
       if (filterState.timeMax !== null && filterState.timeMax !== '' && !isNaN(parseInt(filterState.timeMax,10))) n++;
@@ -1609,21 +1368,30 @@
     }
 
     function updateFilterCountBadge() {
-      const n = countActiveFilters();
-      const el = document.getElementById('activeFilterCount');
-      if (!el) return;
-      if (n > 0) { el.style.display = 'inline-block'; el.textContent = n; }
-      else el.style.display = 'none';
+      const setLabel = (id, txt, btnSel, hasActive) => {
+        const el = document.getElementById(id); if (el) el.textContent = txt;
+        const btn = document.querySelector(btnSel); if (btn) btn.classList.toggle('active', !!hasActive);
+      };
+      setLabel('fpc-plant', filterState.plants.size ? `${filterState.plants.size}` : 'All', '[data-filter="plant"]', filterState.plants.size > 0);
+      setLabel('fpc-type',  filterState.types.size  ? `${filterState.types.size}`  : 'All', '[data-filter="type"]',  filterState.types.size > 0);
+      setLabel('fpc-state', filterState.state !== 'all' ? STATE_OPTS.find(o=>o.v===filterState.state).l : 'All', '[data-filter="state"]', filterState.state !== 'all');
+      const m = _moreCount();
+      setLabel('fpc-more',  m ? `${m}` : '0', '[data-filter="more"]', m > 0);
+      const total = countActiveFilters();
+      const clearBtn = document.getElementById('filterClearBtn');
+      if (clearBtn) clearBtn.style.display = total > 0 ? '' : 'none';
+      renderActivePills();
     }
 
     function clearAllFilters() {
-      filterState.types.clear(); filterState.equipment.clear(); filterState.channels.clear();
+      filterState.types.clear(); filterState.equipment.clear(); filterState.channels.clear(); filterState.plants.clear();
       filterState.state = 'all'; filterState.user = ''; filterState.timeMin = ''; filterState.timeMax = ''; filterState.repeats = false;
-      ddCurrentCat = null;
-      renderRows(); renderFilterDD();
+      renderRows();
+      if (_openPop) renderFilterPop(_openPop);
     }
 
     function matchesFilters(r) {
+      if (filterState.plants.size > 0 && !filterState.plants.has(r.plant)) return false;
       if (filterState.types.size > 0 && !filterState.types.has(r.type)) return false;
       if (filterState.equipment.size > 0 && !filterState.equipment.has(r.equipment)) return false;
       if (filterState.state === 'active' && !r.enabled) return false;
@@ -1701,7 +1469,8 @@
         return matchesFilters(r);
       });
       updateFilterCountBadge();
-      renderActivePills();
+      const cntEl = document.getElementById('l2InsightCount');
+      if (cntEl) cntEl.textContent = `${rows.length} of ${insights.length} · across ${plants.length} plants`;
 
       if (!rows.length) {
         c.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)">No insights match the current filters</div>';
@@ -1709,6 +1478,7 @@
       }
       c.innerHTML = rows.map(r => {
         const isSel = selected.has(r.id);
+        const plant = plants.find(p => p.id === r.plant);
         return `<div class="insight-row${isSel?' selected':''}" onclick="handleRowClick(${r.id})">
           <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#193458"/></div>
           <div class="iname">
@@ -1718,6 +1488,7 @@
             </div>
             <span class="iname-text">${r.name}<span class="iname-meta">· ${r.equipment}</span></span>
           </div>
+          <div class="row-plant"><span class="row-plant-dot"></span>${plant?plant.name:'—'}</div>
           <div>${statusBadgeFor(r)}</div>
           <div class="last-trig${r.lastTrigActive?' active':''}">${r.lastTrig}</div>
           <div onclick="event.stopPropagation()">
@@ -1750,45 +1521,207 @@
     function initialsOf(name) { return name.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
     function randBg() { const opts = [['#EBF0F7','#193458'],['#DCE3EE','#193458'],['#B5C2D6','#0E1F36'],['#7B92B3','#FFFFFF'],['#4A6890','#FFFFFF']]; return opts[Math.floor(Math.random()*opts.length)]; }
 
-    function openBulkAddUserModal() { if (selected.size === 0) return; document.getElementById('bulkAddSub').textContent = `Adds a user to ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkAddUserModal').classList.add('open'); }
-    function closeBulkAddUser() { document.getElementById('bulkAddUserModal').classList.remove('open'); }
-    document.getElementById('bulkAddUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkAddUser(); });
-    function applyBulkAddUser() {
-      const name = document.getElementById('bulkAddUserName').value.trim();
-      if (!name) { alert('Enter a user name'); return; }
-      const level = document.getElementById('bulkAddLevel').value;
-      const comm = [0,0,0,0];
-      document.querySelectorAll('.ba-comm').forEach(cb => { if (cb.checked) comm[parseInt(cb.value,10)] = 1; });
-      const [bg, tc] = randBg();
-      const user = { init: initialsOf(name), bg, tc, name, comm };
-      selected.forEach(id => {
-        const r = insights.find(x => x.id === id); if (!r) return;
-        if (level === 'notify') { r.notify.users.push({...user}); }
-        else {
-          const lv = r.escLevels.find(l => l.label === 'Level ' + level);
-          if (lv) lv.users.push({...user});
-        }
-      });
-      closeBulkAddUser(); renderRows();
+    /* ──── Master User Control ──── */
+    let _mucName = '';
+    function openMasterUserModal() {
+      _mucName = '';
+      document.getElementById('mucInput').value = '';
+      document.getElementById('mucSuggest').innerHTML = '';
+      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Start typing to find a user — we\'ll show every insight and level they\'re configured on.</div>';
+      document.getElementById('mucFooter').style.display = 'none';
+      document.getElementById('masterUserModal').classList.add('open');
+      setTimeout(() => document.getElementById('mucInput').focus(), 50);
     }
+    function closeMasterUserModal() { document.getElementById('masterUserModal').classList.remove('open'); }
+    document.getElementById('masterUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMasterUserModal(); });
 
-    function openBulkRemoveUserModal() { if (selected.size === 0) return; document.getElementById('bulkRemoveSub').textContent = `Remove a user from ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkRemoveUserModal').classList.add('open'); }
-    function closeBulkRemoveUser() { document.getElementById('bulkRemoveUserModal').classList.remove('open'); }
-    document.getElementById('bulkRemoveUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBulkRemoveUser(); });
-    function applyBulkRemoveUser() {
-      const name = document.getElementById('bulkRemoveUserName').value.trim();
-      if (!name) { alert('Enter a user name'); return; }
-      const level = document.getElementById('bulkRemoveLevel').value;
-      selected.forEach(id => {
-        const r = insights.find(x => x.id === id); if (!r) return;
-        if (level === 'any' || level === 'notify') r.notify.users = r.notify.users.filter(u => u.name.toLowerCase() !== name.toLowerCase());
-        r.escLevels.forEach(lv => {
-          if (level === 'any' || lv.label === 'Level ' + level) {
-            lv.users = lv.users.filter(u => u.name.toLowerCase() !== name.toLowerCase());
-          }
+    function _allKnownUsers() {
+      const map = new Map();
+      const scope = selected.size > 0 ? insights.filter(r => selected.has(r.id)) : insights;
+      scope.forEach(r => {
+        [...r.notify.users, ...r.escLevels.flatMap(l => l.users)].forEach(u => {
+          if (!map.has(u.name)) map.set(u.name, { ...u, count: 0 });
+          map.get(u.name).count++;
         });
       });
-      closeBulkRemoveUser(); renderRows();
+      return [...map.values()].sort((a, b) => b.count - a.count);
+    }
+
+    function renderMasterUserSuggestions() {
+      const q = document.getElementById('mucInput').value.trim();
+      const sug = document.getElementById('mucSuggest');
+      if (q.length === 0) { sug.innerHTML = ''; renderMasterUserResults(''); return; }
+      const all = _allKnownUsers();
+      const matches = all.filter(u => u.name.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
+      sug.innerHTML = matches.length === 0 ? '' : `<div class="muc-suggest">${matches.map(u => `
+        <div class="muc-suggest-item" onclick="mucPickUser('${u.name.replace(/'/g, "\\'")}')">
+          <div class="user-avatar" style="background:${u.bg};color:${u.tc};width:24px;height:24px;font-size:9px">${u.init}</div>
+          <span>${u.name}</span>
+          <span class="muc-suggest-meta">on ${u.count} level${u.count>1?'s':''}</span>
+        </div>`).join('')}</div>`;
+      // Also live-update results to whatever the typed name matches exactly
+      renderMasterUserResults(q);
+    }
+    function mucPickUser(name) {
+      _mucName = name;
+      document.getElementById('mucInput').value = name;
+      document.getElementById('mucSuggest').innerHTML = '';
+      renderMasterUserResults(name);
+    }
+
+    function _findUserPlacements(name) {
+      const matches = [];
+      const q = name.toLowerCase();
+      const scope = selected.size > 0 ? insights.filter(r => selected.has(r.id)) : insights;
+      scope.forEach(r => {
+        const placements = [];
+        r.notify.users.forEach((u, ui) => { if (u.name.toLowerCase() === q) placements.push({ kind: 'notify', label: 'Notify', userIdx: ui, levelIdx: 'notify' }); });
+        r.escLevels.forEach((lv, li) => { lv.users.forEach((u, ui) => { if (u.name.toLowerCase() === q) placements.push({ kind: 'level', label: lv.label, cls: lv.cls, levelIdx: li, userIdx: ui }); }); });
+        if (placements.length) matches.push({ insight: r, placements });
+      });
+      return matches;
+    }
+
+    function renderMasterUserResults(name) {
+      const out = document.getElementById('mucResults');
+      const footer = document.getElementById('mucFooter');
+      _mucName = name;
+      if (!name || !name.trim()) { out.innerHTML = '<div class="muc-empty">Start typing to find a user.</div>'; footer.style.display = 'none'; return; }
+      const matches = _findUserPlacements(name);
+      const scopeLabel = selected.size > 0 ? `${selected.size} selected insight${selected.size>1?'s':''}` : 'every insight';
+      if (matches.length === 0) {
+        out.innerHTML = `<div class="muc-empty">No matches for <b>${name}</b> in ${scopeLabel}.<br/>Use the dropdown below to add them to one or more levels.</div>
+          ${_mucAddRowHTML(name)}`;
+        footer.style.display = 'none';
+        return;
+      }
+      out.innerHTML = matches.map(m => {
+        const plant = plants.find(p => p.id === m.insight.plant);
+        return `<div class="muc-insight-card">
+          <div class="muc-insight-head">
+            <span class="muc-insight-name">${m.insight.name}</span>
+            <span class="muc-insight-plant">${plant?plant.name:''}</span>
+          </div>
+          <div>
+            ${m.placements.map(pl => `<span class="muc-level-tag removable lbadge ${pl.kind==='notify'?'lbn':(pl.cls||'lb1')}">
+              ${pl.label}
+              <span class="muc-level-tag-x" onclick="mucRemoveOne(${m.insight.id}, '${pl.levelIdx}', ${pl.userIdx}, '${name.replace(/'/g, "\\'")}')" title="Remove from this level">×</span>
+            </span>`).join('')}
+          </div>
+          ${_mucAddRowHTML(name, m.insight.id)}
+        </div>`;
+      }).join('');
+      document.getElementById('mucScope').textContent = `${name} — found on ${matches.length} insight${matches.length>1?'s':''} in ${scopeLabel}`;
+      footer.style.display = '';
+    }
+
+    function _mucAddRowHTML(name, insightId) {
+      const opts = ['notify', '0', '1', '2', '3', '4'].map((v, i) => {
+        const lbl = v === 'notify' ? 'Notify (immediate)' : `Level ${i}`;
+        return `<option value="${v}">${lbl}</option>`;
+      }).join('');
+      const targetArg = insightId == null ? 'null' : insightId;
+      return `<div class="muc-add-row">
+        <select class="muc-add-select" id="mucAddLvl-${insightId||'all'}">${opts}</select>
+        <button class="muc-add-btn" onclick="mucAddOne(${targetArg}, '${name.replace(/'/g, "\\'")}')">+ Add to level</button>
+      </div>`;
+    }
+
+    function mucAddOne(insightId, name) {
+      const lvlSel = document.getElementById(`mucAddLvl-${insightId==null?'all':insightId}`);
+      const lvl = lvlSel.value;
+      const targets = insightId == null
+        ? (selected.size > 0 ? insights.filter(r => selected.has(r.id)) : insights)
+        : [insights.find(r => r.id === insightId)].filter(Boolean);
+      const [bg, tc] = randBg();
+      const user = { init: initialsOf(name), bg, tc, name, comm: [1, 0, 0, 0] };
+      targets.forEach(r => {
+        if (lvl === 'notify') r.notify.users.push({ ...user, comm: [...user.comm] });
+        else {
+          const idx = parseInt(lvl, 10);
+          if (r.escLevels[idx]) r.escLevels[idx].users.push({ ...user, comm: [...user.comm] });
+        }
+      });
+      renderRows();
+      renderMasterUserResults(name);
+    }
+    function mucRemoveOne(insightId, levelIdx, userIdx, name) {
+      const r = insights.find(x => x.id === insightId);
+      if (!r) return;
+      if (levelIdx === 'notify') r.notify.users.splice(userIdx, 1);
+      else r.escLevels[parseInt(levelIdx,10)]?.users.splice(userIdx, 1);
+      renderRows();
+      renderMasterUserResults(name);
+    }
+    function masterRemoveAll() {
+      if (!_mucName) return;
+      const q = _mucName.toLowerCase();
+      const scope = selected.size > 0 ? insights.filter(r => selected.has(r.id)) : insights;
+      let count = 0;
+      scope.forEach(r => {
+        const before = r.notify.users.length;
+        r.notify.users = r.notify.users.filter(u => u.name.toLowerCase() !== q);
+        count += before - r.notify.users.length;
+        r.escLevels.forEach(lv => {
+          const b = lv.users.length;
+          lv.users = lv.users.filter(u => u.name.toLowerCase() !== q);
+          count += b - lv.users.length;
+        });
+      });
+      renderRows();
+      renderMasterUserResults(_mucName);
+      showUndoToast({ msg: `Removed <b>${_mucName}</b> from ${count} placement${count===1?'':'s'}.`, onUndo: () => {} });
+    }
+
+    /* ──── Add Insight ──── */
+    function openAddInsightModal() {
+      const sel = document.getElementById('aiPlant');
+      sel.innerHTML = plants.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      // Reset
+      ['aiName','aiSensor','aiValue','aiUnit','aiClose','aiNotifyUser','aiL1User'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+      document.getElementById('aiL1Delay').value = '0';
+      document.querySelectorAll('#aiTypeGrid .ai-type-chip').forEach(c => c.classList.toggle('selected', c.dataset.val === 'warning'));
+      document.getElementById('addInsightModal').classList.add('open');
+      setTimeout(() => document.getElementById('aiName').focus(), 50);
+    }
+    function closeAddInsightModal() { document.getElementById('addInsightModal').classList.remove('open'); }
+    document.getElementById('addInsightModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddInsightModal(); });
+    document.querySelectorAll('#aiTypeGrid .ai-type-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#aiTypeGrid .ai-type-chip').forEach(x => x.classList.remove('selected'));
+        c.classList.add('selected');
+      });
+    });
+    function submitAddInsight() {
+      const name = document.getElementById('aiName').value.trim();
+      if (!name) { document.getElementById('aiName').focus(); return; }
+      const plant = document.getElementById('aiPlant').value;
+      const equipment = document.getElementById('aiEquipment').value;
+      const type = document.querySelector('#aiTypeGrid .ai-type-chip.selected')?.dataset.val || 'warning';
+      const sensor = document.getElementById('aiSensor').value.trim();
+      const op = document.getElementById('aiOp').value;
+      const val = document.getElementById('aiValue').value;
+      const unit = document.getElementById('aiUnit').value.trim();
+      const close = document.getElementById('aiClose').value.trim();
+      const notifyName = document.getElementById('aiNotifyUser').value.trim();
+      const l1Name = document.getElementById('aiL1User').value.trim();
+      const l1Delay = parseInt(document.getElementById('aiL1Delay').value, 10) || 0;
+      const newId = (insights.reduce((m,r) => Math.max(m, r.id), 0) || 0) + 1;
+      const mkUser = (n) => { const [bg, tc] = randBg(); return { init: initialsOf(n), bg, tc, name: n, comm: [1, 0, 0, 0] }; };
+      const insight = {
+        id: newId, name, type, equipment, plant, enabled: true, task: false,
+        lastTrig: 'Never triggered', lastTrigActive: false,
+        notify: { users: notifyName ? [mkUser(notifyName)] : [] },
+        escLevels: [{ label: 'Level 1', cls: 'lb1', delay: l1Delay, users: l1Name ? [mkUser(l1Name)] : [], hooter: false }],
+        _conditions: { sensor, op, val, unit, close },
+      };
+      insights.push(insight);
+      closeAddInsightModal();
+      renderRows();
+      showUndoToast({
+        msg: `Created <b>${name}</b> in ${plants.find(p => p.id === plant)?.name}.`,
+        onUndo: () => { const i = insights.findIndex(x => x.id === newId); if (i >= 0) insights.splice(i, 1); renderRows(); }
+      });
     }
 
     function openBulkTimingModal() { if (selected.size === 0) return; document.getElementById('bulkTimingSub').textContent = `Adjust escalation delay for ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkTimingModal').classList.add('open'); }
@@ -2128,15 +2061,6 @@
     }
     function cancelConditions() { toggleConditionEdit(); }
 
-    /* L3 manual close */
-    function manualClose() {
-      const banner = document.getElementById('closeInfoBanner');
-      banner.classList.add('active');
-      document.getElementById('closeStatusText').innerHTML = 'Closed manually by <span class="close-val">you</span> · just now';
-      document.getElementById('resolveCard').style.display = 'none';
-      document.getElementById('closeHistory').insertAdjacentHTML('afterbegin',
-        `<div class="close-history-row"><span style="color:var(--color-text-secondary)">Latest closure</span><span class="close-val" style="color:#193458;font-weight:500">Manual · you · just now</span></div>`);
-    }
 
     /* L3 mount */
     document.getElementById('mainToggle').addEventListener('change', function() {
@@ -2144,7 +2068,8 @@
     });
 
     /* Init */
-    renderL1Rows();
+    renderRows();
+    updateFilterCountBadge();
     document.getElementById('navBack').disabled = true;
     document.getElementById('navForward').disabled = true;
   </script>
