@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Smart Formula Builder · Insights+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script>
+  // Robust XLSX loader with CDN fallbacks (some networks block jsdelivr)
+  (function loadXLSX() {
+    const sources = [
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+      'https://unpkg.com/xlsx@0.20.1/dist/xlsx.full.min.js',
+      'https://cdn.jsdelivr.net/npm/xlsx@0.20.1/dist/xlsx.full.min.js'
+    ];
+    let i = 0;
+    function tryNext() {
+      if (i >= sources.length) { window.__xlsxFailed = true; return; }
+      const s = document.createElement('script');
+      s.src = sources[i++];
+      s.async = false;
+      s.onerror = tryNext;
+      document.head.appendChild(s);
+    }
+    tryNext();
+  })();
+</script>
+<style>
+  :root{
+    --bg:#f6f7fb; --panel:#fff; --ink:#0f172a; --muted:#64748b; --line:#e5e7eb;
+    --brand:#4f46e5; --ok:#16a34a; --warn:#d97706; --err:#dc2626; --code-bg:#0b1220; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  a{color:var(--brand);text-decoration:none}
+
+  .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+  .logo{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .logo .plus{color:var(--brand)}
+  .nav a.back{font-size:13px;color:var(--muted)}
+  .nav a.back:hover{color:var(--ink)}
+  .container{max-width:1280px;margin:0 auto;padding:18px 20px 60px}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:flex-start}
+  @media (max-width:980px){.layout{grid-template-columns:1fr}}
+  .sidebar{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow-y:auto}
+  .sidebar h3{margin:0 0 10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .sidebar h3 .count{background:var(--brand);color:#fff;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;letter-spacing:0}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .tab{padding:9px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px}
+  .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+  .tab .count{background:var(--line);color:var(--muted);font-size:10px;padding:1px 6px;border-radius:99px;font-weight:600}
+  .tab.active .count{background:var(--brand);color:#fff}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .card h3{margin:0 0 10px;font-size:14px;font-weight:600}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
+
+  .name-input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;outline:none}
+  .name-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+  textarea.primary{width:100%;min-height:80px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;outline:none;line-height:1.5}
+  textarea.primary:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;transition:all .15s}
+  .btn:hover{background:#f8fafc}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.primary:hover{background:#4338ca}
+  .btn.success{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .btn.success:hover{background:#15803d}
+  .btn.danger{background:#fff;color:var(--err);border-color:#fecaca}
+  .btn.danger:hover{background:#fef2f2}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+  .btn.ghost:hover{background:#f1f5f9;color:var(--ink)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+  .strip{display:flex;align-items:center;gap:10px;margin:14px 0 8px}
+  .strip h4{margin:0;font-size:13px;font-weight:600}
+  .strip .badge{font-size:11px;padding:2px 8px;border-radius:99px;background:#eef2ff;color:var(--brand);font-weight:500}
+  .strip .badge.close{background:#fef2f2;color:var(--err)}
+  .strip .grow{flex:1}
+
+  .logic{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
+  .logic button{border:0;background:transparent;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted)}
+  .logic button.on{background:var(--brand);color:#fff}
+
+  .row{display:grid;grid-template-columns:1fr 60px 1fr 80px auto;gap:6px;margin-bottom:6px;align-items:center}
+  .row input,.row select{border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:13px;outline:none;width:100%;background:#fff}
+  .row input:focus,.row select:focus{border-color:var(--brand)}
+  .row .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:4px}
+  .row .x:hover{background:#fef2f2;color:var(--err)}
+  .add-row{font-size:12px;color:var(--brand);background:none;border:1px dashed var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
+  .add-row:hover{background:#eef2ff;border-color:var(--brand)}
+  .duration{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)}
+  .duration input{width:60px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px}
+  .duration select{border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:inherit;font-size:12px;background:#fff}
+
+  /* Components */
+  .components-list{display:flex;flex-direction:column;gap:10px}
+  .component-block{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+  .component-block.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .component-head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;user-select:none}
+  .component-head:hover{background:#f8fafc}
+  .component-block.on .component-head{background:#eef2ff}
+  .component-head .icon{font-size:18px}
+  .component-head .name{font-weight:600;font-size:13px}
+  .component-head .desc{font-size:11px;color:var(--muted)}
+  .component-head .toggle{margin-left:auto;width:16px;height:16px;border:2px solid var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;background:#fff}
+  .component-block.on .component-head .toggle{background:var(--brand);border-color:var(--brand)}
+  .component-cfg{padding:0 12px 12px;border-top:1px solid var(--line);display:none}
+  .component-block.on .component-cfg{display:block}
+  .cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .cfg-grid.full{grid-template-columns:1fr}
+  .cfg-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+  .cfg-field input,.cfg-field select,.cfg-field textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:13px;outline:none;background:#fff}
+  .cfg-field input:focus,.cfg-field select:focus,.cfg-field textarea:focus{border-color:var(--brand)}
+  .cfg-field textarea{min-height:60px;resize:vertical;font-family:inherit}
+
+  .out{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .out .label{color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+  .out .open-f{color:#86efac} .out .close-f{color:#fca5a5}
+
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:#fafbff}
+  .drop:hover,.drop.over{border-color:var(--brand);background:#eef2ff}
+  .drop strong{color:var(--brand)}
+
+  table.results{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+  table.results th{text-align:left;padding:8px;background:#f1f5f9;font-weight:600;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  table.results td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;word-break:break-word}
+  table.results td:first-child,table.results th:first-child{font-family:inherit;font-size:12px;font-weight:500}
+
+  /* Saved triggers list (sidebar) */
+  .triggers-list{display:flex;flex-direction:column;gap:10px}
+  .trig-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+  .trig-card h4{margin:0;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .trig-card .comps{display:flex;flex-wrap:wrap;gap:4px}
+  .trig-card .comp-pill{font-size:10px;padding:2px 7px;background:#eef2ff;color:var(--brand);border-radius:99px;font-weight:600;letter-spacing:.02em}
+  .trig-card .formula{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);background:#f8fafc;padding:6px 8px;border-radius:6px;line-height:1.5;word-break:break-word}
+  .trig-card .formula.open{border-left:3px solid var(--ok)}
+  .trig-card .formula.close{border-left:3px solid var(--err)}
+  .trig-card .meta{font-size:11px;color:var(--muted)}
+  .trig-card .actions{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+  .trig-card .actions .btn{padding:5px 10px;font-size:12px}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+  .empty .big{font-size:36px;margin-bottom:12px;opacity:.5}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .15s}
+  .modal-bg.show{opacity:1;pointer-events:auto}
+  .modal{background:#fff;border-radius:14px;width:520px;max-width:92vw;max-height:88vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .2s}
+  .modal-bg.show .modal{transform:translateY(0)}
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .modal-head h3{margin:0;font-size:15px;font-weight:600}
+  .modal-head .check{width:28px;height:28px;background:var(--ok);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .modal-body{padding:18px 20px}
+  .modal-body .row-info{margin-bottom:12px}
+  .modal-body .row-info .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-bottom:4px}
+  .modal-body .row-info .val{font-family:'JetBrains Mono',monospace;font-size:12px;background:#f8fafc;padding:8px 10px;border-radius:6px;word-break:break-word;line-height:1.5}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none;z-index:200}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .toast.err{background:var(--err)}
+  .err-banner{background:#fef2f2;color:var(--err);border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:8px;word-break:break-word}
+  .ok-banner{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:8px}
+  .hide{display:none!important}
+
+  .editing-banner{background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .editing-banner button{margin-left:auto;border:0;background:transparent;color:#92400e;font-weight:600;cursor:pointer;font-size:12px;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">Insights<span class="plus">+</span></div>
+    <span style="color:var(--muted);font-size:13px">/ Smart Formula Builder</span>
+    <div style="flex:1"></div>
+    <a class="back" href="index.html">← Back to App</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="layout">
+  <div class="main">
+
+  <div class="tabs">
+    <div class="tab active" data-tab="manual">Build Trigger</div>
+    <div class="tab" data-tab="bulk">Bulk Upload</div>
+  </div>
+
+  <!-- ===== BUILD TRIGGER ===== -->
+  <div id="tab-manual">
+
+    <div id="editingBanner" class="editing-banner hide">
+      Editing: <b id="editingName"></b>
+      <button id="exitEdit">Exit edit mode</button>
+    </div>
+
+    <div class="card">
+      <h3>Trigger details</h3>
+      <input id="triggerName" class="name-input" placeholder="Trigger name (e.g. Bar screen high level)" />
+    </div>
+
+    <div class="card">
+      <h3>Describe the trigger</h3>
+      <p class="hint">Plain English — sensor, threshold, units, duration. Closing logic is auto-generated from the opening.</p>
+      <textarea id="nlInput" class="primary" placeholder="e.g. Bar screen chamber level-1 (CS-1) > 600mm for more than 5 minutes&#10;     Filter feed pumps 1 and 2 are off but flow rate is positive&#10;     DO sensor 1 below 2 mg/L for 10 minutes"></textarea>
+      <div class="btn-row">
+        <button class="btn primary" id="parseBtn">⚡ Parse</button>
+        <button class="btn ghost" id="clearBtn">Clear</button>
+      </div>
+      <div id="errBox" class="err-banner hide"></div>
+    </div>
+
+    <div class="card">
+      <div class="strip">
+        <span class="badge">OPENING</span>
+        <h4>When trigger fires</h4>
+        <div class="grow"></div>
+        <div class="logic" id="logic-open">
+          <button data-l="AND" class="on">AND</button>
+          <button data-l="OR">OR</button>
+        </div>
+      </div>
+      <div id="rows-open"></div>
+      <button class="add-row" data-add="open">+ Add condition</button>
+      <div class="duration">
+        Sustained for
+        <input type="number" min="0" id="dur-open-val" value="0"/>
+        <select id="dur-open-unit"><option>sec</option><option selected>min</option><option>hr</option></select>
+      </div>
+
+      <div class="strip">
+        <span class="badge close">CLOSING</span>
+        <h4>When trigger resets</h4>
+        <div class="grow"></div>
+        <button class="btn ghost" id="autoClose" style="font-size:12px;padding:4px 8px">↻ Auto-invert</button>
+        <div class="logic" id="logic-close">
+          <button data-l="AND" class="on">AND</button>
+          <button data-l="OR">OR</button>
+        </div>
+      </div>
+      <div id="rows-close"></div>
+      <button class="add-row" data-add="close">+ Add condition</button>
+      <div class="duration">
+        Sustained for
+        <input type="number" min="0" id="dur-close-val" value="0"/>
+        <select id="dur-close-unit"><option>sec</option><option selected>min</option><option>hr</option></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Components</h3>
+      <p class="hint">Click each component to enable + configure what it does when this trigger fires.</p>
+      <div class="components-list" id="componentsList"></div>
+    </div>
+
+    <div class="card">
+      <h3>Generated formulas</h3>
+      <div class="out" id="output"><span class="label">Add at least one condition.</span></div>
+      <div class="btn-row">
+        <button class="btn success" id="saveBtn">💾 Save Trigger</button>
+        <button class="btn" id="copyBtn">📋 Copy</button>
+        <button class="btn" id="exportBtn">⬇ Export JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BULK ===== -->
+  <div id="tab-bulk" class="hide">
+    <div class="card">
+      <h3>Upload Excel</h3>
+      <p class="hint">Columns: <b>name</b>, <b>opening</b>, <b>closing</b> (optional), <b>components</b> (optional, comma-separated). Each parsed row is automatically saved to your dashboard.</p>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn" id="dlTpl">⬇ Download template</button>
+      </div>
+      <div class="drop" id="drop">
+        <div style="font-size:24px;margin-bottom:6px">📁</div>
+        <div><strong>Click to upload</strong> or drag &amp; drop .xlsx / .csv</div>
+      </div>
+      <input type="file" id="file" accept=".xlsx,.xls,.csv" style="display:none"/>
+      <div id="bulkStatus" class="hint" style="margin-top:10px"></div>
+      <div id="bulkErr" class="err-banner hide"></div>
+      <div id="bulkOut"></div>
+    </div>
+  </div>
+
+  </div><!-- /main -->
+
+  <aside class="sidebar">
+    <h3>Saved Triggers <span class="count" id="savedCount">0</span></h3>
+    <div id="savedHost"></div>
+  </aside>
+  </div><!-- /layout -->
+</div>
+
+<!-- Save confirmation modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="check">✓</span>
+      <h3 id="modalTitle">Trigger saved</h3>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn" id="modalDashboard">View Dashboard</button>
+      <button class="btn primary" id="modalNew">Create Another</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// COMPONENT SCHEMA
+// ============================================================
+const COMPONENTS = [
+  { key:'alert',         icon:'🔔', name:'Alert',         desc:'Trigger an in-app alert',
+    fields:[
+      { id:'severity', label:'Severity', type:'select', options:['Info','Warning','High','Critical'], default:'Warning' },
+      { id:'title',    label:'Alert title',  type:'text' },
+      { id:'message',  label:'Message',  type:'textarea', full:true },
+    ]
+  },
+  { key:'communication', icon:'✉️',  name:'Communication', desc:'Send email / SMS / chat notification',
+    fields:[
+      { id:'channel',    label:'Channel',     type:'select', options:['Email','SMS','WhatsApp','Slack','Teams'], default:'Email' },
+      { id:'recipients', label:'Recipients',  type:'text', placeholder:'Comma-separated (e.g. ops@company.com, +91...)' },
+      { id:'subject',    label:'Subject',     type:'text' },
+      { id:'body',       label:'Message body',type:'textarea', full:true },
+    ]
+  },
+  { key:'task', icon:'📋', name:'Task', desc:'Create a task for an operator',
+    fields:[
+      { id:'title',       label:'Task title',  type:'text' },
+      { id:'assignee',    label:'Assignee',    type:'text', placeholder:'Operator name or role' },
+      { id:'priority',    label:'Priority',    type:'select', options:['Low','Medium','High','Urgent'], default:'Medium' },
+      { id:'description', label:'Description', type:'textarea', full:true },
+    ]
+  },
+  { key:'hooter', icon:'📢', name:'Hooter', desc:'Sound a physical hooter / siren',
+    fields:[
+      { id:'hooterId', label:'Hooter ID / Location', type:'text', placeholder:'e.g. HOOTER_PLANT_01' },
+      { id:'duration', label:'Duration (sec)',       type:'number', default:30 },
+      { id:'pattern',  label:'Pattern',              type:'select', options:['Continuous','Pulsed','Intermittent'], default:'Continuous' },
+    ]
+  },
+  { key:'report', icon:'📊', name:'Report', desc:'Generate / append to a report',
+    fields:[
+      { id:'reportName', label:'Report',     type:'text', placeholder:'e.g. Daily Plant Incidents' },
+      { id:'frequency',  label:'Frequency',  type:'select', options:['One-off','Daily','Weekly','Monthly'], default:'One-off' },
+      { id:'recipients', label:'Recipients', type:'text', placeholder:'Comma-separated emails' },
+    ]
+  },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  triggerName: '',
+  open:  { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
+  close: { logic:'AND', rows:[], dur:{val:0, unit:'min'} },
+  componentsOn:  new Set(['alert']),
+  componentsCfg: {},   // { alert: { severity:'Warning', ... }, ... }
+  editingId: null,
+  saved: [],           // loaded from localStorage
+};
+
+const UNITS = ['—','mm','m','cm','bar','kPa','psi','m³/h','L/s','L/min','°C','%','mg/L','NTU','pH','rpm','kW','A','V','Hz'];
+const OPS   = ['=','!=','>','>=','<','<='];
+const FLIP  = {'=':'!=','!=':'=','>':'<=','>=':'<','<':'>=','<=':'>'};
+const STORAGE_KEY = 'ip_saved_triggers_v1';
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function loadSaved() {
+  try { state.saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e){ state.saved = []; }
+}
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.saved));
+  document.getElementById('savedCount').textContent = state.saved.length;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === id));
+  document.getElementById('tab-manual').classList.toggle('hide', id !== 'manual');
+  document.getElementById('tab-bulk').classList.toggle('hide', id !== 'bulk');
+}
+
+// ============================================================
+// CONDITION ROWS
+// ============================================================
+function renderRows(section) {
+  const host = document.getElementById('rows-' + section);
+  host.innerHTML = '';
+  state[section].rows.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.innerHTML = `
+      <input placeholder="Tag (e.g. Bar_Screen_Level_Sensor)" value="${esc(r.tag)}" data-f="tag"/>
+      <select data-f="op">${OPS.map(o => `<option ${o===r.op?'selected':''}>${o}</option>`).join('')}</select>
+      <input placeholder="Value" value="${esc(r.val)}" data-f="val"/>
+      <select data-f="unit">${UNITS.map(u => `<option ${u===r.unit?'selected':''}>${u}</option>`).join('')}</select>
+      <button class="x" title="Remove">×</button>`;
+    div.querySelectorAll('[data-f]').forEach(el => {
+      el.oninput = el.onchange = () => { r[el.dataset.f] = el.value; updateOutput(); };
+    });
+    div.querySelector('.x').onclick = () => { state[section].rows.splice(i, 1); renderRows(section); updateOutput(); };
+    host.appendChild(div);
+  });
+}
+function newRow() { return {tag:'', op:'>', val:'', unit:'—'}; }
+
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+  const s = b.dataset.add; state[s].rows.push(newRow()); renderRows(s); updateOutput();
+});
+
+['open','close'].forEach(s => {
+  document.querySelectorAll(`#logic-${s} button`).forEach(b => b.onclick = () => {
+    state[s].logic = b.dataset.l;
+    document.querySelectorAll(`#logic-${s} button`).forEach(x => x.classList.toggle('on', x===b));
+    updateOutput();
+  });
+  document.getElementById(`dur-${s}-val`).oninput  = e => { state[s].dur.val  = +e.target.value || 0; updateOutput(); };
+  document.getElementById(`dur-${s}-unit`).onchange = e => { state[s].dur.unit = e.target.value;       updateOutput(); };
+});
+
+document.getElementById('triggerName').oninput = e => { state.triggerName = e.target.value; };
+
+// ============================================================
+// COMPONENTS UI
+// ============================================================
+function renderComponents() {
+  const host = document.getElementById('componentsList');
+  host.innerHTML = '';
+  COMPONENTS.forEach(c => {
+    const block = document.createElement('div');
+    block.className = 'component-block' + (state.componentsOn.has(c.key) ? ' on' : '');
+    block.dataset.key = c.key;
+    const fieldsHtml = c.fields.map(f => `
+      <div class="cfg-field${f.full ? ' full' : ''}" data-fid="${f.id}">
+        <label>${esc(f.label)}</label>
+        ${f.type === 'select'
+          ? `<select data-cfg="${c.key}.${f.id}">${f.options.map(o => `<option ${(state.componentsCfg[c.key]?.[f.id]||f.default)===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`
+          : f.type === 'textarea'
+            ? `<textarea data-cfg="${c.key}.${f.id}" placeholder="${esc(f.placeholder||'')}">${esc(state.componentsCfg[c.key]?.[f.id]||'')}</textarea>`
+            : `<input type="${f.type}" data-cfg="${c.key}.${f.id}" placeholder="${esc(f.placeholder||'')}" value="${esc(state.componentsCfg[c.key]?.[f.id]||(f.default!=null?f.default:''))}"/>`
+        }
+      </div>`).join('');
+    block.innerHTML = `
+      <div class="component-head">
+        <div class="icon">${c.icon}</div>
+        <div>
+          <div class="name">${esc(c.name)}</div>
+          <div class="desc">${esc(c.desc)}</div>
+        </div>
+        <div class="toggle">${state.componentsOn.has(c.key) ? '✓' : ''}</div>
+      </div>
+      <div class="component-cfg">
+        <div class="cfg-grid${c.fields.some(f=>f.full)?' full':''}">${fieldsHtml}</div>
+      </div>`;
+    block.querySelector('.component-head').onclick = () => {
+      if (state.componentsOn.has(c.key)) state.componentsOn.delete(c.key);
+      else state.componentsOn.add(c.key);
+      renderComponents();
+      updateOutput();
+    };
+    block.querySelectorAll('[data-cfg]').forEach(el => {
+      el.oninput = el.onchange = () => {
+        const [ck, fid] = el.dataset.cfg.split('.');
+        if (!state.componentsCfg[ck]) state.componentsCfg[ck] = {};
+        state.componentsCfg[ck][fid] = el.value;
+      };
+    });
+    host.appendChild(block);
+  });
+}
+
+// ============================================================
+// FORMULA BUILD
+// ============================================================
+function buildFormula(section) {
+  const s = state[section];
+  const valid = s.rows.filter(r => r.tag.trim() && r.val.toString().trim());
+  if (!valid.length) return null;
+  const parts = valid.map(r => {
+    const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : '';
+    return `${r.tag.trim()}${r.op}${r.val}${u}`;
+  });
+  const inner  = parts.length === 1 ? parts[0] : `${s.logic}(${parts.join(', ')})`;
+  const durStr = s.dur.val > 0 ? ` [for ${s.dur.val} ${s.dur.unit}]` : '';
+  return `IF(${inner}, 1, 0)${durStr}`;
+}
+function updateOutput() {
+  const o = buildFormula('open'), c = buildFormula('close');
+  const out = document.getElementById('output');
+  if (!o && !c) { out.innerHTML = '<span class="label">Add at least one condition.</span>'; return; }
+  let h = '';
+  if (o) h += `<span class="label">Opening</span><span class="open-f">${esc(o)}</span>\n\n`;
+  if (c) h += `<span class="label">Closing</span><span class="close-f">${esc(c)}</span>\n\n`;
+  if (state.componentsOn.size) h += `<span class="label">Components</span>${[...state.componentsOn].join(', ')}`;
+  out.innerHTML = h;
+}
+
+// ============================================================
+// AUTO-INVERT
+// ============================================================
+document.getElementById('autoClose').onclick = () => {
+  const valid = state.open.rows.filter(r => r.tag && r.val);
+  if (!valid.length) { toast('Add an opening condition first'); return; }
+  state.close.logic = state.open.logic === 'AND' ? 'OR' : 'AND';
+  state.close.rows  = state.open.rows.map(r => ({...r, op: FLIP[r.op] || r.op}));
+  state.close.dur   = {...state.open.dur};
+  document.querySelectorAll('#logic-close button').forEach(b => b.classList.toggle('on', b.dataset.l === state.close.logic));
+  document.getElementById('dur-close-val').value  = state.close.dur.val;
+  document.getElementById('dur-close-unit').value = state.close.dur.unit;
+  renderRows('close');
+  updateOutput();
+};
+
+// ============================================================
+// SMART LOCAL PARSER
+// ============================================================
+const DUR_RE = /\b(?:for\s+(?:more\s+than\s+|at\s+least\s+|over\s+)?|sustained\s+(?:for\s+)?|after\s+)(\d+(?:\.\d+)?)\s*(sec(?:onds?)?|min(?:utes?)?|hr?|hours?)\b/gi;
+
+function extractDuration(text) {
+  DUR_RE.lastIndex = 0;
+  const m = DUR_RE.exec(text);
+  if (!m) return {val:0, unit:'min'};
+  const val = Math.round(parseFloat(m[1]));
+  const raw = m[2].toLowerCase();
+  const unit = /^s/.test(raw) ? 'sec' : /^h/.test(raw) ? 'hr' : 'min';
+  return {val, unit};
+}
+function removeDuration(text) {
+  DUR_RE.lastIndex = 0;
+  return text.replace(DUR_RE, '').replace(/\s+/g, ' ').trim();
+}
+
+const UNIT_NORM = {
+  mm:'mm', cm:'cm', m:'m', bar:'bar', kpa:'kPa', psi:'psi',
+  'm3/h':'m³/h','m³/h':'m³/h',
+  'l/s':'L/s','l/min':'L/min',lpm:'L/min',
+  '°c':'°C',degc:'°C',
+  '%':'%','mg/l':'mg/L',
+  ntu:'NTU',ph:'pH',rpm:'rpm',kw:'kW',hz:'Hz',
+  a:'A',amp:'A',amps:'A',v:'V',
+};
+function normUnit(raw) {
+  if (!raw) return '';
+  const k = raw.toLowerCase().replace(/\s+/g,'');
+  return UNIT_NORM[k] || raw;
+}
+
+const TAG_MAP = [
+  {re:/bar[\s_-]*screen/i,                          base:'Bar_Screen_Level_Sensor',              ni:false},
+  {re:/filter[\s_-]*feed[\s_-]*pump/i,              base:'Filter_Feed_Pump_N_ONOFF',             ni:true, onoff:true},
+  {re:/filter[\s_-]*feed/i,                         base:'Filter_Feed_Flow_Rate',                ni:false},
+  {re:/sludge[\s_-]*recirculation[\s_-]*pump/i,     base:'Sludge_Recirculation_Pump_N_ONOFF',   ni:true, onoff:true},
+  {re:/sludge[\s_-]*pump/i,                         base:'Sludge_Pump_N_ONOFF',                 ni:true, onoff:true},
+  {re:/raw[\s_-]*sewage[\s_-]*pump/i,               base:'Raw_Sewage_Pump_N_ONOFF',             ni:true, onoff:true},
+  {re:/(?:inlet|influent)[\s_-]*flow/i,             base:'Inlet_Flow_Rate',                      ni:false},
+  {re:/(?:outlet|effluent)[\s_-]*flow/i,            base:'Outlet_Flow_Rate',                     ni:false},
+  {re:/flow[\s_-]*rate|flow[\s_-]*meter|flowrate/i, base:'Flow_Rate_N',                          ni:true},
+  {re:/pressure[\s_-]*transmitter|pt[-_]?\d+/i,     base:'PT_N',                                 ni:true},
+  {re:/dissolved[\s_-]*oxygen|\bdo[\s_-]*sensor/i,  base:'DO_Sensor_N',                          ni:true},
+  {re:/\bph[\s_-]*(?:sensor|meter|probe)?\b/i,      base:'pH_Sensor_N',                          ni:true},
+  {re:/turbidity/i,                                  base:'Turbidity_Sensor_N',                   ni:true},
+  {re:/\bmlss\b|mixed[\s_-]*liquor/i,               base:'MLSS_Sensor',                          ni:false},
+  {re:/\borp\b/i,                                   base:'ORP_Sensor',                           ni:false},
+  {re:/\bcod\b/i,                                   base:'COD_Sensor',                           ni:false},
+  {re:/\bbod\b/i,                                   base:'BOD_Sensor',                           ni:false},
+  {re:/temperature|\btemp\b/i,                      base:'Temperature_Sensor_N',                  ni:true},
+  {re:/\btds\b/i,                                   base:'TDS_Sensor',                           ni:false},
+  {re:/conductivity/i,                              base:'Conductivity_Sensor',                  ni:false},
+  {re:/clarifier[\s_-]*level/i,                     base:'Clarifier_Level_Sensor_N',             ni:true},
+  {re:/\bsbr[\s_-]*(?:level|tank)?\b/i,             base:'SBR_Level_Sensor_N',                  ni:true},
+  {re:/sump[\s_-]*level/i,                          base:'Sump_Level_Sensor_N',                  ni:true},
+  {re:/equalisa?tion[\s_-]*tank|eq[\s_-]*tank/i,    base:'EQ_Tank_Level_N',                      ni:true},
+  {re:/tank[\s_-]*level/i,                          base:'Tank_Level_Sensor_N',                  ni:true},
+  {re:/\blevel\b/i,                                 base:'Level_Sensor_N',                       ni:true},
+  {re:/\bblower\b/i,                                base:'Blower_N_ONOFF',                       ni:true, onoff:true},
+  {re:/inlet[\s_-]*valve/i,                         base:'Inlet_Valve_N_ONOFF',                  ni:true, onoff:true},
+  {re:/outlet[\s_-]*valve/i,                        base:'Outlet_Valve_N_ONOFF',                 ni:true, onoff:true},
+  {re:/\bvalve\b/i,                                 base:'Valve_N_ONOFF',                        ni:true, onoff:true},
+  {re:/\bpump\b/i,                                  base:'Pump_N_ONOFF',                         ni:true, onoff:true},
+  {re:/\bmotor\b/i,                                 base:'Motor_N_ONOFF',                        ni:true, onoff:true},
+  {re:/\bpower\b/i,                                 base:'Power_kW',                             ni:false},
+];
+
+function resolveTag(desc) {
+  for (const e of TAG_MAP) {
+    if (!e.re.test(desc)) continue;
+    if (!e.ni) return [e.base];
+    const multi = desc.match(/\b(\d+)\s+and\s+(\d+)\b/i);
+    if (multi) return [1,2].map(i => e.base.replace('_N_',`_${multi[i]}_`).replace(/_N$/,`_${multi[i]}`));
+    const nums = [...desc.matchAll(/(?<![_\-])(?<!\d)(\d+)(?!\d)(?![\-_])/g)];
+    const n    = nums.length ? nums[0][1] : '1';
+    return [e.base.replace('_N_',`_${n}_`).replace(/_N$/,`_${n}`)];
+  }
+  return [desc.trim().replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'') || 'Sensor'];
+}
+
+const OP_DETECT = [
+  {re:/\b(?:is\s+on|are\s+on|turned?\s*on|started?|running|active|activated|energized)\b/i,                op:'=', fv:'1', fu:''},
+  {re:/\b(?:is\s+off|are\s+off|turned?\s*off|stopped?|inactive|deactivated|de.energized|not\s+running)\b/i, op:'=', fv:'0', fu:''},
+  {re:/\bpositive\b|\bnon.?zero\b/i,                                                                          op:'>', fv:'0', fu:''},
+  {re:/\b(?:no\s+flow|zero\s+flow|negative)\b/i,                                                             op:'<=', fv:'0', fu:''},
+  {re:/\b(?:greater\s+than\s+or\s+equal\s+to|at\s+least|minimum\s*(?:of\s*)?)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'>='},
+  {re:/\b(?:less\s+than\s+or\s+equal\s+to|at\s+most|maximum\s*(?:of\s*)?|not\s+(?:more|greater)\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'<='},
+  {re:/\b(?:greater\s+than|more\s+than|exceeds?|above|over|higher\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'>'},
+  {re:/\b(?:less\s+than|below|under|lower\s+than)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'<'},
+  {re:/>=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'>='},
+  {re:/<=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'<='},
+  {re:/!=\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/, op:'!='},
+  {re:/>\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/,  op:'>'},
+  {re:/<\s*(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/,  op:'<'},
+  {re:/\b(?:is|equals?)\s+(\d+(?:\.\d+)?)\s*([a-zA-Z%°³/]+)?/i, op:'='},
+  {re:/(\d+(?:\.\d+)?)\s*([a-zA-Z]{1,5})?$/, op:'='},
+];
+
+function parseSegment(seg) {
+  const s = seg.trim();
+  for (const det of OP_DETECT) {
+    const m = s.match(det.re);
+    if (!m) continue;
+    let op = det.op, val, unit;
+    if (det.fv !== undefined) { val = det.fv; unit = det.fu; }
+    else { if (!m[1]) continue; val = m[1]; unit = normUnit(m[2] || ''); }
+    const tagDesc = s.substring(0, m.index).trim() || s;
+    return resolveTag(tagDesc).map(t => ({tag:t, op, val, unit: unit || '—'}));
+  }
+  return null;
+}
+
+function splitSegments(text) {
+  const strong = text.split(/\s+(?:but|while|however|whereas|although)\s+/i);
+  const segs = [];
+  for (const part of strong) {
+    const andParts = part.split(/\s+and\s+/i);
+    if (andParts.length > 1 && andParts.every(p => OP_DETECT.some(d => d.re.test(p)))) { segs.push(...andParts); continue; }
+    const orParts = part.split(/\s+or\s+/i);
+    if (orParts.length > 1 && orParts.every(p => OP_DETECT.some(d => d.re.test(p)))) { segs.push(...orParts); continue; }
+    segs.push(part);
+  }
+  return segs.filter(s => s.trim().length > 2);
+}
+
+function detectLogic(text) {
+  const hasOr  = /\bor\b/i.test(text);
+  const hasAnd = /\band\b/i.test(text);
+  return (hasOr && !hasAnd) ? 'OR' : 'AND';
+}
+
+function smartParse(input) {
+  const dur = extractDuration(input);
+  let cleaned = removeDuration(input);
+  cleaned = cleaned.replace(/\([^)]+\)/g, ' ').replace(/\s+/g, ' ').trim();
+  const logic = detectLogic(cleaned);
+  const segs  = splitSegments(cleaned);
+  const conditions = [];
+  for (const seg of segs) {
+    const parsed = parseSegment(seg);
+    if (parsed) conditions.push(...parsed);
+  }
+  const closing = {
+    logic:      logic === 'AND' ? 'OR' : 'AND',
+    conditions: conditions.map(c => ({...c, op: FLIP[c.op] || c.op})),
+    duration:   dur,
+  };
+  return {opening: {logic, conditions, duration: dur}, closing};
+}
+
+function applyParsed(parsed) {
+  const apply = (section, src) => {
+    state[section].logic = src.logic;
+    state[section].rows  = src.conditions.map(c => ({tag:c.tag, op:c.op, val:String(c.val), unit:c.unit||'—'}));
+    state[section].dur   = {val:src.duration.val, unit:src.duration.unit};
+    document.querySelectorAll(`#logic-${section} button`).forEach(b => b.classList.toggle('on', b.dataset.l === src.logic));
+    document.getElementById(`dur-${section}-val`).value  = src.duration.val;
+    document.getElementById(`dur-${section}-unit`).value = src.duration.unit;
+    renderRows(section);
+  };
+  apply('open',  parsed.opening);
+  apply('close', parsed.closing);
+  updateOutput();
+}
+
+// ============================================================
+// PARSE / CLEAR
+// ============================================================
+const parseBtn = document.getElementById('parseBtn');
+const errBox = document.getElementById('errBox');
+parseBtn.onclick = () => {
+  const txt = document.getElementById('nlInput').value.trim();
+  if (!txt) { toast('Type something first'); return; }
+  errBox.classList.add('hide');
+  try {
+    const result = smartParse(txt);
+    if (!result.opening.conditions.length) {
+      errBox.textContent = 'Could not identify any conditions. Try being more specific — e.g. "Bar screen level > 600mm" or "Pump 1 is off".';
+      errBox.classList.remove('hide');
+      return;
+    }
+    applyParsed(result);
+    toast('Parsed ✓');
+  } catch(e) {
+    errBox.textContent = e.message;
+    errBox.classList.remove('hide');
+  }
+};
+
+document.getElementById('clearBtn').onclick = () => resetForm();
+
+function resetForm() {
+  document.getElementById('nlInput').value = '';
+  document.getElementById('triggerName').value = '';
+  state.triggerName = '';
+  state.open  = {logic:'AND', rows:[newRow()], dur:{val:0,unit:'min'}};
+  state.close = {logic:'AND', rows:[newRow()], dur:{val:0,unit:'min'}};
+  state.componentsOn  = new Set(['alert']);
+  state.componentsCfg = {};
+  state.editingId = null;
+  document.getElementById('editingBanner').classList.add('hide');
+  ['open','close'].forEach(s => {
+    document.querySelectorAll(`#logic-${s} button`).forEach(b => b.classList.toggle('on', b.dataset.l === 'AND'));
+    document.getElementById(`dur-${s}-val`).value  = 0;
+    document.getElementById(`dur-${s}-unit`).value = 'min';
+    renderRows(s);
+  });
+  renderComponents();
+  errBox.classList.add('hide');
+  updateOutput();
+}
+
+document.getElementById('exitEdit').onclick = () => { resetForm(); toast('Exited edit mode'); };
+
+// ============================================================
+// SAVE / LOAD / DELETE
+// ============================================================
+document.getElementById('saveBtn').onclick = saveTrigger;
+
+function saveTrigger() {
+  const name = state.triggerName.trim();
+  if (!name) { toast('Enter a trigger name first', true); document.getElementById('triggerName').focus(); return; }
+  const validOpen = state.open.rows.filter(r => r.tag.trim() && r.val.toString().trim());
+  if (!validOpen.length) { toast('Add at least one opening condition', true); return; }
+  if (!state.componentsOn.size) { toast('Select at least one component', true); return; }
+
+  const components = {};
+  state.componentsOn.forEach(k => { components[k] = {...(state.componentsCfg[k] || {})}; });
+
+  const trig = {
+    id: state.editingId || `trig_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+    name,
+    opening: { logic: state.open.logic, rows: deepClone(state.open.rows), dur: {...state.open.dur} },
+    closing: { logic: state.close.logic, rows: deepClone(state.close.rows), dur: {...state.close.dur} },
+    components,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const idx = state.saved.findIndex(t => t.id === trig.id);
+  if (idx >= 0) {
+    trig.createdAt = state.saved[idx].createdAt;
+    state.saved[idx] = trig;
+  } else {
+    trig.createdAt = trig.updatedAt;
+    state.saved.unshift(trig);
+  }
+  persist();
+  renderSaved();
+  showSavedModal(trig, idx >= 0);
+}
+
+function loadIntoForm(trig) {
+  state.editingId   = trig.id;
+  state.triggerName = trig.name;
+  state.open        = {logic:trig.opening.logic, rows:deepClone(trig.opening.rows), dur:{...trig.opening.dur}};
+  state.close       = {logic:trig.closing.logic, rows:deepClone(trig.closing.rows), dur:{...trig.closing.dur}};
+  state.componentsOn  = new Set(Object.keys(trig.components));
+  state.componentsCfg = deepClone(trig.components);
+
+  document.getElementById('triggerName').value = trig.name;
+  document.getElementById('editingName').textContent = trig.name;
+  document.getElementById('editingBanner').classList.remove('hide');
+  ['open','close'].forEach(s => {
+    document.querySelectorAll(`#logic-${s} button`).forEach(b => b.classList.toggle('on', b.dataset.l === state[s].logic));
+    document.getElementById(`dur-${s}-val`).value  = state[s].dur.val;
+    document.getElementById(`dur-${s}-unit`).value = state[s].dur.unit;
+    renderRows(s);
+  });
+  renderComponents();
+  updateOutput();
+  switchTab('manual');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function deleteTrigger(id) {
+  if (!confirm('Delete this trigger?')) return;
+  state.saved = state.saved.filter(t => t.id !== id);
+  persist();
+  renderSaved();
+  toast('Deleted');
+}
+
+// ============================================================
+// SAVED DASHBOARD
+// ============================================================
+function renderSaved() {
+  const host = document.getElementById('savedHost');
+  if (!state.saved.length) {
+    host.innerHTML = `<div class="empty" style="padding:24px 12px;font-size:12px"><div class="big" style="font-size:28px">📭</div>No saved triggers yet.<br><span style="font-size:11px">Build one and click <b>Save Trigger</b>.</span></div>`;
+    return;
+  }
+  host.innerHTML = `<div class="triggers-list">${state.saved.map(t => triggerCardHtml(t)).join('')}</div>`;
+  host.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => {
+    const t = state.saved.find(x => x.id === b.dataset.edit);
+    if (t) loadIntoForm(t);
+  });
+  host.querySelectorAll('[data-del]').forEach(b => b.onclick = () => deleteTrigger(b.dataset.del));
+}
+
+function triggerCardHtml(t) {
+  const open = formulaFromState(t.opening), close = formulaFromState(t.closing);
+  const comps = Object.keys(t.components).map(k => {
+    const def = COMPONENTS.find(c => c.key === k);
+    return `<span class="comp-pill">${def ? def.icon+' '+def.name : k}</span>`;
+  }).join('');
+  const date = new Date(t.updatedAt).toLocaleString();
+  return `<div class="trig-card">
+    <h4>${esc(t.name)}</h4>
+    <div class="comps">${comps}</div>
+    <div class="formula open"><b>Opens:</b> ${esc(open||'—')}</div>
+    <div class="formula close"><b>Closes:</b> ${esc(close||'—')}</div>
+    <div class="meta">Updated ${esc(date)}</div>
+    <div class="actions">
+      <button class="btn" data-edit="${t.id}">✏️ Edit</button>
+      <button class="btn danger" data-del="${t.id}">🗑 Delete</button>
+    </div>
+  </div>`;
+}
+
+function formulaFromState(sec) {
+  const valid = (sec.rows||[]).filter(r => r.tag && r.val.toString().trim());
+  if (!valid.length) return '';
+  const parts = valid.map(r => { const u = r.unit && r.unit !== '—' ? ` ${r.unit}` : ''; return `${r.tag}${r.op}${r.val}${u}`; });
+  const inner = parts.length === 1 ? parts[0] : `${sec.logic}(${parts.join(', ')})`;
+  const d = sec.dur?.val > 0 ? ` [for ${sec.dur.val} ${sec.dur.unit}]` : '';
+  return `IF(${inner}, 1, 0)${d}`;
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function showSavedModal(trig, isUpdate) {
+  document.getElementById('modalTitle').textContent = isUpdate ? 'Trigger updated' : 'Trigger saved';
+  const open = formulaFromState(trig.opening), close = formulaFromState(trig.closing);
+  const compsHtml = Object.keys(trig.components).map(k => {
+    const def = COMPONENTS.find(c => c.key === k);
+    const cfg = trig.components[k];
+    const cfgPairs = Object.entries(cfg||{}).filter(([,v]) => v && String(v).trim()).map(([k2,v]) => `<div style="font-size:11px;color:var(--muted)"><b>${esc(k2)}:</b> ${esc(String(v))}</div>`).join('');
+    return `<div style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+      <div style="font-weight:600;font-size:12px;margin-bottom:4px">${def ? def.icon+' '+def.name : k}</div>
+      ${cfgPairs || '<div style="font-size:11px;color:var(--muted)">No config set</div>'}
+    </div>`;
+  }).join('');
+  document.getElementById('modalBody').innerHTML = `
+    <div class="row-info"><div class="lbl">Name</div><div class="val">${esc(trig.name)}</div></div>
+    <div class="row-info"><div class="lbl">Opening</div><div class="val">${esc(open||'—')}</div></div>
+    <div class="row-info"><div class="lbl">Closing</div><div class="val">${esc(close||'—')}</div></div>
+    <div class="row-info"><div class="lbl">Components</div>${compsHtml || '<div class="val">None</div>'}</div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') closeModal(); };
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modalDashboard').onclick = () => {
+  closeModal();
+  const sb = document.querySelector('.sidebar');
+  if (sb) sb.scrollIntoView({behavior:'smooth', block:'start'});
+};
+document.getElementById('modalNew').onclick = () => { closeModal(); resetForm(); };
+
+// ============================================================
+// COPY / EXPORT
+// ============================================================
+document.getElementById('copyBtn').onclick = async () => {
+  const o = buildFormula('open'), c = buildFormula('close');
+  if (!o && !c) { toast('Nothing to copy'); return; }
+  const txt = [o ? `Opening: ${o}`:null, c ? `Closing: ${c}`:null, state.componentsOn.size ? `Components: ${[...state.componentsOn].join(', ')}`:null].filter(Boolean).join('\n');
+  await navigator.clipboard.writeText(txt);
+  toast('Copied');
+};
+document.getElementById('exportBtn').onclick = () => {
+  const data = {
+    name: state.triggerName,
+    opening: serialize('open'),
+    closing: serialize('close'),
+    components: [...state.componentsOn].reduce((a,k)=>{a[k]=state.componentsCfg[k]||{};return a;}, {}),
+  };
+  dl(JSON.stringify(data,null,2), 'trigger.json', 'application/json');
+};
+function serialize(section) {
+  const s = state[section];
+  return {logic:s.logic, formula:buildFormula(section), conditions:s.rows.filter(r=>r.tag&&r.val).map(r=>({tag:r.tag, operator:r.op, value:r.val, unit:r.unit==='—'?'':r.unit})), duration:s.dur};
+}
+function dl(content, name, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type}));
+  a.download = name; a.click();
+}
+
+// ============================================================
+// BULK UPLOAD
+// ============================================================
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+drop.onclick = () => fileInput.click();
+['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+fileInput.onchange = () => fileInput.files[0] && handleFile(fileInput.files[0]);
+
+function handleFile(file) {
+  const status = document.getElementById('bulkStatus');
+  const errEl  = document.getElementById('bulkErr');
+  const out    = document.getElementById('bulkOut');
+  errEl.classList.add('hide'); errEl.textContent = '';
+  out.innerHTML = '';
+  status.textContent = `Reading ${file.name}...`;
+
+  if (typeof XLSX === 'undefined') {
+    errEl.textContent = 'XLSX library failed to load. Check your internet connection and refresh.';
+    errEl.classList.remove('hide');
+    status.textContent = '';
+    return;
+  }
+
+  file.arrayBuffer().then(buf => {
+    let wb;
+    try { wb = XLSX.read(buf, {type:'array'}); }
+    catch(e) { throw new Error('Could not read file: ' + e.message); }
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    if (!ws) throw new Error('No worksheet found in the file.');
+    const rawRows = XLSX.utils.sheet_to_json(ws, {defval:'', raw:false});
+    if (!rawRows.length) throw new Error('Sheet is empty.');
+
+    // Normalise column names to lowercase
+    const rows = rawRows.map(r => {
+      const out = {};
+      for (const k in r) out[String(k).trim().toLowerCase()] = String(r[k] ?? '').trim();
+      return out;
+    });
+
+    const headers = Object.keys(rows[0]);
+    if (!headers.includes('opening')) {
+      throw new Error(`Sheet must have an "opening" column. Found columns: ${headers.join(', ')}`);
+    }
+
+    status.textContent = `Loaded ${rows.length} rows. Parsing...`;
+
+    const parsed = rows.map((r, i) => {
+      try {
+        if (!r.opening) throw new Error('Empty opening text');
+        const p = smartParse(r.opening);
+        const opening = p.opening;
+        const closing = r.closing ? smartParse(r.closing).opening : p.closing;
+        if (!opening.conditions.length) throw new Error('Could not parse any conditions');
+        return {
+          name: r.name || `Trigger ${i+1}`,
+          opening_formula: formulaFromParsed(opening),
+          closing_formula: formulaFromParsed(closing),
+          components: (r.components || 'alert').split(',').map(s => s.trim()).filter(Boolean),
+          opening, closing,
+        };
+      } catch(e) {
+        return { name: r.name || `Trigger ${i+1}`, error: e.message };
+      }
+    });
+
+    // Auto-save successful ones
+    let savedCount = 0;
+    parsed.forEach(p => {
+      if (p.error) return;
+      const components = {};
+      p.components.forEach(c => { if (COMPONENTS.find(d => d.key === c)) components[c] = {}; });
+      const trig = {
+        id: `trig_${Date.now()}_${Math.random().toString(36).slice(2,7)}_${savedCount}`,
+        name: p.name,
+        opening: { logic:p.opening.logic, rows:p.opening.conditions.map(c=>({tag:c.tag,op:c.op,val:String(c.val),unit:c.unit||'—'})), dur:p.opening.duration },
+        closing: { logic:p.closing.logic, rows:p.closing.conditions.map(c=>({tag:c.tag,op:c.op,val:String(c.val),unit:c.unit||'—'})), dur:p.closing.duration },
+        components,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      state.saved.unshift(trig);
+      savedCount++;
+    });
+    persist();
+    renderSaved();
+
+    renderBulk(parsed);
+    const errs = parsed.filter(p => p.error).length;
+    status.innerHTML = `<b>Done.</b> Parsed ${parsed.length - errs}/${parsed.length} rows. <b>Saved ${savedCount} triggers</b> to dashboard.${errs ? ` (${errs} errors below)` : ''}`;
+  }).catch(e => {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hide');
+    status.textContent = '';
+  });
+}
+
+function formulaFromParsed(b) {
+  if (!b || !b.conditions?.length) return '';
+  const parts = b.conditions.map(c => { const u = c.unit && c.unit!=='—' ? ` ${c.unit}` : ''; return `${c.tag}${c.op}${c.val}${u}`; });
+  const inner = parts.length === 1 ? parts[0] : `${b.logic}(${parts.join(', ')})`;
+  const d = b.duration?.val > 0 ? ` [for ${b.duration.val} ${b.duration.unit}]` : '';
+  return `IF(${inner}, 1, 0)${d}`;
+}
+
+function renderBulk(rs) {
+  let h = '<table class="results"><thead><tr><th>Name</th><th>Opening</th><th>Closing</th><th>Components</th></tr></thead><tbody>';
+  rs.forEach(r => {
+    h += r.error
+      ? `<tr><td>${esc(r.name)}</td><td colspan="3" style="color:var(--err)">⚠ ${esc(r.error)}</td></tr>`
+      : `<tr><td>${esc(r.name)}</td><td>${esc(r.opening_formula)}</td><td>${esc(r.closing_formula)}</td><td>${(r.components||[]).join(', ')}</td></tr>`;
+  });
+  h += '</tbody></table>';
+  document.getElementById('bulkOut').innerHTML = h;
+}
+
+document.getElementById('dlTpl').onclick = () => {
+  const data = [
+    {name:'Bar screen high level',     opening:'Bar screen chamber level-1 (CS-1) > 600mm for more than 5 minutes', closing:'', components:'alert,hooter'},
+    {name:'Pumps off but flow active', opening:'Filter feed pumps 1 and 2 are off but flow rate is positive',        closing:'', components:'alert,task'},
+    {name:'Low DO in tank 1',          opening:'DO sensor 1 below 2 mg/L for 10 minutes',                            closing:'', components:'alert'},
+  ];
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Triggers');
+  XLSX.writeFile(wb, 'trigger-template.xlsx');
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!isErr);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+loadSaved();
+persist();
+state.open.rows.push(newRow());
+state.close.rows.push(newRow());
+renderRows('open');
+renderRows('close');
+renderComponents();
+renderSaved();
+updateOutput();
+</script>
+</body>
+</html>

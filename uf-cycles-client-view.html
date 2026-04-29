@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UF Cycles · Insights+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ink: #1a1916;
+    --ink-2: #5c5a52;
+    --ink-3: #9a9890;
+    --line: #d8d6ce;
+    --line-2: #eceae2;
+    --bg: #edeae4;
+    --paper: #ffffff;
+    --soft: #f5f4f0;
+    --brand-900: #0E1F36;
+    --brand-800: #193458;
+    --brand-700: #2A4A75;
+    --brand-500: #4A6890;
+    --brand-300: #7B92B3;
+    --brand-200: #A8B6CC;
+    --brand-100: #DCE3EE;
+    --brand-50:  #EBF0F7;
+    --brand-25:  #F5F8FC;
+    --warn-bg:#FBF3E2; --warn-line:#E8D29A; --warn-ink:#6B4E0E; --warn-acc:#B98B1F;
+    --alert-bg:#FBEDE3; --alert-line:#E5B7A0; --alert-ink:#7C2F0E; --alert-acc:#B5491D;
+    --ok-bg:#E8F1E9; --ok-line:#B7D4BA; --ok-ink:#2D5530; --ok-acc:#4A8A52;
+    --r-md: 6px; --r-lg: 10px;
+    --el-1: 0 1px 2px rgba(14,31,54,.04);
+    --el-2: 0 4px 12px rgba(14,31,54,.06);
+    --ease: cubic-bezier(.16,.84,.32,1);
+  }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+  @keyframes pulse  { 0%,100% { box-shadow: 0 0 0 0 rgba(74,138,82,.0);} 50% { box-shadow: 0 0 0 8px rgba(74,138,82,.12);} }
+  @keyframes shimmer{ 0% { background-position: -200px 0;} 100% { background-position: 200px 0;} }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); padding: 24px 20px; min-height: 100vh; font-size: 13px; }
+  .shell { max-width: 1240px; margin: 0 auto; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); margin-bottom: 16px; }
+  .brand { font-weight: 600; color: var(--brand-900); font-size: 14px; letter-spacing: -.01em; display:flex; align-items:center; gap:8px;}
+  .brand .plus { color: var(--brand-700); }
+  .crumb { font-size: 12px; color: var(--ink-2); }
+  .crumb b { color: var(--brand-800); font-weight: 600; }
+  .spacer { flex: 1; }
+  .live { display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; background: var(--ok-bg); border: 0.5px solid var(--ok-line); color: var(--ok-ink); border-radius: 999px; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
+  .live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--ok-acc); animation: pulse 1.8s var(--ease) infinite; }
+  .select-light { height: 30px; border: 0.5px solid var(--line); border-radius: var(--r-md); padding: 0 28px 0 10px; font-size: 12px; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c5a52' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 8px center; appearance: none; -webkit-appearance: none; color: var(--ink); font-family: var(--font-sans); cursor: pointer; }
+
+  /* Header */
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 0 4px; margin-bottom: 14px; }
+  .head h1 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; color: var(--brand-900); }
+  .head .sub { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .range { display: inline-flex; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-md); padding: 3px; gap: 2px; }
+  .range button { background: transparent; border: 0; padding: 5px 12px; font-size: 11.5px; font-weight: 500; color: var(--ink-2); border-radius: 4px; cursor: pointer; font-family: var(--font-sans); }
+  .range button.active { background: var(--brand-800); color: #fff; }
+
+  /* KPI strip */
+  .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 820px){ .kpi-strip { grid-template-columns: repeat(2,1fr); } }
+  .kpi { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 14px 16px; animation: fadeUp .25s var(--ease); }
+  .kpi-label { font-size: 11px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+  .kpi-row { display:flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; color: var(--brand-900); font-family: var(--font-mono); letter-spacing: -.02em; }
+  .kpi-unit { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+  .kpi-trend { font-size: 11px; color: var(--ok-ink); margin-top: 6px; }
+  .kpi-trend.down { color: var(--alert-ink); }
+  .kpi-bar { height: 4px; background: var(--soft); border-radius: 2px; margin-top: 12px; overflow: hidden; }
+  .kpi-bar > div { height: 100%; background: var(--brand-700); border-radius: 2px; transition: width .6s var(--ease); }
+
+  /* Layout */
+  .grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 1000px){ .grid { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 18px; animation: fadeUp .25s var(--ease); }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .card-head h2 { font-size: 14px; font-weight: 600; color: var(--brand-900); letter-spacing: -.005em; }
+  .card-head .meta { font-size: 11.5px; color: var(--ink-3); }
+
+  /* Live cycle */
+  .live-cycle { background: linear-gradient(180deg, var(--brand-25) 0%, var(--paper) 100%); border-color: var(--brand-100); }
+  .now-line { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .now-line .name { font-size: 16px; font-weight: 600; color: var(--brand-900); }
+  .now-line .tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--brand-700); background: #fff; padding: 3px 8px; border-radius: 4px; border: 0.5px solid var(--brand-100); }
+  .steps { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .step { display: grid; grid-template-columns: 28px 1fr 90px; gap: 10px; align-items: center; }
+  .step-idx { width: 24px; height: 24px; border-radius: 50%; background: var(--soft); color: var(--ink-2); font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid var(--line); }
+  .step.done .step-idx { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok-line); }
+  .step.active .step-idx { background: var(--brand-800); color: #fff; border-color: var(--brand-800); animation: pulse 1.8s var(--ease) infinite; }
+  .step-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .step-name { font-size: 12.5px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .step-name .badge { font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; background: var(--brand-50); color: var(--brand-700); border: 0.5px solid var(--brand-100); }
+  .step.done .step-name .badge { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok-line); }
+  .step-prog { height: 6px; background: var(--soft); border-radius: 3px; overflow: hidden; position: relative; }
+  .step-prog > div { height: 100%; background: var(--brand-300); border-radius: 3px; transition: width .6s var(--ease); }
+  .step.done .step-prog > div { background: var(--ok-acc); }
+  .step.active .step-prog > div { background: linear-gradient(90deg, var(--brand-700), var(--brand-500)); background-size: 200px 100%; animation: shimmer 1.8s linear infinite; }
+  .step-time { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); text-align: right; }
+  .step-time b { color: var(--ink); font-weight: 600; }
+
+  /* History */
+  .hist-row { display: grid; grid-template-columns: 110px 1fr 110px 110px; gap: 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: center; }
+  .hist-row:last-child { border-bottom: 0; }
+  .hist-time { font-size: 11.5px; color: var(--ink-2); font-family: var(--font-mono); }
+  .hist-time b { display: block; color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .hist-bar { display: flex; height: 18px; border-radius: 4px; overflow: hidden; background: var(--soft); border: 0.5px solid var(--line-2); }
+  .hist-bar div { height: 100%; }
+  .hist-bar .seg-1 { background: var(--brand-300); }
+  .hist-bar .seg-2 { background: var(--brand-500); }
+  .hist-bar .seg-3 { background: var(--brand-700); }
+  .hist-bar .seg-4 { background: var(--brand-200); }
+  .hist-dur { font-family: var(--font-mono); font-size: 12px; color: var(--ink); text-align: right; }
+  .hist-dur .delta { font-size: 10.5px; display: block; margin-top: 2px; }
+  .hist-dur .delta.ok { color: var(--ok-ink); }
+  .hist-dur .delta.warn { color: var(--warn-ink); }
+  .hist-dur .delta.alert { color: var(--alert-ink); }
+  .hist-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; justify-self: end; }
+  .hs-ok { background: var(--ok-bg); color: var(--ok-ink); border: 0.5px solid var(--ok-line); }
+  .hs-warn { background: var(--warn-bg); color: var(--warn-ink); border: 0.5px solid var(--warn-line); }
+  .hs-alert { background: var(--alert-bg); color: var(--alert-ink); border: 0.5px solid var(--alert-line); }
+  .hs-skip { background: var(--soft); color: var(--ink-2); border: 0.5px solid var(--line); }
+
+  /* Parameters */
+  .param { padding: 14px 0; border-bottom: 0.5px dashed var(--line-2); }
+  .param:last-child { border-bottom: 0; padding-bottom: 0; }
+  .param:first-child { padding-top: 0; }
+  .param-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .param-name { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+  .param-mode { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+  .param-val { margin-left: auto; font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--brand-900); }
+  .param-val .u { font-size: 10.5px; color: var(--ink-3); margin-left: 3px; font-weight: 500; }
+  .spark { width: 100%; height: 36px; }
+  .band { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--ink-2); margin-top: 6px; }
+  .band-track { flex: 1; height: 5px; background: var(--soft); border-radius: 3px; position: relative; }
+  .band-fill  { position: absolute; height: 100%; background: var(--ok-bg); border-top: 1px solid var(--ok-line); border-bottom: 1px solid var(--ok-line); border-radius: 2px; }
+  .band-marker { position: absolute; top: -3px; width: 2px; height: 11px; background: var(--brand-900); border-radius: 1px; }
+  .band-marker.out { background: var(--alert-acc); }
+
+  /* Alerts feed */
+  .alert-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px dashed var(--line-2); }
+  .alert-item:last-child { border-bottom: 0; padding-bottom: 0; }
+  .alert-item:first-child { padding-top: 0; }
+  .alert-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .alert-dot.warn { background: var(--warn-acc); }
+  .alert-dot.alert { background: var(--alert-acc); }
+  .alert-dot.info { background: var(--brand-500); }
+  .alert-body { flex: 1; min-width: 0; }
+  .alert-title { font-size: 12px; font-weight: 500; color: var(--ink); }
+  .alert-desc { font-size: 11px; color: var(--ink-2); margin-top: 2px; line-height: 1.45; }
+  .alert-when { font-size: 10.5px; color: var(--ink-3); font-family: var(--font-mono); margin-top: 4px; }
+
+  /* Footer note */
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--ink-2); padding: 12px 4px 0; }
+  .legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 2px; }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Top bar -->
+    <div class="topbar">
+      <span class="brand">Insights<span class="plus">+</span></span>
+      <span class="crumb">Plant A · <b>UF Skid 1</b></span>
+      <div class="spacer"></div>
+      <select class="select-light" id="assetSel">
+        <option value="uf1" selected>UF Skid 1</option>
+        <option value="uf2">UF Skid 2</option>
+        <option value="ro1">RO Train 1</option>
+        <option value="mbr1">MBR Train 1</option>
+      </select>
+      <span class="live"><span class="pulse"></span>Live · <span id="clock">—</span></span>
+    </div>
+
+    <!-- Header -->
+    <div class="head">
+      <div>
+        <h1>Filter Cycle</h1>
+        <div class="sub">How your cycles are running, in one place.</div>
+      </div>
+      <div class="range" id="rangeSel">
+        <button data-r="24h" class="active">Today</button>
+        <button data-r="7d">7d</button>
+        <button data-r="30d">30d</button>
+      </div>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="kpi-strip" id="kpiStrip"></div>
+
+    <!-- Main grid -->
+    <div class="grid">
+      <!-- LEFT column -->
+      <div class="col">
+        <!-- Live cycle -->
+        <div class="card live-cycle" id="liveCard">
+          <div class="card-head">
+            <h2>Running now</h2>
+            <span class="meta" id="liveMeta">—</span>
+          </div>
+          <div class="now-line">
+            <div class="name" id="liveName">—</div>
+            <span class="tag" id="liveTag">—</span>
+          </div>
+          <div class="steps" id="liveSteps"></div>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Recent cycles</h2>
+            <span class="meta" id="histMeta">last 10</span>
+          </div>
+          <div id="histList"></div>
+          <div class="legend">
+            <span class="lg"><span class="sw" style="background:var(--brand-300);"></span>Drain</span>
+            <span class="lg"><span class="sw" style="background:var(--brand-500);"></span>Air scour</span>
+            <span class="lg"><span class="sw" style="background:var(--brand-700);"></span>Backwash</span>
+            <span class="lg"><span class="sw" style="background:var(--brand-200);"></span>Rinse</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT column -->
+      <div class="col">
+        <!-- Tracked parameters -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Tracked parameters</h2>
+            <span class="meta">live</span>
+          </div>
+          <div id="paramList"></div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Alerts</h2>
+            <span class="meta" id="alertMeta">—</span>
+          </div>
+          <div id="alertList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---------- Demo data ----------
+  // Cycle config (mirrors UF Backwash from the configurator)
+  const STEPS = [
+    { name: 'Top drain',       set: 2, mode: 'sensor' },
+    { name: 'Air scour',       set: 3, mode: 'time'   },
+    { name: 'Bottom backwash', set: 5, mode: 'sensor' },
+    { name: 'Forward flush',   set: 2, mode: 'time'   }
+  ]; // total set = 12 min
+  const CYCLE_NAME = 'UF Backwash';
+  const CYCLE_TAG  = 'uf_backwash_duration';
+
+  // KPIs
+  const KPI = [
+    { label: '% Uptime',        value: 68.4, unit: '%', target: 60, trend: '+2.1 vs yesterday', up: true },
+    { label: '% Cleaning',      value: 19.1, unit: '%', target: 20, trend: '−0.6 vs yesterday', up: true },
+    { label: '% Standby',       value: 12.5, unit: '%', target: 20, trend: '−1.5 vs yesterday', up: true },
+    { label: 'Production eff.', value: 87.2, unit: '%', target: 85, trend: '+0.4 vs yesterday', up: true }
+  ];
+
+  // Live cycle: which step is active and elapsed seconds within it
+  let live = { stepIdx: 2, elapsedInStep: 192, startedAt: minutesAgo(7) }; // backwash, 3:12 in
+
+  // History: 10 recent cycles
+  const HIST = generateHistory(10);
+
+  // Tracked parameters with sparkline series
+  const PARAMS = [
+    { name:'UF Inlet pressure',  mode:'Δ before/after', value: 1.62, unit:'bar', series: jitter(20, 1.4, 0.18), band:null,           delta: 0.18, status:'ok' },
+    { name:'Permeate flow',      mode:'Threshold',       value: 6.2,  unit:'m³/h', series: jitter(20, 6.1, 0.4),  band:[4,8],         status:'ok' },
+    { name:'Recovery',           mode:'Efficiency',      value: 88.4, unit:'%', series: jitter(20, 87, 1.6),    band:[85,100],      status:'ok' },
+    { name:'Trans-membrane Δ',   mode:'Threshold',       value: 0.42, unit:'bar', series: jitter(20, 0.36, 0.06), band:[0.1, 0.4],   status:'warn' }
+  ];
+
+  // Alerts feed
+  const ALERTS = [
+    { sev:'warn',  title:'Trans-membrane Δ above band', desc:'Reading 0.42 bar exceeded upper bound 0.40 bar at the end of cycle #2814.', when: minutesAgoLabel(8) },
+    { sev:'info',  title:'Cycle #2813 finished early',  desc:'Total duration 11:24 vs target 12:00 (−5%). Within tolerance, no action required.', when: minutesAgoLabel(34) },
+    { sev:'alert', title:'Cycle #2810 skipped',         desc:'Scheduled main cycle did not start within its window. Check upstream supply tank levels.', when: minutesAgoLabel(96) }
+  ];
+
+  // ---------- Helpers ----------
+  function minutesAgo(m){ return new Date(Date.now() - m*60000); }
+  function minutesAgoLabel(m){
+    if (m < 60) return m + 'm ago';
+    if (m < 60*24) return Math.round(m/60) + 'h ago';
+    return Math.round(m/60/24) + 'd ago';
+  }
+  function fmtMS(sec){
+    sec = Math.max(0, Math.round(sec));
+    const m = Math.floor(sec/60), s = sec%60;
+    return m + ':' + (s<10?'0':'') + s;
+  }
+  function jitter(n, base, amp){
+    const out = []; let v = base;
+    for (let i=0;i<n;i++){ v = base + (Math.random()-.5)*amp*2; out.push(+v.toFixed(2)); }
+    return out;
+  }
+  function generateHistory(n){
+    const out = [];
+    for (let i=0;i<n;i++){
+      const ageMin = (i+1)*32 + Math.round(Math.random()*5 - 2);
+      const segs = STEPS.map(s => {
+        const drift = (Math.random()-.45)*0.6; // mostly close to target, some drift
+        return Math.max(0.3, s.set + drift);
+      });
+      const total = segs.reduce((a,b)=>a+b,0);
+      const targetTotal = STEPS.reduce((a,b)=>a+b.set, 0);
+      const deltaPct = (total - targetTotal) / targetTotal * 100;
+      let status = 'ok';
+      if (i === 4) status = 'skip';
+      else if (Math.abs(deltaPct) > 8) status = 'alert';
+      else if (Math.abs(deltaPct) > 4) status = 'warn';
+      out.push({
+        idx: 2814 - i,
+        when: minutesAgo(ageMin),
+        whenLabel: minutesAgoLabel(ageMin),
+        segs, total, target: targetTotal, deltaPct, status
+      });
+    }
+    return out;
+  }
+  function fmtTimeHM(d){
+    const h = d.getHours(), m = d.getMinutes();
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  }
+
+  // ---------- Render KPIs ----------
+  function renderKPIs(){
+    const el = document.getElementById('kpiStrip');
+    el.innerHTML = KPI.map(k => {
+      const pct = Math.min(100, k.value);
+      const trendClass = k.up ? '' : 'down';
+      const arrow = k.up ? '▲' : '▼';
+      return `
+        <div class="kpi">
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-row">
+            <span class="kpi-value">${k.value.toFixed(1)}</span>
+            <span class="kpi-unit">${k.unit}</span>
+          </div>
+          <div class="kpi-trend ${trendClass}">${arrow} ${k.trend} · target ${k.target}${k.unit}</div>
+          <div class="kpi-bar"><div style="width:${pct}%"></div></div>
+        </div>`;
+    }).join('');
+  }
+
+  // ---------- Render Live cycle ----------
+  function renderLive(){
+    document.getElementById('liveName').textContent = CYCLE_NAME + ' · #2815';
+    document.getElementById('liveTag').textContent  = CYCLE_TAG;
+    document.getElementById('liveMeta').textContent = 'started ' + fmtTimeHM(live.startedAt);
+
+    const el = document.getElementById('liveSteps');
+    el.innerHTML = STEPS.map((s, i) => {
+      let pct = 0, label = '';
+      let cls = '';
+      if (i < live.stepIdx) { pct = 100; cls = 'done'; label = `${s.set}:00 / ${s.set}:00`; }
+      else if (i === live.stepIdx) {
+        cls = 'active';
+        const setSec = s.set * 60;
+        pct = Math.min(100, live.elapsedInStep / setSec * 100);
+        label = `<b>${fmtMS(live.elapsedInStep)}</b> / ${s.set}:00`;
+      } else { pct = 0; label = `0:00 / ${s.set}:00`; }
+      const badge = i < live.stepIdx ? '<span class="badge">done</span>' : (i === live.stepIdx ? '<span class="badge">active</span>' : '');
+      return `
+        <div class="step ${cls}">
+          <span class="step-idx">${i+1}</span>
+          <div class="step-meta">
+            <div class="step-name">${s.name} ${badge}</div>
+            <div class="step-prog"><div style="width:${pct}%"></div></div>
+          </div>
+          <div class="step-time">${label}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ---------- Render History ----------
+  function renderHistory(){
+    const el = document.getElementById('histList');
+    el.innerHTML = HIST.map(h => {
+      if (h.status === 'skip') {
+        return `
+          <div class="hist-row">
+            <div class="hist-time"><b>—</b>${h.whenLabel}</div>
+            <div style="font-size:11.5px; color:var(--ink-2); font-style: italic;">Cycle did not start within its window.</div>
+            <div class="hist-dur">—</div>
+            <span class="hist-status hs-skip">Skipped</span>
+          </div>`;
+      }
+      const total = h.segs.reduce((a,b)=>a+b,0);
+      const segHtml = h.segs.map((d, i) => `<div class="seg-${i+1}" style="width:${(d/total*100).toFixed(1)}%" title="${STEPS[i].name}: ${d.toFixed(1)}m"></div>`).join('');
+      const dCls = h.status === 'alert' ? 'alert' : h.status === 'warn' ? 'warn' : 'ok';
+      const sCls = h.status === 'alert' ? 'hs-alert' : h.status === 'warn' ? 'hs-warn' : 'hs-ok';
+      const sLbl = h.status === 'alert' ? 'Out of band' : h.status === 'warn' ? 'Drift' : 'On target';
+      const sign = h.deltaPct >= 0 ? '+' : '';
+      return `
+        <div class="hist-row">
+          <div class="hist-time"><b>#${h.idx}</b>${h.whenLabel}</div>
+          <div class="hist-bar">${segHtml}</div>
+          <div class="hist-dur">${total.toFixed(1)}m<span class="delta ${dCls}">${sign}${h.deltaPct.toFixed(1)}% vs target</span></div>
+          <span class="hist-status ${sCls}">${sLbl}</span>
+        </div>`;
+    }).join('');
+  }
+
+  // ---------- Render Parameters ----------
+  function sparkline(series, status){
+    const w = 220, h = 36, pad = 2;
+    const min = Math.min(...series), max = Math.max(...series);
+    const span = (max - min) || 1;
+    const step = (w - pad*2) / (series.length - 1);
+    const pts = series.map((v, i) => {
+      const x = pad + i * step;
+      const y = h - pad - ((v - min) / span) * (h - pad*2);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    const stroke = status === 'warn' ? 'var(--warn-acc)' : status === 'alert' ? 'var(--alert-acc)' : 'var(--brand-700)';
+    const fill   = status === 'warn' ? 'rgba(185,139,31,.10)' : status === 'alert' ? 'rgba(181,73,29,.10)' : 'rgba(42,74,117,.10)';
+    const areaPts = `${pad},${h-pad} ${pts} ${w-pad},${h-pad}`;
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+      <polygon points="${areaPts}" fill="${fill}"/>
+      <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>`;
+  }
+  function bandBar(value, band){
+    const [lo, hi] = band;
+    const min = Math.min(lo, value) - (hi-lo)*0.4;
+    const max = Math.max(hi, value) + (hi-lo)*0.4;
+    const span = max - min;
+    const fillL = ((lo - min) / span) * 100;
+    const fillW = ((hi - lo) / span) * 100;
+    const markL = ((value - min) / span) * 100;
+    const out = value < lo || value > hi;
+    return `
+      <div class="band">
+        <span>${lo}</span>
+        <div class="band-track">
+          <div class="band-fill" style="left:${fillL}%; width:${fillW}%;"></div>
+          <div class="band-marker ${out?'out':''}" style="left:calc(${markL}% - 1px);"></div>
+        </div>
+        <span>${hi}</span>
+      </div>`;
+  }
+  function renderParams(){
+    const el = document.getElementById('paramList');
+    el.innerHTML = PARAMS.map(p => {
+      const status = p.status || 'ok';
+      const dot = status === 'warn' ? '<span style="color:var(--warn-ink)">●</span>' : status === 'alert' ? '<span style="color:var(--alert-ink)">●</span>' : '<span style="color:var(--ok-ink)">●</span>';
+      const extra = p.mode === 'Δ before/after'
+        ? `<div class="band" style="margin-top:6px;"><span>Δ vs pre-cycle</span><div class="band-track"><div class="band-fill" style="left:0; width:100%; background:var(--brand-50); border-color:var(--brand-100);"></div></div><span style="font-family:var(--font-mono); color:var(--ink);">+${p.delta} ${p.unit}</span></div>`
+        : (p.band ? bandBar(p.value, p.band) : '');
+      return `
+        <div class="param">
+          <div class="param-head">
+            <span class="param-name">${p.name} ${dot}</span>
+            <span class="param-mode">${p.mode}</span>
+            <span class="param-val">${p.value}<span class="u">${p.unit}</span></span>
+          </div>
+          ${sparkline(p.series, status)}
+          ${extra}
+        </div>`;
+    }).join('');
+  }
+
+  // ---------- Render Alerts ----------
+  function renderAlerts(){
+    const el = document.getElementById('alertList');
+    document.getElementById('alertMeta').textContent = ALERTS.length + ' active';
+    el.innerHTML = ALERTS.map(a => `
+      <div class="alert-item">
+        <span class="alert-dot ${a.sev}"></span>
+        <div class="alert-body">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-desc">${a.desc}</div>
+          <div class="alert-when">${a.when}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ---------- Clock & live tick ----------
+  function tick(){
+    const now = new Date();
+    const c = document.getElementById('clock');
+    if (c) c.textContent = fmtTimeHM(now) + ':' + (now.getSeconds()<10?'0':'') + now.getSeconds();
+    // advance live cycle
+    live.elapsedInStep += 1;
+    const setSec = STEPS[live.stepIdx].set * 60;
+    if (live.elapsedInStep >= setSec) {
+      if (live.stepIdx < STEPS.length - 1) { live.stepIdx += 1; live.elapsedInStep = 0; }
+      else { // cycle complete — reset to next backwash
+        live = { stepIdx: 0, elapsedInStep: 0, startedAt: new Date() };
+      }
+    }
+    renderLive();
+  }
+
+  // Range buttons (cosmetic)
+  document.getElementById('rangeSel').addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') return;
+    document.querySelectorAll('#rangeSel button').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+
+  renderKPIs();
+  renderLive();
+  renderHistory();
+  renderParams();
+  renderAlerts();
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
