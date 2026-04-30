@@ -2252,28 +2252,29 @@
       if (document.getElementById('mucBulkChannels')) _renderMucChannelChips();
     }
     function _renderMucInsightPicker() {
-      const wrap = document.getElementById('mucInsightPicker');
+      const chips = document.getElementById('ccInsightChips');
+      const countEl = document.getElementById('ccInsightCount');
+      const disclose = document.getElementById('ccInsightsDisclose');
+      if (!chips || !countEl) return; // Modal isn't rendered yet — no-op
       const list = _scopeBeforeInsightFilter();
-      // Hide picker if scope is "selected" (rows already chosen) or empty
-      if (_mucScopeMode === 'selected' || list.length <= 1) {
-        wrap.style.display = 'none';
-        _mucScopeInsightIds.clear();
+      if (list.length === 0) {
+        chips.innerHTML = '<div style="font-size:11px;color:var(--color-text-tertiary);padding:6px">Pick a plant first to see matching insights.</div>';
+        countEl.textContent = 'pick a plant first';
+        if (disclose) disclose.removeAttribute('open');
         return;
       }
-      wrap.style.display = '';
-      const chips = document.getElementById('mucInsightChips');
+      const noneSel = _mucScopeInsightIds.has('__none__');
       chips.innerHTML = list.map(r => {
-        const noneSel = _mucScopeInsightIds.has('__none__');
         const on = !noneSel && (_mucScopeInsightIds.size === 0 || _mucScopeInsightIds.has(r.id));
         const plant = plants.find(p => p.id === r.plant);
-        return `<button class="channel-chip${on?' on':''}" onclick="toggleMucInsight(${r.id})" title="${(plant?.name||'') + ' · ' + r.equipment}">${r.name}</button>`;
+        return `<button class="cc-sev-chip${on?' on':''}" onclick="toggleMucInsight(${r.id})" title="${(plant?.name||'') + ' · ' + r.equipment}">${r.name}</button>`;
       }).join('');
       const total = list.length;
       let picked;
-      if (_mucScopeInsightIds.has('__none__')) picked = 0;
+      if (noneSel) picked = 0;
       else if (_mucScopeInsightIds.size === 0) picked = total;
       else picked = _mucScopeInsightIds.size;
-      document.getElementById('mucInsightCount').textContent = `${picked} of ${total} included`;
+      countEl.textContent = picked === total ? `all ${total} matching` : `${picked} of ${total} included`;
     }
     function toggleMucInsight(id) {
       if (_mucScopeInsightIds.has('__none__')) { _mucScopeInsightIds.clear(); _mucScopeInsightIds.add(id); }
@@ -2337,7 +2338,8 @@
     function setMucScope(mode) {
       _mucScopeMode = mode;
       _renderMucScopeChips();
-      document.getElementById('mucPlantPicker').style.display = mode === 'plant' ? '' : 'none';
+      const planter = document.getElementById('mucPlantPicker');
+      if (planter) planter.style.display = mode === 'plant' ? '' : 'none';
       if (mode === 'plant') _renderMucPlantPicker();
       _mucScopeInsightIds.clear();
       _renderMucInsightPicker();
@@ -2351,6 +2353,7 @@
     }
     function _renderMucPlantPicker() {
       const wrap = document.getElementById('mucPlantChips');
+      if (!wrap) return; // legacy element removed in CC redesign
       wrap.innerHTML = plants.map(p => {
         const on = _mucScopePlants.has(p.id);
         return `<button class="channel-chip${on?' on':''}" onclick="toggleMucPlant('${p.id}')">${p.name}</button>`;
@@ -2360,10 +2363,13 @@
       if (_mucScopePlants.has(id)) _mucScopePlants.delete(id); else _mucScopePlants.add(id);
       _renderMucPlantPicker();
       _updateMucScopeNote();
+      if (typeof _renderCcPlantChips === 'function') _renderCcPlantChips();
+      if (typeof _updateCcPreview === 'function') _updateCcPreview();
       if (_activeNames().length) renderMasterUserResults();
     }
     function _renderMucChannelChips() {
       const wrap = document.getElementById('mucBulkChannels');
+      if (!wrap) return; // only present inside Advanced action fields
       wrap.innerHTML = ['✉ Email', '✆ SMS', 'W WhatsApp', '☏ Call'].map((lbl, i) => `
         <button class="channel-chip${_mucBulkChannels[i]?' on':''}" onclick="toggleMucChannel(${i})">${lbl}</button>
       `).join('');
@@ -2371,6 +2377,8 @@
     function toggleMucChannel(i) {
       _mucBulkChannels[i] = _mucBulkChannels[i] ? 0 : 1;
       _renderMucChannelChips();
+      if (typeof _renderCcChannelChips === 'function') _renderCcChannelChips();
+      if (typeof _updateCcPreview === 'function') _updateCcPreview();
     }
 
     function _scopeBeforeInsightFilter() {
@@ -2396,7 +2404,8 @@
       else parts.push(_mucScopePlants.size === 0 ? 'no plants picked' : `${_mucScopePlants.size} plant${_mucScopePlants.size===1?'':'s'}`);
       if (_mucScopeTypes.size > 0 && _mucScopeTypes.size < 3) parts.push([..._mucScopeTypes].join('/'));
       parts.push(`${scope.length} insight${scope.length===1?'':'s'} in scope`);
-      document.getElementById('mucScopeNote').textContent = parts.join(' · ');
+      const noteEl = document.getElementById('mucScopeNote');
+      if (noteEl) noteEl.textContent = parts.join(' · ');
     }
 
     function _allKnownUsers() {
@@ -2462,6 +2471,7 @@
     function renderMasterUserResults() {
       const out = document.getElementById('mucResults');
       _updateMucScopeNote();
+      if (!out) return; // Advanced sub-modal not open — nothing to render into
       const names = _activeNames();
       if (names.length === 0) { out.innerHTML = '<div class="muc-empty">Type one or more names above (Enter after each).</div>'; return; }
       const scope = _mucScope();
