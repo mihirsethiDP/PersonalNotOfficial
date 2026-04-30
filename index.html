@@ -147,6 +147,82 @@
     .fp-toggle-off { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
     .fp-toggle-off:hover { background: #F7DBC8; }
 
+    /* Control Center · Escalate — modern card layout */
+    .cc-modal { padding: 0; }
+    .cc-head { padding: 18px 22px 14px; background: linear-gradient(180deg, #fff, var(--brand-25)); border-bottom: 0.5px solid var(--color-border-tertiary); border-top-left-radius: var(--border-radius-lg); border-top-right-radius: var(--border-radius-lg); }
+    .cc-body { padding: 16px 22px 14px; max-height: calc(100vh - 240px); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .cc-footer { padding: 12px 22px; background: #fff; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; }
+    .cc-card { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; overflow: hidden; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); }
+    .cc-card:hover { border-color: var(--brand-200); }
+    .cc-card-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--brand-25); border-bottom: 0.5px solid var(--color-border-tertiary); flex-wrap: wrap; }
+    .cc-step { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-800); color: #fff; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cc-card-title { font-size: 13.5px; font-weight: 600; color: var(--color-text-primary); }
+    .cc-card-sub { font-size: 11.5px; color: var(--color-text-tertiary); margin-left: 4px; }
+    .cc-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+    .cc-field { display: flex; flex-direction: column; gap: 6px; }
+    .cc-field-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; display: inline-flex; align-items: center; gap: 8px; }
+    .cc-field-hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--color-text-tertiary); font-size: 10.5px; }
+    .cc-chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .cc-chip-row.scroll { max-height: 130px; overflow-y: auto; padding: 2px; }
+    .cc-mini-btn { height: 24px; padding: 0 10px; font-size: 11px; border-radius: 4px; border: 0.5px solid var(--brand-200); background: var(--brand-50); color: var(--brand-800); cursor: pointer; font-family: var(--font-sans); transition: background .12s; }
+    .cc-mini-btn:hover { background: var(--brand-100); }
+    .cc-mini-btn.ghost { background: #fff; border-color: var(--color-border-secondary); color: var(--color-text-secondary); }
+    .cc-mini-btn.ghost:hover { background: var(--brand-25); }
+
+    /* Severity chips with color dot */
+    .cc-sev-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 16px; background: #fff; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); }
+    .cc-sev-chip:hover { background: var(--brand-25); border-color: var(--brand-300); color: var(--brand-800); }
+    .cc-sev-chip.on { background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-800); font-weight: 600; box-shadow: var(--elev-1); }
+    .cc-sev-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+
+    /* Channel chips inside CC (larger than the inline 26px) */
+    .cc-channel-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; background: #fff; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); }
+    .cc-channel-chip:hover { background: var(--brand-25); border-color: var(--brand-300); color: var(--brand-800); }
+    .cc-channel-chip.on { background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-800); font-weight: 600; }
+    .cc-channel-chip.on .channel-legend-glyph { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+
+    /* Mode cards: 2 large radio cards */
+    .cc-mode-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cc-mode-card { padding: 12px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; background: #fff; text-align: left; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); display: flex; flex-direction: column; gap: 4px; position: relative; }
+    .cc-mode-card:hover { border-color: var(--brand-300); background: var(--brand-25); }
+    .cc-mode-card.on { border-color: var(--brand-500); background: var(--brand-50); box-shadow: var(--elev-1); }
+    .cc-mode-card.on::after { content: '✓'; position: absolute; top: 10px; right: 12px; width: 18px; height: 18px; background: var(--brand-800); color: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+    .cc-mode-icon { font-size: 16px; }
+    .cc-mode-title { font-size: 12.5px; font-weight: 600; color: var(--color-text-primary); }
+    .cc-mode-sub { font-size: 11px; color: var(--color-text-secondary); line-height: 1.45; }
+
+    /* Schedule cards: 4 in a row */
+    .cc-schedule-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .cc-sched-card { padding: 12px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; background: #fff; text-align: left; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); display: flex; flex-direction: column; gap: 4px; position: relative; }
+    .cc-sched-card:hover { border-color: var(--brand-300); background: var(--brand-25); }
+    .cc-sched-card.on { border-color: var(--brand-500); background: var(--brand-50); box-shadow: var(--elev-1); }
+    .cc-sched-card.on::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; background: var(--brand-800); color: #fff; border-radius: 50%; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+    .cc-sched-icon { font-size: 16px; }
+    .cc-sched-title { font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+    .cc-sched-sub { font-size: 10.5px; color: var(--color-text-tertiary); line-height: 1.4; }
+    .cc-custom-disclose { margin-top: 10px; }
+    .cc-custom-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; padding: 10px 12px 4px; }
+
+    /* Disclosure (progressive disclosure pattern) */
+    .cc-disclose { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; overflow: hidden; transition: border-color .14s; }
+    .cc-disclose[open] { border-color: var(--brand-200); }
+    .cc-disclose summary { list-style: none; cursor: pointer; padding: 10px 12px; display: flex; align-items: center; gap: 8px; user-select: none; transition: background .12s; }
+    .cc-disclose summary::-webkit-details-marker { display: none; }
+    .cc-disclose summary:hover { background: var(--brand-50); }
+    .cc-disclose-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+    .cc-disclose-meta { font-size: 11px; color: var(--color-text-tertiary); }
+    .cc-disclose-chev { margin-left: auto; transition: transform .2s var(--ease-out); color: var(--color-text-tertiary); font-size: 14px; }
+    .cc-disclose[open] .cc-disclose-chev { transform: rotate(90deg); color: var(--brand-700); }
+    .cc-disclose-body { padding: 4px 12px 12px; animation: fadeUp .2s var(--ease-out); }
+
+    /* Live preview footer */
+    .cc-preview { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: linear-gradient(180deg, var(--brand-50), var(--brand-25)); border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-700); border-radius: 8px; }
+    .cc-preview-icon { font-size: 16px; flex-shrink: 0; }
+    .cc-preview-text { font-size: 12.5px; color: var(--brand-800); line-height: 1.55; flex: 1; }
+    .cc-preview-text b { font-weight: 600; }
+    .cc-preview.invalid { background: var(--sev-warn-bg); border-color: var(--sev-warn-line); border-left-color: var(--sev-warn-accent); }
+    .cc-preview.invalid .cc-preview-text { color: var(--sev-warn-ink); }
+
     /* Channel legend */
     .channel-legend { display: inline-flex; align-items: center; gap: 10px; padding: 6px 10px; background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; font-size: 11px; color: var(--color-text-secondary); flex-wrap: wrap; }
     .channel-legend-title { font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; }
@@ -655,6 +731,10 @@
             <span id="l2InsightCount" style="font-size:12.5px;color:var(--color-text-secondary)"></span>
           </div>
           <div style="display:flex;gap:8px">
+            <button class="filter-btn" onclick="openMasterUserModal()" title="Open the Control Center to escalate insights, send digests, schedule alerts">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:2px;vertical-align:-1px"><path d="M2 2l8 4-8 4 1.5-4z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Escalate
+            </button>
             <button class="btn-primary" onclick="openAddInsightModal()" title="Create a new insight">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:4px;vertical-align:-1px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Add insight
@@ -984,82 +1064,220 @@
     </div>
   </div>
 
-  <!-- ══════════════════ Control Center · Manage ══════════════════ -->
+  <!-- ══════════════════ Control Center · Escalate ══════════════════ -->
   <div class="modal-bg" id="masterUserModal">
-    <div class="modal" style="width:720px">
-      <div class="modal-head">
+    <div class="modal cc-modal" style="width:760px">
+      <div class="modal-head cc-head">
         <div>
-          <div class="modal-title">Control Center · Manage</div>
-          <div class="modal-sub">One hub to add or remove a user across one insight, many insights, or every insight in selected plants</div>
+          <div class="modal-title">Control Center · Escalate insights</div>
+          <div class="modal-sub">Pick what to send, who to send it to, and when. Live preview at the bottom.</div>
         </div>
         <button class="modal-close" onclick="closeMasterUserModal()">✕</button>
       </div>
+      <div class="modal-body cc-body">
+
+        <!-- Card 1 · Source — what gets escalated -->
+        <section class="cc-card">
+          <header class="cc-card-head">
+            <span class="cc-step">1</span>
+            <span class="cc-card-title">Source</span>
+            <span class="cc-card-sub">Pick the plants and the insights to include</span>
+          </header>
+          <div class="cc-card-body">
+            <!-- Plants -->
+            <div class="cc-field">
+              <span class="cc-field-label">Plants</span>
+              <div class="cc-chip-row" id="ccPlantChips"></div>
+            </div>
+            <!-- Severity (Hick's: 3 well-known severities only) -->
+            <div class="cc-field">
+              <span class="cc-field-label">Criticality
+                <span class="cc-field-hint">leave empty for all three</span>
+              </span>
+              <div class="cc-chip-row">
+                <button class="cc-sev-chip" data-sev="incident" onclick="ccToggleSev('incident')">
+                  <span class="cc-sev-dot" style="background:var(--brand-900)"></span>Incident
+                </button>
+                <button class="cc-sev-chip" data-sev="issue" onclick="ccToggleSev('issue')">
+                  <span class="cc-sev-dot" style="background:var(--sev-alert-accent)"></span>Issue
+                </button>
+                <button class="cc-sev-chip" data-sev="warning" onclick="ccToggleSev('warning')">
+                  <span class="cc-sev-dot" style="background:var(--sev-warn-accent)"></span>Warning
+                </button>
+              </div>
+            </div>
+            <!-- Insights — progressive disclosure -->
+            <div class="cc-field">
+              <details class="cc-disclose" id="ccInsightsDisclose">
+                <summary>
+                  <span class="cc-disclose-title">Specific insights</span>
+                  <span class="cc-disclose-meta" id="ccInsightCount">all matching</span>
+                  <span class="cc-disclose-chev">›</span>
+                </summary>
+                <div class="cc-disclose-body">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <button class="cc-mini-btn" onclick="ccPickAllInsights(true)">Select all matching</button>
+                    <button class="cc-mini-btn ghost" onclick="ccPickAllInsights(false)">Clear selection</button>
+                  </div>
+                  <div class="cc-chip-row scroll" id="ccInsightChips"></div>
+                </div>
+              </details>
+            </div>
+            <!-- Digest mode (Hick's: 2 explicit modes, default = Single) -->
+            <div class="cc-field">
+              <span class="cc-field-label">Delivery mode</span>
+              <div class="cc-mode-row">
+                <button class="cc-mode-card on" data-mode="single" onclick="ccSetMode('single')">
+                  <span class="cc-mode-icon">✉</span>
+                  <span class="cc-mode-title">One per insight</span>
+                  <span class="cc-mode-sub">Each insight goes out as its own message — best for high-priority alerts</span>
+                </button>
+                <button class="cc-mode-card" data-mode="digest" onclick="ccSetMode('digest')">
+                  <span class="cc-mode-icon">📋</span>
+                  <span class="cc-mode-title">Digest cluster</span>
+                  <span class="cc-mode-sub">All matching insights bundled into a single message — best for daily/weekly recaps</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Card 2 · Recipients -->
+        <section class="cc-card">
+          <header class="cc-card-head">
+            <span class="cc-step">2</span>
+            <span class="cc-card-title">Recipients</span>
+            <span class="cc-card-sub">Who receives this — supervisors, owners, or any teammate</span>
+          </header>
+          <div class="cc-card-body">
+            <div class="cc-field">
+              <span class="cc-field-label">People</span>
+              <div class="muc-chip-input" onclick="document.getElementById('mucInput').focus()" style="margin-bottom:0">
+                <div class="muc-chip-list" id="mucChipList"></div>
+                <input class="muc-input-inline" id="mucInput" placeholder="Type a name and press Enter…" oninput="renderMasterUserSuggestions()" onkeydown="mucNameKey(event)"/>
+              </div>
+              <div id="mucSuggest"></div>
+            </div>
+            <div class="cc-field">
+              <span class="cc-field-label">Channels
+                <span class="cc-field-hint">how they get notified</span>
+              </span>
+              <div class="cc-chip-row" id="ccChannelChips">
+                <button class="cc-channel-chip on" data-ch="0" onclick="ccToggleChannel(0)"><span class="channel-legend-glyph">✉</span>Email</button>
+                <button class="cc-channel-chip" data-ch="1" onclick="ccToggleChannel(1)"><span class="channel-legend-glyph">✆</span>SMS</button>
+                <button class="cc-channel-chip" data-ch="2" onclick="ccToggleChannel(2)"><span class="channel-legend-glyph">W</span>WhatsApp</button>
+                <button class="cc-channel-chip" data-ch="3" onclick="ccToggleChannel(3)"><span class="channel-legend-glyph">☏</span>Call</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Card 3 · Schedule (Hick's: 4 presets + Custom disclosure) -->
+        <section class="cc-card">
+          <header class="cc-card-head">
+            <span class="cc-step">3</span>
+            <span class="cc-card-title">Schedule</span>
+            <span class="cc-card-sub">Send once now or on a recurring cadence</span>
+          </header>
+          <div class="cc-card-body">
+            <div class="cc-schedule-grid">
+              <button class="cc-sched-card on" data-when="now" onclick="ccSetWhen('now')">
+                <span class="cc-sched-icon">⚡</span>
+                <span class="cc-sched-title">Send now</span>
+                <span class="cc-sched-sub">Goes out the moment you hit Send</span>
+              </button>
+              <button class="cc-sched-card" data-when="hourly" onclick="ccSetWhen('hourly')">
+                <span class="cc-sched-icon">⏱</span>
+                <span class="cc-sched-title">Hourly</span>
+                <span class="cc-sched-sub">Top of every hour</span>
+              </button>
+              <button class="cc-sched-card" data-when="daily" onclick="ccSetWhen('daily')">
+                <span class="cc-sched-icon">☀</span>
+                <span class="cc-sched-title">Daily</span>
+                <span class="cc-sched-sub">Every day at 9:00 AM</span>
+              </button>
+              <button class="cc-sched-card" data-when="weekly" onclick="ccSetWhen('weekly')">
+                <span class="cc-sched-icon">📆</span>
+                <span class="cc-sched-title">Weekly</span>
+                <span class="cc-sched-sub">Mondays at 9:00 AM</span>
+              </button>
+            </div>
+            <details class="cc-disclose cc-custom-disclose" id="ccCustomDisclose">
+              <summary>
+                <span class="cc-disclose-title">Custom schedule</span>
+                <span class="cc-disclose-meta">override the preset</span>
+                <span class="cc-disclose-chev">›</span>
+              </summary>
+              <div class="cc-disclose-body">
+                <div class="cc-custom-grid">
+                  <div class="cc-field">
+                    <span class="cc-field-label">Repeat</span>
+                    <select class="action-pop-select" id="ccCustomRepeat">
+                      <option value="once">Once (no repeat)</option>
+                      <option value="hourly">Every hour</option>
+                      <option value="daily" selected>Every day</option>
+                      <option value="weekdays">Every weekday (Mon–Fri)</option>
+                      <option value="weekly">Every week</option>
+                    </select>
+                  </div>
+                  <div class="cc-field">
+                    <span class="cc-field-label">Time</span>
+                    <input class="action-pop-input" type="time" id="ccCustomTime" value="09:00"/>
+                  </div>
+                  <div class="cc-field" id="ccCustomDayWrap">
+                    <span class="cc-field-label">Day of week</span>
+                    <select class="action-pop-select" id="ccCustomDay">
+                      <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option>
+                      <option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option>
+                      <option value="0">Sunday</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- Live preview -->
+        <div class="cc-preview" id="ccPreview">
+          <span class="cc-preview-icon">👁</span>
+          <span class="cc-preview-text" id="ccPreviewText">Pick a plant to see the preview…</span>
+        </div>
+
+      </div>
+      <div class="modal-footer cc-footer">
+        <button class="btn-ghost" onclick="closeMasterUserModal()">Cancel</button>
+        <button class="btn-ghost" onclick="ccOpenAdvanced()" title="Switch to user-level configuration (Add / Remove / Edit timing / Edit channels)">Advanced…</button>
+        <div style="flex:1"></div>
+        <button class="btn-primary" id="ccSendBtn" onclick="ccSendEscalation()">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="margin-right:4px;vertical-align:-1px"><path d="M2 2l8 4-8 4 1.5-4z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="ccSendLabel">Send escalation</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced sub-modal: keeps the original Add/Remove/Edit timing/Edit channels actions -->
+  <div class="modal-bg" id="ccAdvancedModal">
+    <div class="modal" style="width:680px">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Advanced · User-level configuration</div>
+          <div class="modal-sub">Add / remove a user, edit timing on a level, or edit channels for an existing user</div>
+        </div>
+        <button class="modal-close" onclick="ccCloseAdvanced()">✕</button>
+      </div>
       <div class="modal-body">
-        <!-- Scope selector -->
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-          <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Scope</span>
-          <button class="channel-chip" data-scope="all" onclick="setMucScope('all')">All insights</button>
-          <button class="channel-chip" data-scope="selected" onclick="setMucScope('selected')">Selected rows</button>
-          <button class="channel-chip" data-scope="plant" onclick="setMucScope('plant')">By plant…</button>
-          <span id="mucScopeNote" style="font-size:11px;color:var(--color-text-tertiary);margin-left:auto"></span>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Action</span>
+          <button class="channel-chip on" data-action="add"     onclick="setMucAction('add')">Add user</button>
+          <button class="channel-chip"    data-action="remove"  onclick="setMucAction('remove')">Remove user</button>
+          <button class="channel-chip"    data-action="timing"  onclick="setMucAction('timing')">Edit timing</button>
+          <button class="channel-chip"    data-action="channel" onclick="setMucAction('channel')">Edit channels</button>
         </div>
-        <div id="mucPlantPicker" style="display:none;margin-bottom:10px;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--brand-25)">
-          <div style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Pick plants</div>
-          <div id="mucPlantChips" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-        </div>
-
-        <!-- Severity-type filter (Issue / Warning / Incident only — escalations don't apply to Achievement/Improvement) -->
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-          <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Insight type</span>
-          <button class="channel-chip" data-type="issue"    onclick="toggleMucType('issue')">Issue</button>
-          <button class="channel-chip" data-type="warning"  onclick="toggleMucType('warning')">Warning</button>
-          <button class="channel-chip" data-type="incident" onclick="toggleMucType('incident')">Incident</button>
-          <span style="font-size:10.5px;color:var(--color-text-tertiary);margin-left:6px">leave empty to include all 3</span>
-        </div>
-
-        <!-- Insight picker (visible when more than one insight in scope) -->
-        <div id="mucInsightPicker" style="display:none;margin-bottom:10px;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--brand-25)">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em">Insights</span>
-            <button class="muc-add-btn" onclick="mucPickAllInsights(true)" style="padding:2px 8px;font-size:10.5px">Select all</button>
-            <button class="muc-add-btn" onclick="mucPickAllInsights(false)" style="padding:2px 8px;font-size:10.5px;background:#fff;border-color:var(--color-border-secondary);color:var(--color-text-secondary)">Clear</button>
-            <span id="mucInsightCount" style="margin-left:auto;font-size:10.5px;color:var(--color-text-tertiary)"></span>
-          </div>
-          <div id="mucInsightChips" style="display:flex;flex-wrap:wrap;gap:4px;max-height:120px;overflow-y:auto"></div>
-        </div>
-
-        <!-- Multi-name chip input -->
-        <div class="muc-chip-input" id="mucChipInput" onclick="document.getElementById('mucInput').focus()">
-          <div class="muc-chip-list" id="mucChipList"></div>
-          <input class="muc-input-inline" id="mucInput" placeholder="Type a name and press Enter to add another…" oninput="renderMasterUserSuggestions()" onkeydown="mucNameKey(event)"/>
-        </div>
-        <div id="mucSuggest"></div>
-
-        <!-- Bulk action bar -->
-        <div id="mucBulkBar" style="display:none;padding:10px 12px;border:0.5px solid var(--brand-200);border-radius:6px;background:var(--brand-25);margin-bottom:10px">
-          <!-- Action selector -->
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-            <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Action</span>
-            <button class="channel-chip on" data-action="add"     onclick="setMucAction('add')">Add user</button>
-            <button class="channel-chip"    data-action="remove"  onclick="setMucAction('remove')">Remove user</button>
-            <button class="channel-chip"    data-action="timing"  onclick="setMucAction('timing')">Edit timing</button>
-            <button class="channel-chip"    data-action="channel" onclick="setMucAction('channel')">Edit channels</button>
-          </div>
-          <!-- Action-specific fields -->
-          <div id="mucActionFields" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
-        </div>
-
-        <div class="channel-legend" style="margin-bottom:10px">
-          <span class="channel-legend-title">Channels</span>
-          <span class="channel-legend-item"><span class="channel-legend-glyph">✉</span>Email</span>
-          <span class="channel-legend-item"><span class="channel-legend-glyph">✆</span>SMS</span>
-          <span class="channel-legend-item"><span class="channel-legend-glyph">W</span>WhatsApp</span>
-          <span class="channel-legend-item"><span class="channel-legend-glyph">☏</span>Call</span>
-        </div>
-
-        <div id="mucResults" class="muc-results">
-          <div class="muc-empty">Pick a scope, optionally narrow by Issue/Warning/Incident and by specific insights, type one or more names, then choose an action.</div>
-        </div>
+        <div style="font-size:11.5px;color:var(--color-text-tertiary);margin-bottom:10px;line-height:1.5">Uses the same Source &amp; Recipients picked above. Action runs on every insight in the current scope.</div>
+        <div id="mucActionFields" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:0.5px solid var(--brand-200);border-radius:6px;background:var(--brand-25)"></div>
+        <div id="mucResults" class="muc-results" style="margin-top:12px"></div>
       </div>
     </div>
   </div>
@@ -1806,9 +2024,12 @@
     let _mucBulkChannels = [1, 0, 0, 0];
     let _mucBulkLevel = 'notify';
     let _mucBulkDelay = 15;
+    /* CC state for the redesigned filter cards */
+    let ccDigestMode = 'single';                    // 'single' | 'digest'
+    let ccWhen = 'now';                             // 'now' | 'hourly' | 'daily' | 'weekly' | 'custom'
     function openMasterUserModal() {
       _mucNames = [];
-      _mucScopeMode = selected.size > 0 ? 'selected' : 'all';
+      _mucScopeMode = 'plant';                       // CC always works on a plant pick
       _mucScopePlants.clear();
       _mucScopeTypes.clear();
       _mucScopeInsightIds.clear();
@@ -1816,23 +2037,160 @@
       _mucBulkChannels = [1, 0, 0, 0];
       _mucBulkLevel = 'notify';
       _mucBulkDelay = 15;
-      document.getElementById('mucInput').value = '';
-      document.getElementById('mucSuggest').innerHTML = '';
-      document.getElementById('mucBulkBar').style.display = 'none';
-      _renderMucScopeChips();
+      ccDigestMode = 'single';
+      ccWhen = 'now';
+      const mucInputEl = document.getElementById('mucInput');
+      if (mucInputEl) mucInputEl.value = '';
+      const sug = document.getElementById('mucSuggest'); if (sug) sug.innerHTML = '';
+      _renderCcPlantChips();
       _renderMucTypeChips();
-      _renderMucActionChips();
-      _renderMucPlantPicker();
       _renderMucInsightPicker();
       _renderMucNameChips();
-      _renderMucActionFields();
-      _updateMucScopeNote();
-      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Pick a scope, optionally narrow by Issue/Warning/Incident and by specific insights, type one or more names, then choose an action.</div>';
+      _renderCcChannelChips();
+      _renderCcModeCards();
+      _renderCcSchedCards();
+      _updateCcPreview();
       document.getElementById('masterUserModal').classList.add('open');
-      setTimeout(() => document.getElementById('mucInput').focus(), 50);
+      setTimeout(() => document.getElementById('mucInput')?.focus(), 50);
     }
+
+    /* CC plant chips */
+    function _renderCcPlantChips() {
+      const wrap = document.getElementById('ccPlantChips'); if (!wrap) return;
+      wrap.innerHTML = plants.map(p => {
+        const on = _mucScopePlants.has(p.id);
+        return `<button class="cc-sev-chip${on?' on':''}" onclick="ccTogglePlant('${p.id}')"><span class="row-plant-dot"></span>${p.name}</button>`;
+      }).join('');
+    }
+    function ccTogglePlant(id) {
+      if (_mucScopePlants.has(id)) _mucScopePlants.delete(id); else _mucScopePlants.add(id);
+      _renderCcPlantChips();
+      _mucScopeInsightIds.clear();
+      _renderMucInsightPicker();
+      _updateCcPreview();
+    }
+    /* CC severity */
+    function ccToggleSev(t) {
+      if (_mucScopeTypes.has(t)) _mucScopeTypes.delete(t); else _mucScopeTypes.add(t);
+      _renderMucTypeChips();
+      _renderMucInsightPicker();
+      _updateCcPreview();
+    }
+    /* CC insight picker — already rendered by _renderMucInsightPicker; expose a wrapper */
+    function ccPickAllInsights(all) { mucPickAllInsights(all); _updateCcPreview(); }
+    /* CC channels */
+    function _renderCcChannelChips() {
+      document.querySelectorAll('#ccChannelChips [data-ch]').forEach(b => {
+        const i = parseInt(b.dataset.ch, 10);
+        b.classList.toggle('on', !!_mucBulkChannels[i]);
+      });
+    }
+    function ccToggleChannel(i) {
+      _mucBulkChannels[i] = _mucBulkChannels[i] ? 0 : 1;
+      _renderCcChannelChips();
+      _updateCcPreview();
+    }
+    /* CC delivery mode */
+    function _renderCcModeCards() {
+      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === ccDigestMode));
+    }
+    function ccSetMode(m) { ccDigestMode = m; _renderCcModeCards(); _updateCcPreview(); }
+    /* CC schedule */
+    function _renderCcSchedCards() {
+      document.querySelectorAll('[data-when]').forEach(b => b.classList.toggle('on', b.dataset.when === ccWhen));
+    }
+    function ccSetWhen(w) {
+      ccWhen = w; _renderCcSchedCards();
+      const cd = document.getElementById('ccCustomDisclose');
+      if (cd) cd.removeAttribute('open');
+      _updateCcPreview();
+    }
+    /* When the user expands Custom, switch the cadence to 'custom' so the preview reflects it */
+    document.addEventListener('toggle', (e) => {
+      const t = e.target;
+      if (t && t.id === 'ccCustomDisclose' && t.open) { ccWhen = 'custom'; _renderCcSchedCards(); _updateCcPreview(); }
+    }, true);
+
+    /* Live preview line — Recognition over recall */
+    function _updateCcPreview() {
+      const el = document.getElementById('ccPreviewText');
+      const wrap = document.getElementById('ccPreview');
+      if (!el || !wrap) return;
+      const scope = _mucScope();
+      const plantNames = [..._mucScopePlants].map(id => plants.find(p => p.id === id)?.name).filter(Boolean);
+      const sevs = [..._mucScopeTypes];
+      const recipients = _activeNames();
+      const channels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]);
+
+      const issues = [];
+      if (plantNames.length === 0) issues.push('pick at least one plant');
+      if (recipients.length === 0) issues.push('add at least one recipient');
+      if (channels.length === 0) issues.push('pick at least one channel');
+      if (issues.length > 0) {
+        wrap.classList.add('invalid');
+        el.innerHTML = `<b>Almost there</b> — ${issues.join(', ')} to enable Send.`;
+        document.getElementById('ccSendBtn').disabled = true;
+        return;
+      }
+      wrap.classList.remove('invalid');
+      document.getElementById('ccSendBtn').disabled = false;
+
+      const sevPart = sevs.length === 0 ? 'all matching' : sevs.length === 3 ? 'all severities' : sevs.join(' / ');
+      const insightPart = (() => {
+        if (_mucScopeInsightIds.has('__none__')) return 'no insights selected';
+        if (_mucScopeInsightIds.size === 0) return `<b>${scope.length}</b> matching insight${scope.length===1?'':'s'}`;
+        return `<b>${_mucScopeInsightIds.size}</b> picked insight${_mucScopeInsightIds.size===1?'':'s'}`;
+      })();
+      const plantPart = plantNames.length === 1 ? `<b>${plantNames[0]}</b>` : `<b>${plantNames.length}</b> plants`;
+      const recPart = recipients.length === 1 ? `<b>${recipients[0]}</b>` : `<b>${recipients.length}</b> recipients`;
+      const modePart = ccDigestMode === 'digest' ? 'as a <b>digest</b>' : '<b>one message per insight</b>';
+      const whenPart = _ccWhenText();
+      el.innerHTML = `Send ${insightPart} (${sevPart}) from ${plantPart} to ${recPart} via <b>${channels.join(' / ')}</b>, ${modePart}, ${whenPart}.`;
+      document.getElementById('ccSendLabel').textContent = ccWhen === 'now' ? 'Send escalation' : 'Schedule escalation';
+    }
+    function _ccWhenText() {
+      if (ccWhen === 'now') return 'right <b>now</b>';
+      if (ccWhen === 'hourly') return 'every <b>hour</b>';
+      if (ccWhen === 'daily') return 'every day at <b>9:00 AM</b>';
+      if (ccWhen === 'weekly') return 'every <b>Monday at 9:00 AM</b>';
+      return 'on a <b>custom schedule</b>';
+    }
+
+    /* Send/Schedule handler — emits success summary toast */
+    function ccSendEscalation() {
+      const scope = _mucScope();
+      const recipients = _activeNames();
+      const channels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]);
+      if (scope.length === 0 || recipients.length === 0 || channels.length === 0) return;
+      const items = [];
+      const insightCount = scope.length;
+      const recipientLine = recipients.length === 1 ? `<b>${recipients[0]}</b>` : recipients.map(r => `<b>${r}</b>`).join(', ');
+      items.push({ html: `Recipients: ${recipientLine} via <b>${channels.join(' / ')}</b>.` });
+      items.push({ html: `Insights: <b>${insightCount}</b> ${insightCount===1?'item':'items'} from <b>${[..._mucScopePlants].map(id => plants.find(p => p.id === id)?.name).join(', ')}</b>${_mucScopeTypes.size?' · ' + [..._mucScopeTypes].join(' / '):''}.` });
+      items.push({ html: `Mode: ${ccDigestMode === 'digest' ? '<b>Digest cluster</b> — bundled into a single message' : '<b>One per insight</b> — separate messages'}.` });
+      items.push({ skipped: true, html: `Schedule: ${_ccWhenText().replace(/<\/?b>/g,'')}.` });
+      // Per-recipient line giving an explicit success/failure cue
+      recipients.forEach(nm => {
+        items.push({ html: `<b>${nm}</b> — queued (${insightCount} insight${insightCount===1?'':'s'} via ${channels.join('/')}).` });
+      });
+      const verb = ccWhen === 'now' ? 'Sent' : 'Scheduled';
+      const title = `${verb} ${ccDigestMode === 'digest' ? '1 digest' : insightCount + ' message' + (insightCount===1?'':'s')} to ${recipients.length} recipient${recipients.length===1?'':'s'}`;
+      showSuccessToast({ title, items, duration: 7000 });
+      closeMasterUserModal();
+    }
+
+    /* Advanced sub-modal — surfaces the original Add/Remove/Edit timing/Edit channels actions */
+    function ccOpenAdvanced() {
+      _renderMucActionChips();
+      _renderMucActionFields();
+      renderMasterUserResults();
+      document.getElementById('ccAdvancedModal').classList.add('open');
+    }
+    function ccCloseAdvanced() { document.getElementById('ccAdvancedModal').classList.remove('open'); }
+    document.getElementById('ccAdvancedModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) ccCloseAdvanced(); });
+
     function _renderMucTypeChips() {
-      document.querySelectorAll('#masterUserModal [data-type]').forEach(b => b.classList.toggle('on', _mucScopeTypes.has(b.dataset.type)));
+      document.querySelectorAll('#masterUserModal [data-sev]').forEach(b => b.classList.toggle('on', _mucScopeTypes.has(b.dataset.sev)));
     }
     function toggleMucType(t) {
       if (_mucScopeTypes.has(t)) _mucScopeTypes.delete(t);
@@ -1949,6 +2307,7 @@
       const wrap = document.getElementById('mucChipList');
       if (!wrap) return;
       wrap.innerHTML = _mucNames.map((n, i) => `<span class="muc-name-chip">${n}<span class="muc-name-chip-x" onclick="mucRemoveNameChip(${i})" title="Remove">×</span></span>`).join('');
+      if (typeof _updateCcPreview === 'function') _updateCcPreview();
     }
     function _commitTypedName() {
       const inp = document.getElementById('mucInput');
@@ -1958,7 +2317,6 @@
       inp.value = '';
       _renderMucNameChips();
       document.getElementById('mucSuggest').innerHTML = '';
-      document.getElementById('mucBulkBar').style.display = '';
       renderMasterUserResults();
       return true;
     }
@@ -1971,7 +2329,6 @@
     }
     function mucRemoveNameChip(i) {
       _mucNames.splice(i, 1); _renderMucNameChips();
-      if (_mucNames.length === 0 && !document.getElementById('mucInput').value.trim()) document.getElementById('mucBulkBar').style.display = 'none';
       renderMasterUserResults();
     }
     function closeMasterUserModal() { document.getElementById('masterUserModal').classList.remove('open'); }
@@ -2056,9 +2413,9 @@
     function renderMasterUserSuggestions() {
       const q = document.getElementById('mucInput').value.trim();
       const sug = document.getElementById('mucSuggest');
+      if (typeof _updateCcPreview === 'function') _updateCcPreview();
       if (q.length === 0) {
         sug.innerHTML = '';
-        if (_mucNames.length === 0) document.getElementById('mucBulkBar').style.display = 'none';
         renderMasterUserResults();
         return;
       }
@@ -2070,7 +2427,6 @@
           <span>${u.name}</span>
           <span class="muc-suggest-meta">on ${u.count} level${u.count>1?'s':''}</span>
         </div>`).join('')}</div>`;
-      document.getElementById('mucBulkBar').style.display = '';
       renderMasterUserResults();
     }
     function mucPickUser(name) {
