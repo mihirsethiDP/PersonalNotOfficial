@@ -944,6 +944,26 @@
           <div id="mucPlantChips" style="display:flex;flex-wrap:wrap;gap:4px"></div>
         </div>
 
+        <!-- Severity-type filter (Issue / Warning / Incident only — escalations don't apply to Achievement/Improvement) -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Insight type</span>
+          <button class="channel-chip" data-type="issue"    onclick="toggleMucType('issue')">Issue</button>
+          <button class="channel-chip" data-type="warning"  onclick="toggleMucType('warning')">Warning</button>
+          <button class="channel-chip" data-type="incident" onclick="toggleMucType('incident')">Incident</button>
+          <span style="font-size:10.5px;color:var(--color-text-tertiary);margin-left:6px">leave empty to include all 3</span>
+        </div>
+
+        <!-- Insight picker (visible when more than one insight in scope) -->
+        <div id="mucInsightPicker" style="display:none;margin-bottom:10px;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--brand-25)">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <span style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em">Insights</span>
+            <button class="muc-add-btn" onclick="mucPickAllInsights(true)" style="padding:2px 8px;font-size:10.5px">Select all</button>
+            <button class="muc-add-btn" onclick="mucPickAllInsights(false)" style="padding:2px 8px;font-size:10.5px;background:#fff;border-color:var(--color-border-secondary);color:var(--color-text-secondary)">Clear</button>
+            <span id="mucInsightCount" style="margin-left:auto;font-size:10.5px;color:var(--color-text-tertiary)"></span>
+          </div>
+          <div id="mucInsightChips" style="display:flex;flex-wrap:wrap;gap:4px;max-height:120px;overflow-y:auto"></div>
+        </div>
+
         <!-- Multi-name chip input -->
         <div class="muc-chip-input" id="mucChipInput" onclick="document.getElementById('mucInput').focus()">
           <div class="muc-chip-list" id="mucChipList"></div>
@@ -951,24 +971,18 @@
         </div>
         <div id="mucSuggest"></div>
 
-        <!-- Bulk action bar (visible when name is typed) -->
+        <!-- Bulk action bar -->
         <div id="mucBulkBar" style="display:none;padding:10px 12px;border:0.5px solid var(--brand-200);border-radius:6px;background:var(--brand-25);margin-bottom:10px">
-          <div style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">One-click action</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span style="font-size:11.5px;color:var(--color-text-secondary)">Apply to level:</span>
-            <select class="muc-add-select" id="mucBulkLevel">
-              <option value="notify">Notify (immediate)</option>
-              <option value="0">Level 1</option>
-              <option value="1">Level 2</option>
-              <option value="2">Level 3</option>
-              <option value="all">All existing levels</option>
-            </select>
-            <span style="font-size:11.5px;color:var(--color-text-secondary)">via</span>
-            <div class="channel-chips" id="mucBulkChannels"></div>
-            <div style="flex:1"></div>
-            <button class="btn-ghost" onclick="masterBulkRemove()" style="border-color:var(--sev-alert-line);color:var(--sev-alert-accent)">Remove from scope</button>
-            <button class="btn-primary" onclick="masterBulkAdd()">Add to scope</button>
+          <!-- Action selector -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Action</span>
+            <button class="channel-chip on" data-action="add"     onclick="setMucAction('add')">Add user</button>
+            <button class="channel-chip"    data-action="remove"  onclick="setMucAction('remove')">Remove user</button>
+            <button class="channel-chip"    data-action="timing"  onclick="setMucAction('timing')">Edit timing</button>
+            <button class="channel-chip"    data-action="channel" onclick="setMucAction('channel')">Edit channels</button>
           </div>
+          <!-- Action-specific fields -->
+          <div id="mucActionFields" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
         </div>
 
         <div class="channel-legend" style="margin-bottom:10px">
@@ -980,7 +994,7 @@
         </div>
 
         <div id="mucResults" class="muc-results">
-          <div class="muc-empty">Pick a scope, type a name and we'll show every insight & level the user is on. The action bar above lets you add or remove in one click.</div>
+          <div class="muc-empty">Pick a scope, optionally narrow by Issue/Warning/Incident and by specific insights, type one or more names, then choose an action.</div>
         </div>
       </div>
     </div>
@@ -1714,26 +1728,154 @@
     function randBg() { const opts = [['#EBF0F7','#193458'],['#DCE3EE','#193458'],['#B5C2D6','#0E1F36'],['#7B92B3','#FFFFFF'],['#4A6890','#FFFFFF']]; return opts[Math.floor(Math.random()*opts.length)]; }
 
     /* ──── Control Center · Manage ──── */
-    let _mucNames = [];               // array of names (chip list)
-    let _mucScopeMode = 'all';         // 'all' | 'selected' | 'plant'
+    const ESC_TYPES = ['issue', 'warning', 'incident'];
+    let _mucNames = [];
+    let _mucScopeMode = 'all';                 // 'all' | 'selected' | 'plant'
     const _mucScopePlants = new Set();
+    const _mucScopeTypes = new Set();          // empty == all 3
+    const _mucScopeInsightIds = new Set();     // empty == every insight in current scope
+    let _mucAction = 'add';                    // 'add' | 'remove' | 'timing' | 'channel'
     let _mucBulkChannels = [1, 0, 0, 0];
+    let _mucBulkLevel = 'notify';
+    let _mucBulkDelay = 15;
     function openMasterUserModal() {
       _mucNames = [];
       _mucScopeMode = selected.size > 0 ? 'selected' : 'all';
       _mucScopePlants.clear();
+      _mucScopeTypes.clear();
+      _mucScopeInsightIds.clear();
+      _mucAction = 'add';
       _mucBulkChannels = [1, 0, 0, 0];
+      _mucBulkLevel = 'notify';
+      _mucBulkDelay = 15;
       document.getElementById('mucInput').value = '';
       document.getElementById('mucSuggest').innerHTML = '';
       document.getElementById('mucBulkBar').style.display = 'none';
       _renderMucScopeChips();
-      _renderMucChannelChips();
+      _renderMucTypeChips();
+      _renderMucActionChips();
       _renderMucPlantPicker();
+      _renderMucInsightPicker();
       _renderMucNameChips();
+      _renderMucActionFields();
       _updateMucScopeNote();
-      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Pick a scope, type one or more names (press <b>Enter</b> after each), then add or remove in one click.</div>';
+      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Pick a scope, optionally narrow by Issue/Warning/Incident and by specific insights, type one or more names, then choose an action.</div>';
       document.getElementById('masterUserModal').classList.add('open');
       setTimeout(() => document.getElementById('mucInput').focus(), 50);
+    }
+    function _renderMucTypeChips() {
+      document.querySelectorAll('#masterUserModal [data-type]').forEach(b => b.classList.toggle('on', _mucScopeTypes.has(b.dataset.type)));
+    }
+    function toggleMucType(t) {
+      if (_mucScopeTypes.has(t)) _mucScopeTypes.delete(t);
+      else _mucScopeTypes.add(t);
+      _renderMucTypeChips();
+      _renderMucInsightPicker();
+      _updateMucScopeNote();
+      if (_activeNames().length) renderMasterUserResults();
+    }
+    function _renderMucActionChips() {
+      document.querySelectorAll('#masterUserModal [data-action]').forEach(b => b.classList.toggle('on', b.dataset.action === _mucAction));
+    }
+    function setMucAction(a) {
+      _mucAction = a;
+      _renderMucActionChips();
+      _renderMucActionFields();
+    }
+    function _renderMucActionFields() {
+      const wrap = document.getElementById('mucActionFields');
+      const levelOpts = `<option value="notify">Notify (immediate)</option><option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option><option value="all">All existing levels</option>`;
+      const lvlSel = `<select class="muc-add-select" id="mucBulkLevel" onchange="_mucBulkLevel=this.value">${levelOpts}</select>`;
+      let html = '';
+      if (_mucAction === 'add') {
+        html = `<span style="font-size:11.5px;color:var(--color-text-secondary)">Add to:</span>${lvlSel}
+          <span style="font-size:11.5px;color:var(--color-text-secondary)">via</span>
+          <div class="channel-chips" id="mucBulkChannels"></div>
+          <div style="flex:1"></div>
+          <button class="btn-primary" onclick="masterApply()">Add to scope</button>`;
+      } else if (_mucAction === 'remove') {
+        html = `<span style="font-size:11.5px;color:var(--color-text-secondary)">Remove from:</span>${lvlSel}
+          <div style="flex:1"></div>
+          <button class="btn-ghost" onclick="masterApply()" style="border-color:var(--sev-alert-line);color:var(--sev-alert-accent)">Remove from scope</button>`;
+      } else if (_mucAction === 'timing') {
+        html = `<span style="font-size:11.5px;color:var(--color-text-secondary)">Set delay on:</span>
+          <select class="muc-add-select" id="mucBulkLevel" onchange="_mucBulkLevel=this.value">
+            <option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option>
+          </select>
+          <span style="font-size:11.5px;color:var(--color-text-secondary)">to</span>
+          <input class="muc-add-select" id="mucBulkDelay" type="number" min="0" value="${_mucBulkDelay}" oninput="_mucBulkDelay=parseInt(this.value,10)||0" style="width:80px"/>
+          <span style="font-size:11.5px;color:var(--color-text-secondary)">min after trigger</span>
+          <span style="font-size:10.5px;color:var(--color-text-tertiary);margin-left:6px">applies to all matching insights — names ignored</span>
+          <div style="flex:1"></div>
+          <button class="btn-primary" onclick="masterApply()">Update timing</button>`;
+      } else if (_mucAction === 'channel') {
+        html = `<span style="font-size:11.5px;color:var(--color-text-secondary)">For users on:</span>${lvlSel}
+          <span style="font-size:11.5px;color:var(--color-text-secondary)">set channels to</span>
+          <div class="channel-chips" id="mucBulkChannels"></div>
+          <div style="flex:1"></div>
+          <button class="btn-primary" onclick="masterApply()">Update channels</button>`;
+      }
+      wrap.innerHTML = html;
+      // Restore controls
+      const lvlEl = document.getElementById('mucBulkLevel');
+      if (lvlEl) {
+        // For timing action, valid values are 0..2; coerce
+        if (_mucAction === 'timing' && (_mucBulkLevel === 'notify' || _mucBulkLevel === 'all')) _mucBulkLevel = '0';
+        lvlEl.value = _mucBulkLevel;
+      }
+      if (document.getElementById('mucBulkChannels')) _renderMucChannelChips();
+    }
+    function _renderMucInsightPicker() {
+      const wrap = document.getElementById('mucInsightPicker');
+      const list = _scopeBeforeInsightFilter();
+      // Hide picker if scope is "selected" (rows already chosen) or empty
+      if (_mucScopeMode === 'selected' || list.length <= 1) {
+        wrap.style.display = 'none';
+        _mucScopeInsightIds.clear();
+        return;
+      }
+      wrap.style.display = '';
+      const chips = document.getElementById('mucInsightChips');
+      chips.innerHTML = list.map(r => {
+        const noneSel = _mucScopeInsightIds.has('__none__');
+        const on = !noneSel && (_mucScopeInsightIds.size === 0 || _mucScopeInsightIds.has(r.id));
+        const plant = plants.find(p => p.id === r.plant);
+        return `<button class="channel-chip${on?' on':''}" onclick="toggleMucInsight(${r.id})" title="${(plant?.name||'') + ' · ' + r.equipment}">${r.name}</button>`;
+      }).join('');
+      const total = list.length;
+      let picked;
+      if (_mucScopeInsightIds.has('__none__')) picked = 0;
+      else if (_mucScopeInsightIds.size === 0) picked = total;
+      else picked = _mucScopeInsightIds.size;
+      document.getElementById('mucInsightCount').textContent = `${picked} of ${total} included`;
+    }
+    function toggleMucInsight(id) {
+      if (_mucScopeInsightIds.has('__none__')) { _mucScopeInsightIds.clear(); _mucScopeInsightIds.add(id); }
+      else if (_mucScopeInsightIds.size === 0) {
+        // currently implicit "all" — switching to explicit set excluding clicked
+        const list = _scopeBeforeInsightFilter();
+        list.forEach(r => _mucScopeInsightIds.add(r.id));
+        _mucScopeInsightIds.delete(id);
+      } else {
+        if (_mucScopeInsightIds.has(id)) _mucScopeInsightIds.delete(id);
+        else _mucScopeInsightIds.add(id);
+        const list = _scopeBeforeInsightFilter();
+        if (_mucScopeInsightIds.size === list.length) _mucScopeInsightIds.clear();
+        if (_mucScopeInsightIds.size === 0) _mucScopeInsightIds.add('__none__');
+      }
+      _renderMucInsightPicker();
+      _updateMucScopeNote();
+      if (_activeNames().length) renderMasterUserResults();
+    }
+    function mucPickAllInsights(all) {
+      // "Select all" → empty set means "include all" (cleaner default state)
+      // "Clear" → keep an explicit empty list while marking that we want NOTHING.
+      // We model "nothing picked" with a sentinel: use the special value '__none__'
+      _mucScopeInsightIds.clear();
+      if (!all) _mucScopeInsightIds.add('__none__');
+      _renderMucInsightPicker();
+      _updateMucScopeNote();
+      if (_activeNames().length) renderMasterUserResults();
     }
     function _renderMucNameChips() {
       const wrap = document.getElementById('mucChipList');
@@ -1772,6 +1914,8 @@
       _renderMucScopeChips();
       document.getElementById('mucPlantPicker').style.display = mode === 'plant' ? '' : 'none';
       if (mode === 'plant') _renderMucPlantPicker();
+      _mucScopeInsightIds.clear();
+      _renderMucInsightPicker();
       _updateMucScopeNote();
       if (_activeNames().length) renderMasterUserResults();
     }
@@ -1804,18 +1948,30 @@
       _renderMucChannelChips();
     }
 
+    function _scopeBeforeInsightFilter() {
+      let base;
+      if (_mucScopeMode === 'selected') base = insights.filter(r => selected.has(r.id));
+      else if (_mucScopeMode === 'plant') base = _mucScopePlants.size === 0 ? [] : insights.filter(r => _mucScopePlants.has(r.plant));
+      else base = insights.slice();
+      // Type filter (only Issue/Warning/Incident eligible for escalations)
+      const allowedTypes = _mucScopeTypes.size === 0 ? new Set(ESC_TYPES) : _mucScopeTypes;
+      return base.filter(r => allowedTypes.has(r.type));
+    }
     function _mucScope() {
-      if (_mucScopeMode === 'selected') return insights.filter(r => selected.has(r.id));
-      if (_mucScopeMode === 'plant') return _mucScopePlants.size === 0 ? [] : insights.filter(r => _mucScopePlants.has(r.plant));
-      return insights.slice();
+      const base = _scopeBeforeInsightFilter();
+      if (_mucScopeInsightIds.has('__none__')) return [];
+      if (_mucScopeInsightIds.size === 0) return base;
+      return base.filter(r => _mucScopeInsightIds.has(r.id));
     }
     function _updateMucScopeNote() {
       const scope = _mucScope();
-      let lbl;
-      if (_mucScopeMode === 'all') lbl = `${scope.length} insight${scope.length===1?'':'s'} (all)`;
-      else if (_mucScopeMode === 'selected') lbl = selected.size === 0 ? 'no rows selected — pick rows on the list first' : `${selected.size} selected row${selected.size===1?'':'s'}`;
-      else lbl = _mucScopePlants.size === 0 ? 'no plants picked yet' : `${scope.length} insight${scope.length===1?'':'s'} in ${_mucScopePlants.size} plant${_mucScopePlants.size===1?'':'s'}`;
-      document.getElementById('mucScopeNote').textContent = lbl;
+      const parts = [];
+      if (_mucScopeMode === 'all') parts.push(`all plants`);
+      else if (_mucScopeMode === 'selected') parts.push(selected.size === 0 ? 'no rows selected — pick rows first' : `${selected.size} selected row${selected.size===1?'':'s'}`);
+      else parts.push(_mucScopePlants.size === 0 ? 'no plants picked' : `${_mucScopePlants.size} plant${_mucScopePlants.size===1?'':'s'}`);
+      if (_mucScopeTypes.size > 0 && _mucScopeTypes.size < 3) parts.push([..._mucScopeTypes].join('/'));
+      parts.push(`${scope.length} insight${scope.length===1?'':'s'} in scope`);
+      document.getElementById('mucScopeNote').textContent = parts.join(' · ');
     }
 
     function _allKnownUsers() {
@@ -1920,19 +2076,44 @@
       return 'Level ' + (parseInt(lvl,10) + 1);
     }
 
-    function masterBulkAdd() {
-      _commitTypedName();
-      const names = _activeNames();
-      if (names.length === 0) { alert('Add at least one name.'); return; }
-      const lvl = document.getElementById('mucBulkLevel').value;
-      if (_mucBulkChannels.every(c => !c)) { alert('Pick at least one channel.'); return; }
-      const scope = _mucScope();
-      if (scope.length === 0) { alert('Scope is empty — pick rows or plants first.'); return; }
+    function _scopeText() {
+      const parts = [];
+      if (_mucScopeMode === 'selected') parts.push(`${selected.size} selected row${selected.size===1?'':'s'}`);
+      else if (_mucScopeMode === 'plant') {
+        const names = [..._mucScopePlants].map(id => plants.find(p => p.id === id)?.name).filter(Boolean);
+        parts.push(names.length === 0 ? 'no plants' : names.join(', '));
+      } else parts.push('all plants');
+      if (_mucScopeTypes.size > 0 && _mucScopeTypes.size < 3) parts.push(`types: ${[..._mucScopeTypes].join('/')}`);
+      if (_mucScopeInsightIds.size > 0) parts.push(`${_mucScopeInsightIds.size} insight${_mucScopeInsightIds.size===1?'':'s'}`);
+      return parts.join(' · ');
+    }
 
-      const summary = []; // {name, added, updated}
+    /* Unified action dispatcher — handles Add / Remove / Timing / Channels */
+    function masterApply() {
+      _commitTypedName();
+      const scope = _mucScope();
+      if (scope.length === 0) {
+        showSuccessToast({ title: 'Nothing to apply', items: [{ skipped: true, html: 'Scope is empty — pick rows, plants or types so at least one insight is included.' }] });
+        return;
+      }
+      if (_mucAction === 'timing') return _masterApplyTiming(scope);
+      const names = _activeNames();
+      if (names.length === 0) {
+        showSuccessToast({ title: 'No users specified', items: [{ skipped: true, html: 'Type at least one name (press <b>Enter</b> after each) before running this action.' }] });
+        return;
+      }
+      if (_mucAction === 'add')     return _masterApplyAdd(scope, names);
+      if (_mucAction === 'remove')  return _masterApplyRemove(scope, names);
+      if (_mucAction === 'channel') return _masterApplyChannel(scope, names);
+    }
+
+    function _masterApplyAdd(scope, names) {
+      const lvl = document.getElementById('mucBulkLevel').value;
+      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel (Email / SMS / WhatsApp / Call) before adding.' }] }); return; }
+      const summary = [];
       names.forEach(nm => {
         const [bg, tc] = randBg();
-        let added = 0, updated = 0;
+        let added = 0, updated = 0, levelsTouched = new Set();
         scope.forEach(r => {
           const targetLevels = lvl === 'all'
             ? [{ kind: 'notify' }, ...r.escLevels.map((lv, i) => ({ kind: 'level', idx: i }))]
@@ -1940,6 +2121,7 @@
           targetLevels.forEach(tl => {
             const list = tl.kind === 'notify' ? r.notify.users : r.escLevels[tl.idx]?.users;
             if (!list) return;
+            levelsTouched.add(tl.kind === 'notify' ? 'Notify' : 'Level ' + (tl.idx+1));
             const existing = list.find(u => u.name.toLowerCase() === nm.toLowerCase());
             if (existing) {
               const before = existing.comm.join('');
@@ -1953,31 +2135,26 @@
         });
         summary.push({ name: nm, added, updated });
       });
-      renderRows();
-      renderMasterUserResults();
+      renderRows(); renderMasterUserResults();
       const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]).join(' / ');
       const items = summary.map(s => {
-        if (s.added === 0 && s.updated === 0) return { skipped: true, html: `<b>${s.name}</b> — no change (already configured with these channels).` };
+        if (s.added === 0 && s.updated === 0) return { skipped: true, html: `<b>${s.name}</b> — no change (already configured with the same channels).` };
         const parts = [];
-        if (s.added) parts.push(`added to ${s.added} level${s.added===1?'':'s'}`);
-        if (s.updated) parts.push(`channels updated on ${s.updated} level${s.updated===1?'':'s'}`);
+        if (s.added) parts.push(`added to <b>${s.added}</b> level${s.added===1?'':'s'}`);
+        if (s.updated) parts.push(`channels updated on <b>${s.updated}</b> level${s.updated===1?'':'s'}`);
         return { html: `<b>${s.name}</b> — ${parts.join(', ')}.` };
       });
       const totalAdded = summary.reduce((a, s) => a + s.added, 0);
       const totalUpdated = summary.reduce((a, s) => a + s.updated, 0);
-      const title = totalAdded + totalUpdated === 0
-        ? `No new placements needed`
-        : `${totalAdded ? totalAdded + ' new placement' + (totalAdded===1?'':'s') : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' channel update' + (totalUpdated===1?'':'s') : ''} to ${_bulkLvlLabel(lvl)}`;
-      const scopeLine = `Scope: ${_scopeText()} · Channels: ${channelLabels}`;
-      showSuccessToast({ title, items: [...items, { skipped: true, html: scopeLine }] });
+      const ok = totalAdded + totalUpdated > 0;
+      const title = ok
+        ? `${totalAdded ? totalAdded + ' added' : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' updated' : ''} on ${_bulkLvlLabel(lvl)}`
+        : `No changes were necessary`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()} · Channels: ${channelLabels}` }] });
     }
-    function masterBulkRemove() {
-      _commitTypedName();
-      const names = _activeNames();
-      if (names.length === 0) { alert('Add at least one name.'); return; }
+
+    function _masterApplyRemove(scope, names) {
       const lvl = document.getElementById('mucBulkLevel').value;
-      const scope = _mucScope();
-      if (scope.length === 0) { alert('Scope is empty — pick rows or plants first.'); return; }
       const summary = [];
       names.forEach(nm => {
         const q = nm.toLowerCase();
@@ -1993,22 +2170,74 @@
         });
         summary.push({ name: nm, removed });
       });
-      renderRows();
-      renderMasterUserResults();
+      renderRows(); renderMasterUserResults();
       const items = summary.map(s => s.removed === 0
-        ? { skipped: true, html: `<b>${s.name}</b> — wasn't on this scope, nothing removed.` }
-        : { html: `<b>${s.name}</b> — removed from ${s.removed} placement${s.removed===1?'':'s'}.` });
+        ? { skipped: true, html: `<b>${s.name}</b> — wasn't on ${_bulkLvlLabel(lvl)} in scope, nothing to remove.` }
+        : { html: `<b>${s.name}</b> — removed from <b>${s.removed}</b> placement${s.removed===1?'':'s'}.` });
       const total = summary.reduce((a, s) => a + s.removed, 0);
       const title = total === 0 ? `Nothing to remove` : `Removed ${total} placement${total===1?'':'s'} from ${_bulkLvlLabel(lvl)}`;
       showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()}` }] });
     }
-    function _scopeText() {
-      if (_mucScopeMode === 'selected') return `${selected.size} selected row${selected.size===1?'':'s'}`;
-      if (_mucScopeMode === 'plant') {
-        const names = [..._mucScopePlants].map(id => plants.find(p => p.id === id)?.name).filter(Boolean);
-        return names.length === 0 ? 'no plants' : names.join(', ');
-      }
-      return 'all insights';
+
+    function _masterApplyTiming(scope) {
+      const lvlIdx = parseInt(document.getElementById('mucBulkLevel').value, 10);
+      const newDelay = parseInt(_mucBulkDelay, 10);
+      if (isNaN(newDelay) || newDelay < 0) { showSuccessToast({ title: 'Invalid delay', items: [{ skipped: true, html: 'Enter a non-negative number of minutes.' }] }); return; }
+      const items = []; let updated = 0, missing = 0, sameValue = 0;
+      const lvlLabel = 'Level ' + (lvlIdx + 1);
+      scope.forEach(r => {
+        const lv = r.escLevels[lvlIdx];
+        if (!lv) { missing++; items.push({ skipped: true, html: `<b>${r.name}</b> — has no ${lvlLabel} configured.` }); return; }
+        if (lv.delay === newDelay) { sameValue++; items.push({ skipped: true, html: `<b>${r.name}</b> — ${lvlLabel} delay was already ${newDelay}m.` }); return; }
+        const old = lv.delay; lv.delay = newDelay; updated++;
+        items.push({ html: `<b>${r.name}</b> — ${lvlLabel} delay <b>${old}m → ${newDelay}m</b>.` });
+      });
+      renderRows(); renderMasterUserResults();
+      const titleParts = [];
+      if (updated) titleParts.push(`${updated} updated`);
+      if (sameValue) titleParts.push(`${sameValue} unchanged`);
+      if (missing) titleParts.push(`${missing} missing`);
+      const title = titleParts.length === 0 ? 'No changes' : `Timing on ${lvlLabel}: ${titleParts.join(' · ')}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()}` }] });
+    }
+
+    function _masterApplyChannel(scope, names) {
+      const lvl = document.getElementById('mucBulkLevel').value;
+      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before applying.' }] }); return; }
+      const summary = [];
+      names.forEach(nm => {
+        const q = nm.toLowerCase();
+        let updated = 0, notFound = 0, sameValue = 0;
+        scope.forEach(r => {
+          const targets = lvl === 'all'
+            ? [r.notify.users, ...r.escLevels.map(lv => lv.users)]
+            : lvl === 'notify' ? [r.notify.users] : [r.escLevels[parseInt(lvl,10)]?.users].filter(Boolean);
+          let touched = false;
+          targets.forEach(list => {
+            const u = list.find(x => x.name.toLowerCase() === q);
+            if (u) {
+              touched = true;
+              if (u.comm.join('') === _mucBulkChannels.join('')) sameValue++;
+              else { u.comm = [..._mucBulkChannels]; updated++; }
+            }
+          });
+          if (!touched) notFound++;
+        });
+        summary.push({ name: nm, updated, notFound, sameValue });
+      });
+      renderRows(); renderMasterUserResults();
+      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]).join(' / ');
+      const items = summary.flatMap(s => {
+        const lines = [];
+        if (s.updated)   lines.push({ html: `<b>${s.name}</b> — channels updated on <b>${s.updated}</b> placement${s.updated===1?'':'s'}.` });
+        if (s.sameValue) lines.push({ skipped: true, html: `<b>${s.name}</b> — already had these exact channels on <b>${s.sameValue}</b> placement${s.sameValue===1?'':'s'}.` });
+        if (s.notFound)  lines.push({ skipped: true, html: `<b>${s.name}</b> — not present on ${s.notFound} insight${s.notFound===1?'':'s'} in scope (no channels to update).` });
+        if (lines.length === 0) lines.push({ skipped: true, html: `<b>${s.name}</b> — not present anywhere in scope.` });
+        return lines;
+      });
+      const total = summary.reduce((a, s) => a + s.updated, 0);
+      const title = total === 0 ? `No channel updates` : `Updated channels on ${total} placement${total===1?'':'s'}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()} · Set to: ${channelLabels}` }] });
     }
 
     function mucRemoveOne(insightId, levelIdx, userIdx, name) {
