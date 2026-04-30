@@ -150,7 +150,9 @@
     /* Control Center · Escalate — modern card layout */
     .cc-modal { padding: 0; }
     .cc-head { padding: 18px 22px 14px; background: linear-gradient(180deg, #fff, var(--brand-25)); border-bottom: 0.5px solid var(--color-border-tertiary); border-top-left-radius: var(--border-radius-lg); border-top-right-radius: var(--border-radius-lg); }
-    .cc-body { padding: 16px 22px 14px; max-height: calc(100vh - 240px); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .cc-body { padding: 16px 22px 14px; flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .cc-head { flex: 0 0 auto; }
+    .cc-footer { flex: 0 0 auto; }
     .cc-footer { padding: 12px 22px; background: #fff; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; }
     .cc-card { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; overflow: hidden; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); }
     .cc-card:hover { border-color: var(--brand-200); }
@@ -270,7 +272,9 @@
     /* Add Insight modal — refined layout */
     .ai-modal { padding: 0; }
     .ai-head { padding: 18px 22px 14px; background: linear-gradient(180deg, #fff, var(--brand-25)); border-bottom: 0.5px solid var(--color-border-tertiary); border-top-left-radius: var(--border-radius-lg); border-top-right-radius: var(--border-radius-lg); }
-    .ai-body { padding: 4px 22px 18px; max-height: calc(100vh - 220px); overflow-y: auto; }
+    .ai-body { padding: 4px 22px 18px; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .ai-head { flex: 0 0 auto; }
+    .ai-footer { flex: 0 0 auto; }
     .ai-footer { padding: 12px 22px; background: #fff; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; }
     .ai-section { padding: 16px 0; border-bottom: 0.5px dashed var(--color-border-tertiary); }
     .ai-section:last-child { border-bottom: none; padding-bottom: 4px; }
@@ -391,7 +395,8 @@
     /* Buttons */
     .btn-ghost { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
     .btn-primary { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid #193458; background: #193458; color: #ffffff; cursor: pointer; font-weight: 500; font-family: var(--font-sans); }
-    .btn-primary:hover { background: #2A4A75; border-color: #2A4A75; }
+    .btn-primary:hover:not(:disabled) { background: #2A4A75; border-color: #2A4A75; }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; background: var(--brand-300); border-color: var(--brand-300); }
     .btn-danger { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--sev-alert-line); background: transparent; color: var(--sev-alert-accent); cursor: pointer; font-family: var(--font-sans); }
     .btn-danger:hover { background: var(--sev-alert-bg); }
 
@@ -458,7 +463,7 @@
     .modal-bg { display: none; position: fixed; inset: 0; background: rgba(14,31,54,.42); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 200; align-items: center; justify-content: center; animation: fadeIn .15s var(--ease-out); }
     .modal-bg.open .modal { animation: pop .26s var(--ease-out); }
     .modal-bg.open { display: flex; }
-    .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 540px; max-height: 82vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 540px; max-height: 88vh; overflow: hidden; display: flex; flex-direction: column; }
     .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
     .modal-title { font-size: 15.5px; font-weight: 600; color: var(--color-text-primary); letter-spacing: -.005em; }
     .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; }
@@ -1212,7 +1217,7 @@
                 <div class="cc-custom-grid">
                   <div class="cc-field">
                     <span class="cc-field-label">Repeat</span>
-                    <select class="action-pop-select" id="ccCustomRepeat">
+                    <select class="action-pop-select" id="ccCustomRepeat" onchange="_updateCcPreview()">
                       <option value="once">Once (no repeat)</option>
                       <option value="hourly">Every hour</option>
                       <option value="daily" selected>Every day</option>
@@ -1222,11 +1227,11 @@
                   </div>
                   <div class="cc-field">
                     <span class="cc-field-label">Time</span>
-                    <input class="action-pop-input" type="time" id="ccCustomTime" value="09:00"/>
+                    <input class="action-pop-input" type="time" id="ccCustomTime" value="09:00" oninput="_updateCcPreview()"/>
                   </div>
                   <div class="cc-field" id="ccCustomDayWrap">
                     <span class="cc-field-label">Day of week</span>
-                    <select class="action-pop-select" id="ccCustomDay">
+                    <select class="action-pop-select" id="ccCustomDay" onchange="_updateCcPreview()">
                       <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option>
                       <option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option>
                       <option value="0">Sunday</option>
@@ -2153,7 +2158,28 @@
       if (ccWhen === 'hourly') return 'every <b>hour</b>';
       if (ccWhen === 'daily') return 'every day at <b>9:00 AM</b>';
       if (ccWhen === 'weekly') return 'every <b>Monday at 9:00 AM</b>';
-      return 'on a <b>custom schedule</b>';
+      // Custom — read live inputs and reflect them, plus toggle Day-of-week visibility
+      const repeat = document.getElementById('ccCustomRepeat')?.value || 'daily';
+      const time = document.getElementById('ccCustomTime')?.value || '09:00';
+      const dayEl = document.getElementById('ccCustomDay');
+      const dayLabel = dayEl ? (dayEl.options[dayEl.selectedIndex]?.text || 'Monday') : 'Monday';
+      const dayWrap = document.getElementById('ccCustomDayWrap');
+      if (dayWrap) dayWrap.style.display = repeat === 'weekly' ? '' : 'none';
+      const fmtTime = (() => {
+        const [h, m] = time.split(':').map(n => parseInt(n,10));
+        if (isNaN(h)) return time;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+        return `${h12}:${String(m||0).padStart(2,'0')} ${ampm}`;
+      })();
+      const map = {
+        once:    `once at <b>${fmtTime}</b>`,
+        hourly:  `every <b>hour</b>`,
+        daily:   `every day at <b>${fmtTime}</b>`,
+        weekdays:`every <b>weekday</b> (Mon–Fri) at <b>${fmtTime}</b>`,
+        weekly:  `every <b>${dayLabel}</b> at <b>${fmtTime}</b>`,
+      };
+      return map[repeat] || `on a <b>custom schedule</b>`;
     }
 
     /* Send/Schedule handler — emits success summary toast */
