@@ -83,6 +83,40 @@
     .ux-hint.error .ux-hint-icon { color: var(--sev-alert-accent); }
     .ux-hint.info .ux-hint-icon { color: var(--brand-500); }
 
+    /* Persistent action toolbar (replaces transient bulk-bar) */
+    .action-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px 12px; background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 12px; transition: background .18s var(--ease-out), border-color .18s var(--ease-out); position: relative; }
+    .action-bar[data-empty="true"] { background: var(--color-background-secondary); border-style: dashed; }
+    .action-bar[data-empty="false"] { border-color: var(--brand-200); box-shadow: var(--elev-1); }
+    .action-bar-label { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; padding: 0 4px; }
+    .action-bar-label #actionBarCount { color: var(--color-text-primary); font-weight: 600; }
+    .action-bar[data-empty="true"] #actionBarCount { color: var(--color-text-tertiary); font-weight: 500; }
+    .action-bar-hint { font-weight: 400; color: var(--color-text-tertiary); margin-left: 4px; }
+    .action-bar[data-empty="false"] .action-bar-hint { display: none; }
+    .action-divider { width: 0.5px; height: 20px; background: var(--color-border-secondary); margin: 0 2px; }
+    .action-group { position: relative; }
+    .action-btn { height: 30px; padding: 0 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; background: #fff; color: var(--color-text-secondary); font-size: 12px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-sans); transition: background .14s var(--ease-out), border-color .14s var(--ease-out), color .14s var(--ease-out); }
+    .action-btn:hover:not(:disabled) { background: var(--brand-50); border-color: var(--brand-300); color: var(--brand-800); }
+    .action-btn.primary { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+    .action-btn.primary:hover:not(:disabled) { background: var(--brand-700); border-color: var(--brand-700); color: #fff; }
+    .action-btn.ghost { background: transparent; border-color: transparent; }
+    .action-btn.ghost:hover:not(:disabled) { background: var(--brand-50); }
+    .action-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .action-btn.is-active { background: var(--brand-100); border-color: var(--brand-500); color: var(--brand-800); }
+    .action-pop { position: absolute; top: 38px; left: 0; min-width: 320px; max-width: 380px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); padding: 12px; display: none; z-index: 60; animation: fadeUp .18s var(--ease-out); }
+    .action-pop.open { display: block; }
+    .action-pop-title { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .action-pop-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .action-pop-row:last-of-type { margin-bottom: 12px; }
+    .action-pop-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; }
+    .action-pop-input, .action-pop-select { height: 30px; padding: 0 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-size: 12px; font-family: var(--font-sans); background: #fff; outline: none; transition: border-color .14s var(--ease-out); }
+    .action-pop-input:focus, .action-pop-select:focus { border-color: var(--brand-500); }
+    .action-pop-actions { display: flex; gap: 6px; justify-content: flex-end; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .action-pop-actions button { height: 28px; padding: 0 12px; border-radius: 5px; font-size: 12px; cursor: pointer; font-family: var(--font-sans); }
+    .action-pop-actions .pop-cancel { background: #fff; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); }
+    .action-pop-actions .pop-confirm { background: var(--brand-800); border: 0.5px solid var(--brand-800); color: #fff; font-weight: 500; }
+    .action-pop-actions .pop-confirm.danger { background: var(--sev-alert-accent); border-color: var(--sev-alert-accent); }
+    .action-pop-hint { font-size: 11px; color: var(--color-text-tertiary); line-height: 1.5; padding-bottom: 6px; }
+
     /* Static filter bar with progressive disclosure */
     .filter-static-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .filter-search { flex: 1 1 220px; min-width: 200px; height: 36px; }
@@ -621,10 +655,6 @@
             <span id="l2InsightCount" style="font-size:12.5px;color:var(--color-text-secondary)"></span>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="filter-btn" onclick="openMasterUserModal()" title="Find a user across every insight and add or remove them">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 12c.6-2 2.4-3.2 4.5-3.2s3.9 1.2 4.5 3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Manage
-            </button>
             <button class="btn-primary" onclick="openAddInsightModal()" title="Create a new insight">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:4px;vertical-align:-1px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Add insight
@@ -632,9 +662,14 @@
           </div>
         </div>
 
-        <!-- Static filter bar with progressive disclosure -->
+        <!-- 1. Search bar -->
+        <div style="margin-bottom:10px">
+          <input class="search-input" style="width:100%" placeholder="Search insights by name…" type="text" id="searchInput" oninput="renderRows()"/>
+        </div>
+
+        <!-- 2. Filter bar (below search) — progressive disclosure popovers -->
         <div class="filter-static-bar" id="filterStaticBar">
-          <input class="search-input filter-search" placeholder="Search insights…" type="text" id="searchInput" oninput="renderRows()"/>
+          <span style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:2px">Filter</span>
           <div class="filter-group">
             <button class="filter-pop-btn" data-filter="plant" onclick="toggleFilterPop('plant', this)">
               <span>Plant</span>
@@ -672,15 +707,44 @@
 
         <div class="filter-active-pills" id="filterActivePills"></div>
 
-        <div class="bulk-bar hidden" id="bulkBar">
-          <span class="bulk-bar-count" id="bulkCount">0 selected</span>
+        <!-- 3. Persistent action toolbar — Hick's law: 4 primary actions + More overflow -->
+        <div class="action-bar" id="actionBar" data-empty="true">
+          <span class="action-bar-label">
+            <span id="actionBarCount">0 selected</span>
+            <span class="action-bar-hint" id="actionBarHint">— pick rows to enable bulk actions</span>
+          </span>
           <div style="flex:1"></div>
-          <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable</button>
-          <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable</button>
-          <button class="btn-sm btn-sm-blue" onclick="openMasterUserModal()">Manage users…</button>
-          <button class="btn-sm" onclick="openBulkTimingModal()">Edit timing…</button>
-          <button class="btn-sm" onclick="openBulkAddLevelModal()">Add level…</button>
-          <button class="btn-sm" onclick="clearSelection()">Clear</button>
+          <button class="action-btn" data-needs-selection onclick="bulkEnable()" title="Activate selected insights">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 5.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Enable
+          </button>
+          <button class="action-btn" data-needs-selection onclick="bulkDisable()" title="Deactivate selected insights">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 5.5h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Disable
+          </button>
+          <div class="action-divider"></div>
+          <div class="action-group">
+            <button class="action-btn primary" data-needs-selection onclick="toggleActionPop('add', this)" title="Add a user to selected insights">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="4.5" cy="4" r="1.8" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 9.5c.5-1.6 1.8-2.4 3-2.4s2.5.8 3 2.4M9 4v3M7.5 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Add user
+            </button>
+            <div class="action-pop" id="ap-add"></div>
+          </div>
+          <div class="action-group">
+            <button class="action-btn" data-needs-selection onclick="toggleActionPop('remove', this)" title="Remove a user from selected insights">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="4.5" cy="4" r="1.8" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 9.5c.5-1.6 1.8-2.4 3-2.4s2.5.8 3 2.4M7.5 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Remove user
+            </button>
+            <div class="action-pop" id="ap-remove"></div>
+          </div>
+          <div class="action-group">
+            <button class="action-btn" data-needs-selection onclick="toggleActionPop('more', this)" title="More actions">
+              ⋯
+            </button>
+            <div class="action-pop" id="ap-more"></div>
+          </div>
+          <div class="action-divider"></div>
+          <button class="action-btn ghost" data-needs-selection onclick="clearSelection()">Clear</button>
         </div>
 
         <div class="table-wrap">
@@ -1699,12 +1763,16 @@
       updateBulkBar(); renderRows();
     }
     function updateBulkBar() {
-      const bar = document.getElementById('bulkBar');
-      const cnt = document.getElementById('bulkCount');
-      if (selected.size > 0) { bar.classList.remove('hidden'); cnt.textContent = selected.size + ' selected'; }
-      else bar.classList.add('hidden');
+      const bar = document.getElementById('actionBar');
+      if (!bar) return;
+      const empty = selected.size === 0;
+      bar.dataset.empty = empty ? 'true' : 'false';
+      const cnt = document.getElementById('actionBarCount');
+      cnt.textContent = empty ? '0 selected' : (selected.size + ' selected');
+      bar.querySelectorAll('[data-needs-selection]').forEach(b => { b.disabled = empty; });
+      if (empty) closeAllActionPops();
     }
-    function clearSelection() { selected.clear(); document.getElementById('selectAll').checked = false; updateBulkBar(); renderRows(); }
+    function clearSelection() { selected.clear(); const sa = document.getElementById('selectAll'); if (sa) sa.checked = false; updateBulkBar(); renderRows(); }
     function bulkEnable() {
       let changed = 0; const names = [];
       selected.forEach(id => { const r = insights.find(x => x.id === id); if (r && !r.enabled) { r.enabled = true; changed++; names.push(r.name); } });
@@ -2088,6 +2156,176 @@
       return parts.join(' · ');
     }
 
+    /* ──── Inline action popovers on the main page ──── */
+    let _openActionPop = null;
+    function closeAllActionPops() {
+      document.querySelectorAll('.action-pop.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.action-btn.is-active').forEach(b => b.classList.remove('is-active'));
+      _openActionPop = null;
+    }
+    function toggleActionPop(kind, btn) {
+      if (selected.size === 0) return;
+      const pop = document.getElementById('ap-' + kind);
+      const wasOpen = pop.classList.contains('open');
+      closeAllActionPops();
+      if (!wasOpen) {
+        renderActionPop(kind);
+        pop.classList.add('open');
+        btn.classList.add('is-active');
+        _openActionPop = kind;
+        // Focus first input inside pop for keyboard-driven users
+        setTimeout(() => pop.querySelector('input,select')?.focus(), 30);
+      }
+    }
+    document.addEventListener('click', (e) => {
+      if (!_openActionPop) return;
+      const pop = document.getElementById('ap-' + _openActionPop);
+      if (pop && !pop.contains(e.target) && !e.target.closest(`[onclick*="toggleActionPop('${_openActionPop}'"]`)) {
+        closeAllActionPops();
+      }
+    });
+
+    function _selectedScope() { return insights.filter(r => selected.has(r.id)); }
+
+    function renderActionPop(kind) {
+      const pop = document.getElementById('ap-' + kind);
+      const lvlOpts = `<option value="notify">Notify (immediate)</option><option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option><option value="all">All existing levels</option>`;
+      const channelChips = ['✉ Email', '✆ SMS', 'W WhatsApp', '☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${i===0?' on':''}" data-ch="${i}">${lbl}</button>`).join('');
+      let html = '';
+      if (kind === 'add') {
+        html = `<div class="action-pop-title">Add user to ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-row"><span class="action-pop-label">User name</span>
+            <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Add to level</span>
+            <select class="action-pop-select" id="ap-add-lvl">${lvlOpts}</select>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Channels</span>
+            <div class="channel-chips" id="ap-add-channels">${channelChips}</div>
+          </div>
+          <div class="action-pop-actions">
+            <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
+            <button class="pop-confirm" onclick="apActionAdd()">Add user</button>
+          </div>`;
+      } else if (kind === 'remove') {
+        html = `<div class="action-pop-title">Remove user from ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-row"><span class="action-pop-label">User name (exact match)</span>
+            <input class="action-pop-input" id="ap-rm-name" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Remove from level</span>
+            <select class="action-pop-select" id="ap-rm-lvl">${lvlOpts}</select>
+          </div>
+          <div class="action-pop-actions">
+            <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
+            <button class="pop-confirm danger" onclick="apActionRemove()">Remove user</button>
+          </div>`;
+      } else if (kind === 'more') {
+        // Hick's law — secondary actions tucked here
+        html = `<div class="action-pop-title">More actions</div>
+          <div class="action-pop-row">
+            <button class="action-btn" style="justify-content:flex-start" onclick="closeAllActionPops();_showSubAction('timing')">
+              <span style="font-size:14px">⏱</span> Edit timing on a level
+            </button>
+          </div>
+          <div class="action-pop-row" style="margin-bottom:0">
+            <button class="action-btn" style="justify-content:flex-start" onclick="closeAllActionPops();_showSubAction('channel')">
+              <span style="font-size:14px">✉</span> Edit channels of a user
+            </button>
+          </div>`;
+      } else if (kind === 'timing') {
+        html = `<div class="action-pop-title">Edit timing on ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-hint">Sets the delay (minutes after trigger) for the chosen level on every selected insight that has it.</div>
+          <div class="action-pop-row"><span class="action-pop-label">Level</span>
+            <select class="action-pop-select" id="ap-tm-lvl"><option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option></select>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">New delay (minutes)</span>
+            <input class="action-pop-input" id="ap-tm-delay" type="number" min="0" value="15"/>
+          </div>
+          <div class="action-pop-actions">
+            <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
+            <button class="pop-confirm" onclick="apActionTiming()">Update timing</button>
+          </div>`;
+      } else if (kind === 'channel') {
+        html = `<div class="action-pop-title">Edit channels for a user</div>
+          <div class="action-pop-hint">Sets the channels for a named user wherever they appear on the chosen level across selected insights.</div>
+          <div class="action-pop-row"><span class="action-pop-label">User name</span>
+            <input class="action-pop-input" id="ap-ch-name" placeholder="e.g. Rahul Sharma"/>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Level</span>
+            <select class="action-pop-select" id="ap-ch-lvl">${lvlOpts}</select>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Set channels to</span>
+            <div class="channel-chips" id="ap-ch-channels">${channelChips}</div>
+          </div>
+          <div class="action-pop-actions">
+            <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
+            <button class="pop-confirm" onclick="apActionChannel()">Update channels</button>
+          </div>`;
+      }
+      pop.innerHTML = html;
+      // Wire channel-chip toggles
+      pop.querySelectorAll('.channel-chip[data-ch]').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+    }
+
+    /* Sub-actions opened from the More menu — render into a dedicated host pop */
+    function _showSubAction(kind) {
+      // Reuse the More button as host so positioning is consistent
+      const hostBtn = document.querySelector(`[onclick*="toggleActionPop('more'"]`);
+      const popId = 'ap-' + kind;
+      // Ensure a pop element exists for this kind; create if missing
+      let pop = document.getElementById(popId);
+      if (!pop) {
+        pop = document.createElement('div');
+        pop.id = popId;
+        pop.className = 'action-pop';
+        hostBtn.parentNode.appendChild(pop);
+      }
+      renderActionPop(kind);
+      pop.classList.add('open');
+      hostBtn.classList.add('is-active');
+      _openActionPop = kind;
+      setTimeout(() => pop.querySelector('input,select')?.focus(), 30);
+    }
+
+    function _readChannels(rootId) {
+      const out = [0,0,0,0];
+      document.querySelectorAll(`#${rootId} .channel-chip.on`).forEach(c => out[parseInt(c.dataset.ch,10)] = 1);
+      return out;
+    }
+
+    function apActionAdd() {
+      const name = document.getElementById('ap-add-name').value.trim();
+      if (!name) { document.getElementById('ap-add-name').focus(); return; }
+      const lvl = document.getElementById('ap-add-lvl').value;
+      const channels = _readChannels('ap-add-channels');
+      if (channels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before adding.' }] }); return; }
+      _runAdd(_selectedScope(), [name], lvl, channels);
+      closeAllActionPops();
+    }
+    function apActionRemove() {
+      const name = document.getElementById('ap-rm-name').value.trim();
+      if (!name) { document.getElementById('ap-rm-name').focus(); return; }
+      const lvl = document.getElementById('ap-rm-lvl').value;
+      _runRemove(_selectedScope(), [name], lvl);
+      closeAllActionPops();
+    }
+    function apActionTiming() {
+      const lvlIdx = parseInt(document.getElementById('ap-tm-lvl').value, 10);
+      const delay = parseInt(document.getElementById('ap-tm-delay').value, 10);
+      if (isNaN(delay) || delay < 0) { showSuccessToast({ title: 'Invalid delay', items: [{ skipped: true, html: 'Enter a non-negative number of minutes.' }] }); return; }
+      _runTiming(_selectedScope(), lvlIdx, delay);
+      closeAllActionPops();
+    }
+    function apActionChannel() {
+      const name = document.getElementById('ap-ch-name').value.trim();
+      if (!name) { document.getElementById('ap-ch-name').focus(); return; }
+      const lvl = document.getElementById('ap-ch-lvl').value;
+      const channels = _readChannels('ap-ch-channels');
+      if (channels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel.' }] }); return; }
+      _runChannel(_selectedScope(), [name], lvl, channels);
+      closeAllActionPops();
+    }
+
     /* Unified action dispatcher — handles Add / Remove / Timing / Channels */
     function masterApply() {
       _commitTypedName();
@@ -2107,13 +2345,14 @@
       if (_mucAction === 'channel') return _masterApplyChannel(scope, names);
     }
 
-    function _masterApplyAdd(scope, names) {
-      const lvl = document.getElementById('mucBulkLevel').value;
-      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel (Email / SMS / WhatsApp / Call) before adding.' }] }); return; }
+    /* Shared runners — used by both the Manage modal and the inline action popovers */
+    function _scopeLineFor(scope) { return scope === _mucScope() ? _scopeText() : `${scope.length} selected row${scope.length===1?'':'s'}`; }
+
+    function _runAdd(scope, names, lvl, channels) {
       const summary = [];
       names.forEach(nm => {
         const [bg, tc] = randBg();
-        let added = 0, updated = 0, levelsTouched = new Set();
+        let added = 0, updated = 0;
         scope.forEach(r => {
           const targetLevels = lvl === 'all'
             ? [{ kind: 'notify' }, ...r.escLevels.map((lv, i) => ({ kind: 'level', idx: i }))]
@@ -2121,22 +2360,22 @@
           targetLevels.forEach(tl => {
             const list = tl.kind === 'notify' ? r.notify.users : r.escLevels[tl.idx]?.users;
             if (!list) return;
-            levelsTouched.add(tl.kind === 'notify' ? 'Notify' : 'Level ' + (tl.idx+1));
             const existing = list.find(u => u.name.toLowerCase() === nm.toLowerCase());
             if (existing) {
               const before = existing.comm.join('');
-              existing.comm = [..._mucBulkChannels];
+              existing.comm = [...channels];
               if (existing.comm.join('') !== before) updated++;
             } else {
-              list.push({ init: initialsOf(nm), bg, tc, name: nm, comm: [..._mucBulkChannels] });
+              list.push({ init: initialsOf(nm), bg, tc, name: nm, comm: [...channels] });
               added++;
             }
           });
         });
         summary.push({ name: nm, added, updated });
       });
-      renderRows(); renderMasterUserResults();
-      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]).join(' / ');
+      renderRows();
+      if (typeof renderMasterUserResults === 'function') renderMasterUserResults();
+      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => channels[i]).join(' / ');
       const items = summary.map(s => {
         if (s.added === 0 && s.updated === 0) return { skipped: true, html: `<b>${s.name}</b> — no change (already configured with the same channels).` };
         const parts = [];
@@ -2146,15 +2385,13 @@
       });
       const totalAdded = summary.reduce((a, s) => a + s.added, 0);
       const totalUpdated = summary.reduce((a, s) => a + s.updated, 0);
-      const ok = totalAdded + totalUpdated > 0;
-      const title = ok
-        ? `${totalAdded ? totalAdded + ' added' : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' updated' : ''} on ${_bulkLvlLabel(lvl)}`
-        : `No changes were necessary`;
-      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()} · Channels: ${channelLabels}` }] });
+      const title = (totalAdded + totalUpdated) === 0
+        ? `No changes were necessary`
+        : `${totalAdded ? totalAdded + ' added' : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' updated' : ''} on ${_bulkLvlLabel(lvl)}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeLineFor(scope)} · Channels: ${channelLabels}` }] });
     }
 
-    function _masterApplyRemove(scope, names) {
-      const lvl = document.getElementById('mucBulkLevel').value;
+    function _runRemove(scope, names, lvl) {
       const summary = [];
       names.forEach(nm => {
         const q = nm.toLowerCase();
@@ -2170,19 +2407,17 @@
         });
         summary.push({ name: nm, removed });
       });
-      renderRows(); renderMasterUserResults();
+      renderRows();
+      if (typeof renderMasterUserResults === 'function') renderMasterUserResults();
       const items = summary.map(s => s.removed === 0
         ? { skipped: true, html: `<b>${s.name}</b> — wasn't on ${_bulkLvlLabel(lvl)} in scope, nothing to remove.` }
         : { html: `<b>${s.name}</b> — removed from <b>${s.removed}</b> placement${s.removed===1?'':'s'}.` });
       const total = summary.reduce((a, s) => a + s.removed, 0);
       const title = total === 0 ? `Nothing to remove` : `Removed ${total} placement${total===1?'':'s'} from ${_bulkLvlLabel(lvl)}`;
-      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()}` }] });
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeLineFor(scope)}` }] });
     }
 
-    function _masterApplyTiming(scope) {
-      const lvlIdx = parseInt(document.getElementById('mucBulkLevel').value, 10);
-      const newDelay = parseInt(_mucBulkDelay, 10);
-      if (isNaN(newDelay) || newDelay < 0) { showSuccessToast({ title: 'Invalid delay', items: [{ skipped: true, html: 'Enter a non-negative number of minutes.' }] }); return; }
+    function _runTiming(scope, lvlIdx, newDelay) {
       const items = []; let updated = 0, missing = 0, sameValue = 0;
       const lvlLabel = 'Level ' + (lvlIdx + 1);
       scope.forEach(r => {
@@ -2192,18 +2427,17 @@
         const old = lv.delay; lv.delay = newDelay; updated++;
         items.push({ html: `<b>${r.name}</b> — ${lvlLabel} delay <b>${old}m → ${newDelay}m</b>.` });
       });
-      renderRows(); renderMasterUserResults();
+      renderRows();
+      if (typeof renderMasterUserResults === 'function') renderMasterUserResults();
       const titleParts = [];
       if (updated) titleParts.push(`${updated} updated`);
       if (sameValue) titleParts.push(`${sameValue} unchanged`);
       if (missing) titleParts.push(`${missing} missing`);
       const title = titleParts.length === 0 ? 'No changes' : `Timing on ${lvlLabel}: ${titleParts.join(' · ')}`;
-      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()}` }] });
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeLineFor(scope)}` }] });
     }
 
-    function _masterApplyChannel(scope, names) {
-      const lvl = document.getElementById('mucBulkLevel').value;
-      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before applying.' }] }); return; }
+    function _runChannel(scope, names, lvl, channels) {
       const summary = [];
       names.forEach(nm => {
         const q = nm.toLowerCase();
@@ -2217,16 +2451,17 @@
             const u = list.find(x => x.name.toLowerCase() === q);
             if (u) {
               touched = true;
-              if (u.comm.join('') === _mucBulkChannels.join('')) sameValue++;
-              else { u.comm = [..._mucBulkChannels]; updated++; }
+              if (u.comm.join('') === channels.join('')) sameValue++;
+              else { u.comm = [...channels]; updated++; }
             }
           });
           if (!touched) notFound++;
         });
         summary.push({ name: nm, updated, notFound, sameValue });
       });
-      renderRows(); renderMasterUserResults();
-      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]).join(' / ');
+      renderRows();
+      if (typeof renderMasterUserResults === 'function') renderMasterUserResults();
+      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => channels[i]).join(' / ');
       const items = summary.flatMap(s => {
         const lines = [];
         if (s.updated)   lines.push({ html: `<b>${s.name}</b> — channels updated on <b>${s.updated}</b> placement${s.updated===1?'':'s'}.` });
@@ -2237,7 +2472,23 @@
       });
       const total = summary.reduce((a, s) => a + s.updated, 0);
       const title = total === 0 ? `No channel updates` : `Updated channels on ${total} placement${total===1?'':'s'}`;
-      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()} · Set to: ${channelLabels}` }] });
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeLineFor(scope)} · Set to: ${channelLabels}` }] });
+    }
+
+    /* Modal-side wrappers (preserve existing API) */
+    function _masterApplyAdd(scope, names) {
+      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before adding.' }] }); return; }
+      _runAdd(scope, names, document.getElementById('mucBulkLevel').value, _mucBulkChannels);
+    }
+    function _masterApplyRemove(scope, names) { _runRemove(scope, names, document.getElementById('mucBulkLevel').value); }
+    function _masterApplyTiming(scope) {
+      const newDelay = parseInt(_mucBulkDelay, 10);
+      if (isNaN(newDelay) || newDelay < 0) { showSuccessToast({ title: 'Invalid delay', items: [{ skipped: true, html: 'Enter a non-negative number of minutes.' }] }); return; }
+      _runTiming(scope, parseInt(document.getElementById('mucBulkLevel').value, 10), newDelay);
+    }
+    function _masterApplyChannel(scope, names) {
+      if (_mucBulkChannels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel.' }] }); return; }
+      _runChannel(scope, names, document.getElementById('mucBulkLevel').value, _mucBulkChannels);
     }
 
     function mucRemoveOne(insightId, levelIdx, userIdx, name) {
@@ -2796,6 +3047,7 @@
     /* Init */
     renderRows();
     updateFilterCountBadge();
+    updateBulkBar();
     document.getElementById('navBack').disabled = true;
     document.getElementById('navForward').disabled = true;
   </script>
