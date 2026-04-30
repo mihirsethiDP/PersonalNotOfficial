@@ -695,12 +695,44 @@
             <div class="filter-pop" id="fp-state"></div>
           </div>
           <div class="filter-group">
-            <button class="filter-pop-btn" data-filter="more" onclick="toggleFilterPop('more', this)">
-              <span>More</span>
-              <span class="filter-pop-count" id="fpc-more">0</span>
+            <button class="filter-pop-btn" data-filter="equipment" onclick="toggleFilterPop('equipment', this)">
+              <span>Equipment</span>
+              <span class="filter-pop-count" id="fpc-equipment">All</span>
               <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <div class="filter-pop" id="fp-more"></div>
+            <div class="filter-pop" id="fp-equipment"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="user" onclick="toggleFilterPop('user', this)">
+              <span>User</span>
+              <span class="filter-pop-count" id="fpc-user">Any</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-user"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="channel" onclick="toggleFilterPop('channel', this)">
+              <span>Channel</span>
+              <span class="filter-pop-count" id="fpc-channel">All</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-channel"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="time" onclick="toggleFilterPop('time', this)">
+              <span>Esc. time</span>
+              <span class="filter-pop-count" id="fpc-time">Any</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-time"></div>
+          </div>
+          <div class="filter-group">
+            <button class="filter-pop-btn" data-filter="repeats" onclick="toggleFilterPop('repeats', this)">
+              <span>Repeats</span>
+              <span class="filter-pop-count" id="fpc-repeats">Off</span>
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="filter-pop" id="fp-repeats"></div>
           </div>
           <button class="filter-pop-btn filter-clear" onclick="clearAllFilters()" id="filterClearBtn" style="display:none">Clear all</button>
         </div>
@@ -1488,38 +1520,46 @@
             <span>${o.l}</span>
           </label>`).join('')}
         </div>`;
-      } else if (key === 'more') {
+      } else if (key === 'equipment') {
         html = `<div class="filter-pop-section">
-            <div class="filter-pop-section-title">Equipment</div>
-            ${EQUIP_OPTS.map(o => `<label class="filter-pop-row">
-              <input type="checkbox" ${filterState.equipment.has(o.v)?'checked':''} onchange="ddToggleSet('equipment','${o.v}')"/>
-              <span>${o.l}</span>
-            </label>`).join('')}
+          <div class="filter-pop-section-title">Equipment</div>
+          ${EQUIP_OPTS.map(o => `<label class="filter-pop-row">
+            <input type="checkbox" ${filterState.equipment.has(o.v)?'checked':''} onchange="ddToggleSet('equipment','${o.v}')"/>
+            <span>${o.l}</span>
+          </label>`).join('')}
+        </div>`;
+      } else if (key === 'user') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">User</div>
+          <input class="ai-input" type="text" placeholder="Filter by user name…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)" style="width:100%;height:32px;font-size:12px"/>
+          <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:6px;line-height:1.5">Show only insights where this user appears anywhere in the escalation chain.</div>
+        </div>`;
+      } else if (key === 'channel') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">Notification channel</div>
+          ${CHANNEL_OPTS.map(o => `<label class="filter-pop-row">
+            <input type="checkbox" ${filterState.channels.has(o.v)?'checked':''} onchange="ddToggleSetNum('channels',${o.v})"/>
+            <span>${o.l}</span>
+          </label>`).join('')}
+          <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:4px;line-height:1.5">Insights where at least one user uses any of the picked channels.</div>
+        </div>`;
+      } else if (key === 'time') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">Escalation time window (min)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <input class="ai-input" type="number" min="0" placeholder="Min" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)" style="height:32px;font-size:12px"/>
+            <input class="ai-input" type="number" min="0" placeholder="Max" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)" style="height:32px;font-size:12px"/>
           </div>
-          <div class="filter-pop-section">
-            <div class="filter-pop-section-title">User</div>
-            <input class="ai-input" type="text" placeholder="Filter by user name…" value="${(filterState.user||'').replace(/"/g,'&quot;')}" oninput="ddSetUser(this.value)" style="width:100%;height:30px;font-size:12px"/>
-          </div>
-          <div class="filter-pop-section">
-            <div class="filter-pop-section-title">Channel</div>
-            ${CHANNEL_OPTS.map(o => `<label class="filter-pop-row">
-              <input type="checkbox" ${filterState.channels.has(o.v)?'checked':''} onchange="ddToggleSetNum('channels',${o.v})"/>
-              <span>${o.l}</span>
-            </label>`).join('')}
-          </div>
-          <div class="filter-pop-section">
-            <div class="filter-pop-section-title">Escalation time window (min)</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-              <input class="ai-input" type="number" min="0" placeholder="Min" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)" style="height:30px;font-size:12px"/>
-              <input class="ai-input" type="number" min="0" placeholder="Max" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)" style="height:30px;font-size:12px"/>
-            </div>
-          </div>
-          <div class="filter-pop-section">
-            <label class="filter-pop-row">
-              <input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/>
-              <span>Only repeat users (same person on multiple levels)</span>
-            </label>
-          </div>`;
+          <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:6px;line-height:1.5">Show insights with at least one escalation level whose delay falls inside this range.</div>
+        </div>`;
+      } else if (key === 'repeats') {
+        html = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">Repeat users</div>
+          <label class="filter-pop-row">
+            <input type="checkbox" ${filterState.repeats?'checked':''} onchange="ddToggleRepeats(this.checked)"/>
+            <span>Only insights where the same person appears on more than one escalation level.</span>
+          </label>
+        </div>`;
       }
       pop.innerHTML = html;
     }
@@ -1612,15 +1652,14 @@
       if (filterState.repeats) n++;
       return n;
     }
-    function _moreCount() {
-      let n = 0;
-      n += filterState.equipment.size;
-      n += filterState.channels.size;
-      if (filterState.user) n++;
-      if (filterState.timeMin !== null && filterState.timeMin !== '' && !isNaN(parseInt(filterState.timeMin,10))) n++;
-      if (filterState.timeMax !== null && filterState.timeMax !== '' && !isNaN(parseInt(filterState.timeMax,10))) n++;
-      if (filterState.repeats) n++;
-      return n;
+    function _timeWindowText() {
+      const a = filterState.timeMin, b = filterState.timeMax;
+      const aValid = a !== '' && a != null && !isNaN(parseInt(a,10));
+      const bValid = b !== '' && b != null && !isNaN(parseInt(b,10));
+      if (aValid && bValid) return `${a}–${b}m`;
+      if (aValid) return `≥ ${a}m`;
+      if (bValid) return `≤ ${b}m`;
+      return '';
     }
 
     function updateFilterCountBadge() {
@@ -1628,11 +1667,15 @@
         const el = document.getElementById(id); if (el) el.textContent = txt;
         const btn = document.querySelector(btnSel); if (btn) btn.classList.toggle('active', !!hasActive);
       };
-      setLabel('fpc-plant', filterState.plants.size ? `${filterState.plants.size}` : 'All', '[data-filter="plant"]', filterState.plants.size > 0);
-      setLabel('fpc-type',  filterState.types.size  ? `${filterState.types.size}`  : 'All', '[data-filter="type"]',  filterState.types.size > 0);
-      setLabel('fpc-state', filterState.state !== 'all' ? STATE_OPTS.find(o=>o.v===filterState.state).l : 'All', '[data-filter="state"]', filterState.state !== 'all');
-      const m = _moreCount();
-      setLabel('fpc-more',  m ? `${m}` : '0', '[data-filter="more"]', m > 0);
+      setLabel('fpc-plant',     filterState.plants.size ? `${filterState.plants.size}` : 'All', '[data-filter="plant"]',     filterState.plants.size > 0);
+      setLabel('fpc-type',      filterState.types.size  ? `${filterState.types.size}`  : 'All', '[data-filter="type"]',      filterState.types.size > 0);
+      setLabel('fpc-state',     filterState.state !== 'all' ? STATE_OPTS.find(o=>o.v===filterState.state).l : 'All', '[data-filter="state"]', filterState.state !== 'all');
+      setLabel('fpc-equipment', filterState.equipment.size ? `${filterState.equipment.size}` : 'All', '[data-filter="equipment"]', filterState.equipment.size > 0);
+      setLabel('fpc-user',      filterState.user ? filterState.user : 'Any', '[data-filter="user"]', !!filterState.user);
+      setLabel('fpc-channel',   filterState.channels.size ? `${filterState.channels.size}` : 'All', '[data-filter="channel"]', filterState.channels.size > 0);
+      const tw = _timeWindowText();
+      setLabel('fpc-time',      tw || 'Any', '[data-filter="time"]', !!tw);
+      setLabel('fpc-repeats',   filterState.repeats ? 'On' : 'Off', '[data-filter="repeats"]', filterState.repeats);
       const total = countActiveFilters();
       const clearBtn = document.getElementById('filterClearBtn');
       if (clearBtn) clearBtn.style.display = total > 0 ? '' : 'none';
