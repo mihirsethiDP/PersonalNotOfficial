@@ -58,8 +58,8 @@
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-sans); background: #edeae4; min-height: 100vh; padding: 32px 20px; }
-    .app-shell { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; min-height: 640px; }
+    body { font-family: var(--font-sans); background: linear-gradient(180deg, #eef0f2 0%, #edeae4 320px); min-height: 100vh; padding: 32px 20px; -webkit-font-smoothing: antialiased; }
+    .app-shell { max-width: 1200px; margin: 0 auto; background: var(--color-background-primary); border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; min-height: 640px; box-shadow: 0 1px 2px rgba(14,31,54,0.04), 0 8px 32px rgba(14,31,54,0.04); }
     .nav-bar { max-width: 1200px; margin: 0 auto 12px; display: flex; align-items: center; gap: 8px; }
     .nav-btn { width: 34px; height: 34px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--brand-800); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s var(--ease-out), border-color .15s var(--ease-out), transform .15s var(--ease-out); }
     .nav-btn:hover:not(:disabled) { background: var(--brand-50); border-color: var(--brand-200); transform: translateY(-1px); }
@@ -91,7 +91,7 @@
     .filter-pop-btn:hover { background: var(--brand-50); border-color: var(--brand-200); color: var(--brand-800); }
     .filter-pop-btn.active { background: var(--brand-50); border-color: var(--brand-200); color: var(--brand-800); }
     .filter-pop-count { font-size: 11px; color: var(--color-text-tertiary); }
-    .filter-pop-btn.active .filter-pop-count { color: var(--brand-700); font-weight: 500; }
+    .filter-pop-btn.active .filter-pop-count { color: #fff; background: var(--brand-700); padding: 1px 7px; border-radius: 8px; font-weight: 500; font-size: 10.5px; }
     .filter-clear { color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
     .filter-clear:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
     .filter-pop { position: absolute; top: 42px; left: 0; min-width: 240px; max-width: 320px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); z-index: 60; padding: 10px; display: none; animation: fadeUp .18s var(--ease-out); }
@@ -128,6 +128,13 @@
     .muc-search-row { display: flex; gap: 6px; margin-bottom: 10px; }
     .muc-input { flex: 1; height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; outline: none; font-family: var(--font-sans); }
     .muc-input:focus { border-color: var(--brand-500); }
+    .muc-chip-input { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 38px; padding: 5px 8px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: #fff; cursor: text; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); margin-bottom: 10px; }
+    .muc-chip-input:focus-within { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(74,104,144,0.10); }
+    .muc-chip-list { display: contents; }
+    .muc-name-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 9px; background: var(--brand-100); color: var(--brand-800); border-radius: 14px; font-size: 12px; font-weight: 500; animation: pop .22s var(--ease-out); }
+    .muc-name-chip-x { width: 18px; height: 18px; border-radius: 50%; background: rgba(25,52,88,0.12); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; line-height: 1; transition: background .12s; color: var(--brand-800); }
+    .muc-name-chip-x:hover { background: rgba(25,52,88,0.22); }
+    .muc-input-inline { flex: 1; min-width: 180px; height: 26px; border: none; outline: none; font-size: 13px; font-family: var(--font-sans); background: transparent; }
     .muc-suggest { background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); margin-bottom: 10px; max-height: 140px; overflow-y: auto; }
     .muc-suggest-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; font-size: 12.5px; transition: background .12s; }
     .muc-suggest-item:hover { background: var(--brand-25); }
@@ -150,35 +157,58 @@
     .muc-add-btn:hover { background: var(--brand-100); }
     .muc-bulk-row { display: flex; gap: 8px; padding: 10px 0 0; border-top: 0.5px solid var(--color-border-tertiary); margin-top: 10px; }
 
-    /* Add Insight modal */
-    .ai-form { display: flex; flex-direction: column; gap: 10px; }
+    /* Add Insight modal — refined layout */
+    .ai-modal { padding: 0; }
+    .ai-head { padding: 18px 22px 14px; background: linear-gradient(180deg, #fff, var(--brand-25)); border-bottom: 0.5px solid var(--color-border-tertiary); border-top-left-radius: var(--border-radius-lg); border-top-right-radius: var(--border-radius-lg); }
+    .ai-body { padding: 4px 22px 18px; max-height: calc(100vh - 220px); overflow-y: auto; }
+    .ai-footer { padding: 12px 22px; background: #fff; border-top: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 8px; }
+    .ai-section { padding: 16px 0; border-bottom: 0.5px dashed var(--color-border-tertiary); }
+    .ai-section:last-child { border-bottom: none; padding-bottom: 4px; }
+    .ai-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .ai-section-head > span:nth-child(2) { display: flex; flex-direction: column; }
+    .ai-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand-800); color: #fff; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ai-section-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+    .ai-section-sub { font-size: 11.5px; color: var(--color-text-tertiary); margin-top: 1px; }
+    .ai-channel-legend { margin-left: auto; padding: 4px 8px; font-size: 10px; }
+    .ai-channel-legend .channel-legend-glyph { width: 16px; height: 16px; }
+    .ai-section-body { display: flex; flex-direction: column; gap: 10px; }
     .ai-row { display: flex; flex-direction: column; gap: 4px; }
-    .ai-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .05em; }
-    .ai-input, .ai-select { height: 34px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; font-family: var(--font-sans); background: #fff; outline: none; }
-    .ai-input:focus, .ai-select:focus { border-color: var(--brand-500); }
-    .ai-textarea { min-height: 60px; padding: 8px 12px; resize: vertical; }
-    .ai-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .ai-grid-3 { display: grid; grid-template-columns: 1.4fr 50px 1fr 60px; gap: 6px; }
+    .ai-mini-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; }
+    .ai-input, .ai-select { height: 36px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0 12px; font-size: 13px; font-family: var(--font-sans); background: #fff; outline: none; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); }
+    .ai-input:focus, .ai-select:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(74,104,144,0.10); }
+    .ai-name { height: 42px; font-size: 14px; font-weight: 500; }
+    .ai-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ai-cond-row { display: grid; grid-template-columns: 1.2fr 56px 1fr 70px; gap: 6px; }
+    .ai-cond-op { padding: 0 6px; text-align: center; }
     .ai-type-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .ai-type-chip { padding: 8px 6px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: #fff; font-size: 11.5px; text-align: center; cursor: pointer; font-family: var(--font-sans); transition: all .14s; }
-    .ai-type-chip:hover { background: var(--brand-25); }
-    .ai-type-chip.selected { background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-800); font-weight: 500; }
+    .ai-type-chip { padding: 9px 6px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: #fff; font-size: 11.5px; text-align: center; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+    .ai-type-chip:hover { background: var(--brand-25); border-color: var(--brand-300); }
+    .ai-type-chip.selected { background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-800); font-weight: 600; box-shadow: var(--elev-1); }
+    .ai-type-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+    .ai-type-dot.s-incident { background: var(--brand-900); }
+    .ai-type-dot.s-issue { background: var(--sev-alert-accent); }
+    .ai-type-dot.s-warning { background: var(--sev-warn-accent); }
+    .ai-type-dot.s-achievement { background: var(--brand-700); }
+    .ai-type-dot.s-improvement { background: var(--brand-300); }
     .ai-esc-mini { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
-    .ai-level { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; margin-bottom: 8px; animation: fadeUp .2s var(--ease-out); }
-    .ai-level-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .ai-level-title { font-size: 11.5px; font-weight: 600; color: var(--brand-800); }
-    .ai-level-delay { font-size: 11px; color: var(--color-text-secondary); display: flex; align-items: center; gap: 4px; }
-    .ai-level-delay input { width: 50px; height: 24px; padding: 0 6px; font-size: 11.5px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-family: var(--font-sans); background: #fff; }
-    .ai-level-remove { margin-left: auto; width: 22px; height: 22px; border-radius: 4px; border: 0.5px solid transparent; background: transparent; color: var(--color-text-tertiary); cursor: pointer; font-size: 14px; }
+    .ai-level { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; padding: 0; margin-bottom: 10px; animation: fadeUp .22s var(--ease-out); overflow: hidden; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); }
+    .ai-level:hover { border-color: var(--brand-200); }
+    .ai-level-head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--brand-25); border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .ai-level.notify .ai-level-head { background: var(--brand-900); }
+    .ai-level.notify .ai-level-title { color: rgba(255,255,255,0.85); font-weight: 500; }
+    .ai-level-title { font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); }
+    .ai-level-delay { font-size: 11px; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+    .ai-level-delay input { width: 50px; height: 22px; padding: 0 6px; font-size: 11.5px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-family: var(--font-sans); background: #fff; outline: none; text-align: center; }
+    .ai-level-remove { width: 22px; height: 22px; border-radius: 4px; border: 0.5px solid transparent; background: transparent; color: var(--color-text-tertiary); cursor: pointer; font-size: 14px; line-height: 1; transition: all .12s; }
     .ai-level-remove:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
-    .ai-level-user-row { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center; margin-bottom: 6px; }
-    .ai-level-user-row:last-child { margin-bottom: 0; }
-    .ai-level-user-input { height: 28px; padding: 0 10px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-family: var(--font-sans); background: #fff; }
-    .ai-level-user-input:focus { outline: none; border-color: var(--brand-500); }
+    .ai-level-body { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .ai-level-user-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+    .ai-level-user-input { height: 30px; padding: 0 10px; font-size: 12.5px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-family: var(--font-sans); background: #fff; outline: none; transition: border-color .14s var(--ease-out); }
+    .ai-level-user-input:focus { border-color: var(--brand-500); }
     .ai-user-channels { display: inline-flex; gap: 3px; }
-    .ai-user-channels .channel-chip { padding: 3px 7px; font-size: 10.5px; }
-    .ai-add-user-btn { height: 26px; padding: 0 10px; font-size: 11px; border-radius: 4px; border: 0.5px dashed var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); }
-    .ai-add-user-btn:hover { background: #fff; border-color: var(--brand-300); color: var(--brand-800); }
+    .ai-user-channels .channel-chip { width: 26px; height: 26px; padding: 0; font-size: 11px; justify-content: center; }
+    .ai-add-user-btn { align-self: flex-start; height: 26px; padding: 0 10px; font-size: 11.5px; border-radius: 5px; border: 0.5px dashed var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); transition: all .14s; display: inline-flex; align-items: center; gap: 4px; }
+    .ai-add-user-btn:hover { background: var(--brand-25); border-color: var(--brand-300); color: var(--brand-800); border-style: solid; }
 
     /* Doherty threshold — undo toast */
     .undo-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: #0E1F36; color: #ffffff; border-radius: 10px; padding: 10px 12px 10px 16px; box-shadow: 0 8px 24px rgba(14,31,54,0.28); display: none; align-items: center; gap: 14px; font-size: 13px; z-index: 9999; max-width: 560px; opacity: 0; transition: opacity 0.18s ease, transform 0.22s ease; }
@@ -188,6 +218,22 @@
     .undo-toast-btn:hover { background: #2A4A75; color: #ffffff; border-color: #7B92B3; }
     .undo-toast-btn.primary { color: #ffffff; border-color: #7B92B3; }
     .undo-toast-progress { position: absolute; left: 0; bottom: 0; height: 2px; background: #4A6890; border-bottom-left-radius: 10px; transition: width linear; }
+
+    /* Success toast — summary of what changed */
+    .success-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: #ffffff; color: var(--color-text-primary); border-radius: 10px; padding: 12px 16px 12px 14px; box-shadow: 0 12px 32px rgba(14,31,54,0.16); display: none; flex-direction: column; gap: 6px; font-size: 12.5px; z-index: 10000; max-width: 540px; min-width: 280px; opacity: 0; transition: opacity 0.18s ease, transform 0.22s ease; border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid var(--brand-700); }
+    .success-toast.open { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
+    .success-toast-head { display: flex; align-items: center; gap: 10px; }
+    .success-toast-check { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-100); color: var(--brand-800); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; animation: pop .3s var(--ease-out); }
+    .success-toast-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); flex: 1; }
+    .success-toast-close { background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 16px; padding: 0 2px; line-height: 1; }
+    .success-toast-close:hover { color: var(--color-text-primary); }
+    .success-toast-list { display: flex; flex-direction: column; gap: 3px; padding-left: 32px; max-height: 220px; overflow-y: auto; }
+    .success-toast-item { font-size: 11.5px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 6px; line-height: 1.45; }
+    .success-toast-item::before { content: '·'; color: var(--brand-300); font-weight: 600; }
+    .success-toast-item.skipped { color: var(--color-text-tertiary); }
+    .success-toast-item.skipped::before { color: var(--color-text-tertiary); }
+    .success-toast-item b { color: var(--color-text-primary); font-weight: 500; }
+    .success-toast-progress { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--brand-300); border-bottom-left-radius: 10px; transition: width linear; }
     .view { display: none; }
     .view.active { display: block; animation: fadeUp .28s var(--ease-out); }
 
@@ -299,12 +345,13 @@
     .btn-sm-success:hover, .btn-sm-blue:hover { background: #EBF0F7; }
 
     /* Modals */
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; align-items: center; justify-content: center; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(14,31,54,.42); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 200; align-items: center; justify-content: center; animation: fadeIn .15s var(--ease-out); }
+    .modal-bg.open .modal { animation: pop .26s var(--ease-out); }
     .modal-bg.open { display: flex; }
     .modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-secondary); width: 540px; max-height: 82vh; overflow: hidden; display: flex; flex-direction: column; }
     .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
-    .modal-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
-    .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    .modal-title { font-size: 15.5px; font-weight: 600; color: var(--color-text-primary); letter-spacing: -.005em; }
+    .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; }
     .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-md); border: none; background: transparent; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); }
     .modal-close:hover { background: var(--color-background-secondary); }
     .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
@@ -368,7 +415,8 @@
 
     /* ═════ L2 ═════ */
     #view-l2 .page { padding: 0.5rem 0; min-height: 600px; }
-    #view-l2 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    #view-l2 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; gap: 12px; flex-wrap: wrap; }
+    #view-l2 .page-title { font-size: 22px; font-weight: 600; color: var(--color-text-primary); letter-spacing: -.01em; }
     #view-l2 .plant-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
     #view-l2 .stat-pills { display: flex; gap: 6px; flex-wrap: wrap; }
     #view-l2 .pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
@@ -575,7 +623,7 @@
           <div style="display:flex;gap:8px">
             <button class="filter-btn" onclick="openMasterUserModal()" title="Find a user across every insight and add or remove them">
               <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 12c.6-2 2.4-3.2 4.5-3.2s3.9 1.2 4.5 3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Manage user
+              Manage
             </button>
             <button class="btn-primary" onclick="openAddInsightModal()" title="Create a new insight">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:4px;vertical-align:-1px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -629,7 +677,7 @@
           <div style="flex:1"></div>
           <button class="btn-sm btn-sm-success" onclick="bulkEnable()">Enable</button>
           <button class="btn-sm btn-sm-danger" onclick="bulkDisable()">Disable</button>
-          <button class="btn-sm btn-sm-blue" onclick="openMasterUserModal()">Manage user…</button>
+          <button class="btn-sm btn-sm-blue" onclick="openMasterUserModal()">Manage users…</button>
           <button class="btn-sm" onclick="openBulkTimingModal()">Edit timing…</button>
           <button class="btn-sm" onclick="openBulkAddLevelModal()">Add level…</button>
           <button class="btn-sm" onclick="clearSelection()">Clear</button>
@@ -647,7 +695,7 @@
           </div>
           <div id="rowsContainer"></div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open · Use <b>Manage user</b> to find anyone across every insight at once</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open · Use <b>Manage</b> to find anyone across every insight at once</div>
       </div>
     </div>
 
@@ -840,6 +888,19 @@
     <div class="undo-toast-progress" id="undoToastProgress"></div>
   </div>
 
+  <!-- Success summary toast -->
+  <div class="success-toast" id="successToast" role="status" aria-live="polite">
+    <div class="success-toast-head">
+      <span class="success-toast-check">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 6.8l2.4 2.4L10 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="success-toast-title" id="successToastTitle">Done</span>
+      <button class="success-toast-close" onclick="dismissSuccessToast()" aria-label="Dismiss">×</button>
+    </div>
+    <div class="success-toast-list" id="successToastList"></div>
+    <div class="success-toast-progress" id="successToastProgress"></div>
+  </div>
+
   <div class="modal-bg" id="applyPlantModal">
     <div class="modal" style="width:440px">
       <div class="modal-head">
@@ -859,12 +920,12 @@
     </div>
   </div>
 
-  <!-- ══════════════════ Control Center · Manage user ══════════════════ -->
+  <!-- ══════════════════ Control Center · Manage ══════════════════ -->
   <div class="modal-bg" id="masterUserModal">
     <div class="modal" style="width:720px">
       <div class="modal-head">
         <div>
-          <div class="modal-title">Control Center · Manage user</div>
+          <div class="modal-title">Control Center · Manage</div>
           <div class="modal-sub">One hub to add or remove a user across one insight, many insights, or every insight in selected plants</div>
         </div>
         <button class="modal-close" onclick="closeMasterUserModal()">✕</button>
@@ -883,8 +944,10 @@
           <div id="mucPlantChips" style="display:flex;flex-wrap:wrap;gap:4px"></div>
         </div>
 
-        <div class="muc-search-row">
-          <input class="muc-input" id="mucInput" placeholder="Type a name (e.g. Rahul Sharma)…" oninput="renderMasterUserSuggestions()"/>
+        <!-- Multi-name chip input -->
+        <div class="muc-chip-input" id="mucChipInput" onclick="document.getElementById('mucInput').focus()">
+          <div class="muc-chip-list" id="mucChipList"></div>
+          <input class="muc-input-inline" id="mucInput" placeholder="Type a name and press Enter to add another…" oninput="renderMasterUserSuggestions()" onkeydown="mucNameKey(event)"/>
         </div>
         <div id="mucSuggest"></div>
 
@@ -925,81 +988,110 @@
 
   <!-- ══════════════════ Add Insight modal ══════════════════ -->
   <div class="modal-bg" id="addInsightModal">
-    <div class="modal" style="width:660px">
-      <div class="modal-head">
+    <div class="modal ai-modal" style="width:680px">
+      <div class="modal-head ai-head">
         <div>
-          <div class="modal-title">Add a new insight</div>
-          <div class="modal-sub">Define what to monitor, when it triggers, and the full escalation chain</div>
+          <div class="modal-title">New insight</div>
+          <div class="modal-sub">Define what to monitor, when it fires, and who responds</div>
         </div>
         <button class="modal-close" onclick="closeAddInsightModal()">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="ai-form">
-          <div class="ai-row">
-            <span class="ai-label">Insight name</span>
-            <input class="ai-input" id="aiName" placeholder="e.g. Boiler pressure threshold exceeded"/>
-          </div>
-          <div class="ai-grid-2">
-            <div class="ai-row">
-              <span class="ai-label">Plant</span>
-              <select class="ai-select" id="aiPlant"></select>
-            </div>
-            <div class="ai-row">
-              <span class="ai-label">Equipment</span>
-              <select class="ai-select" id="aiEquipment">
-                <option value="tank">Tank</option>
-                <option value="pump">Pump</option>
-                <option value="valve">Valve</option>
-                <option value="blower">Blower</option>
-              </select>
-            </div>
-          </div>
-          <div class="ai-row">
-            <span class="ai-label">Severity type</span>
-            <div class="ai-type-grid" id="aiTypeGrid">
-              <div class="ai-type-chip" data-val="incident">Incident</div>
-              <div class="ai-type-chip" data-val="issue">Issue</div>
-              <div class="ai-type-chip selected" data-val="warning">Warning</div>
-              <div class="ai-type-chip" data-val="achievement">Achievement</div>
-              <div class="ai-type-chip" data-val="improvement">Improvement</div>
-            </div>
-          </div>
-          <div class="ai-row">
-            <span class="ai-label">Opening condition</span>
-            <div class="ai-grid-3">
-              <input class="ai-input" id="aiSensor" placeholder="Sensor (e.g. PT-101)"/>
-              <select class="ai-select" id="aiOp"><option>≥</option><option>&gt;</option><option>≤</option><option>&lt;</option><option>=</option></select>
-              <input class="ai-input" id="aiValue" type="number" step="0.1" placeholder="Value"/>
-              <input class="ai-input" id="aiUnit" placeholder="Unit"/>
-            </div>
-          </div>
-          <div class="ai-row">
-            <span class="ai-label">Closing condition</span>
-            <input class="ai-input" id="aiClose" placeholder="e.g. PT-101 < 11.0 bar sustained 120s"/>
-          </div>
+      <div class="modal-body ai-body">
 
-          <!-- Escalation builder -->
-          <div class="ai-row" style="border-top:0.5px solid var(--color-border-tertiary);padding-top:14px;margin-top:4px">
-            <span class="ai-label" style="display:flex;align-items:center;justify-content:space-between">
-              <span>Escalation chain</span>
-              <span style="font-weight:400;text-transform:none;font-size:10.5px;color:var(--color-text-tertiary);letter-spacing:0">Notify is mandatory · max 3 standard levels</span>
+        <!-- Step 1 — Basics -->
+        <section class="ai-section">
+          <header class="ai-section-head">
+            <span class="ai-step-num">1</span>
+            <span>
+              <span class="ai-section-title">Basics</span>
+              <span class="ai-section-sub">Name, location, severity</span>
             </span>
-            <div class="channel-legend" style="margin-bottom:10px">
-              <span class="channel-legend-title">Channels</span>
+          </header>
+          <div class="ai-section-body">
+            <div class="ai-row">
+              <input class="ai-input ai-name" id="aiName" placeholder="Insight name (e.g. Boiler pressure threshold exceeded)"/>
+            </div>
+            <div class="ai-grid-2">
+              <div class="ai-row">
+                <span class="ai-mini-label">Plant</span>
+                <select class="ai-select" id="aiPlant"></select>
+              </div>
+              <div class="ai-row">
+                <span class="ai-mini-label">Equipment</span>
+                <select class="ai-select" id="aiEquipment">
+                  <option value="tank">Tank</option>
+                  <option value="pump">Pump</option>
+                  <option value="valve">Valve</option>
+                  <option value="blower">Blower</option>
+                </select>
+              </div>
+            </div>
+            <div class="ai-row">
+              <span class="ai-mini-label">Severity</span>
+              <div class="ai-type-grid" id="aiTypeGrid">
+                <div class="ai-type-chip" data-val="incident"><span class="ai-type-dot s-incident"></span>Incident</div>
+                <div class="ai-type-chip" data-val="issue"><span class="ai-type-dot s-issue"></span>Issue</div>
+                <div class="ai-type-chip selected" data-val="warning"><span class="ai-type-dot s-warning"></span>Warning</div>
+                <div class="ai-type-chip" data-val="achievement"><span class="ai-type-dot s-achievement"></span>Achievement</div>
+                <div class="ai-type-chip" data-val="improvement"><span class="ai-type-dot s-improvement"></span>Improvement</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2 — Trigger -->
+        <section class="ai-section">
+          <header class="ai-section-head">
+            <span class="ai-step-num">2</span>
+            <span>
+              <span class="ai-section-title">Trigger logic</span>
+              <span class="ai-section-sub">When the insight opens and how it resolves</span>
+            </span>
+          </header>
+          <div class="ai-section-body">
+            <div class="ai-row">
+              <span class="ai-mini-label">Opens when</span>
+              <div class="ai-cond-row">
+                <input class="ai-input" id="aiSensor" placeholder="Sensor"/>
+                <select class="ai-select ai-cond-op" id="aiOp"><option>≥</option><option>&gt;</option><option>≤</option><option>&lt;</option><option>=</option></select>
+                <input class="ai-input" id="aiValue" type="number" step="0.1" placeholder="Value"/>
+                <input class="ai-input" id="aiUnit" placeholder="Unit"/>
+              </div>
+            </div>
+            <div class="ai-row">
+              <span class="ai-mini-label">Closes when</span>
+              <input class="ai-input" id="aiClose" placeholder="e.g. PT-101 < 11.0 bar sustained 120s · sensor / manual"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3 — Escalation -->
+        <section class="ai-section">
+          <header class="ai-section-head">
+            <span class="ai-step-num">3</span>
+            <span>
+              <span class="ai-section-title">Escalation chain</span>
+              <span class="ai-section-sub">Notify is required · up to 3 standard levels</span>
+            </span>
+            <div class="channel-legend ai-channel-legend">
               <span class="channel-legend-item"><span class="channel-legend-glyph">✉</span>Email</span>
               <span class="channel-legend-item"><span class="channel-legend-glyph">✆</span>SMS</span>
-              <span class="channel-legend-item"><span class="channel-legend-glyph">W</span>WhatsApp</span>
+              <span class="channel-legend-item"><span class="channel-legend-glyph">W</span>WA</span>
               <span class="channel-legend-item"><span class="channel-legend-glyph">☏</span>Call</span>
             </div>
+          </header>
+          <div class="ai-section-body">
             <div id="aiLevels"></div>
-            <button class="add-level-btn" id="aiAddLevelBtn" onclick="aiAddLevel()" style="margin-top:8px">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Add escalation level
+            <button class="add-level-btn" id="aiAddLevelBtn" onclick="aiAddLevel()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Add another level
             </button>
           </div>
-        </div>
+        </section>
+
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer ai-footer">
+        <span style="font-size:11.5px;color:var(--color-text-tertiary);flex:1">Empty user rows are ignored on submit.</span>
         <button class="btn-ghost" onclick="closeAddInsightModal()">Cancel</button>
         <button class="btn-primary" onclick="submitAddInsight()">Create insight</button>
       </div>
@@ -1381,17 +1473,21 @@
     /* Plant master-switch (global activate/deactivate per plant) */
     function plantBulkToggle(on) {
       const pickedPlants = filterState.plants.size > 0 ? [...filterState.plants] : plants.map(p => p.id);
+      const summary = [];
+      let total = 0;
       pickedPlants.forEach(pid => {
         plantMaster[pid] = on;
-        insights.filter(r => r.plant === pid).forEach(r => r.enabled = on);
+        const list = insights.filter(r => r.plant === pid);
+        let changed = 0;
+        list.forEach(r => { if (r.enabled !== on) { r.enabled = on; changed++; } });
+        total += changed;
+        const pName = plants.find(p => p.id === pid)?.name || pid;
+        summary.push({ html: `<b>${pName}</b> — ${changed} insight${changed===1?'':'s'} ${on?'activated':'deactivated'} (${list.length} total).` });
       });
       renderRows();
-      const label = filterState.plants.size > 0
-        ? `${pickedPlants.length} plant${pickedPlants.length>1?'s':''}`
-        : 'every plant';
-      showUndoToast({
-        msg: `${on?'Activated':'Deactivated'} all insights in ${label}.`,
-        onUndo: () => { pickedPlants.forEach(pid => { plantMaster[pid] = !on; insights.filter(r => r.plant === pid).forEach(r => r.enabled = !on); }); renderRows(); }
+      showSuccessToast({
+        title: `${on?'Activated':'Deactivated'} ${total} insight${total===1?'':'s'} across ${pickedPlants.length} plant${pickedPlants.length===1?'':'s'}`,
+        items: summary,
       });
     }
 
@@ -1595,22 +1691,35 @@
       else bar.classList.add('hidden');
     }
     function clearSelection() { selected.clear(); document.getElementById('selectAll').checked = false; updateBulkBar(); renderRows(); }
-    function bulkEnable() { selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) r.enabled = true; }); renderRows(); }
-    function bulkDisable() { selected.forEach(id => { const r = insights.find(x => x.id === id); if (r) r.enabled = false; }); renderRows(); }
-    function toggleInsight(id, cb) { const r = insights.find(x => x.id === id); if (r) r.enabled = cb.checked; renderRows(); }
+    function bulkEnable() {
+      let changed = 0; const names = [];
+      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r && !r.enabled) { r.enabled = true; changed++; names.push(r.name); } });
+      renderRows();
+      showSuccessToast({ title: `Enabled ${changed} insight${changed===1?'':'s'}`, items: changed === 0 ? [{ skipped: true, html: 'All selected insights were already enabled.' }] : [{ html: names.slice(0,5).map(n => `<b>${n}</b>`).join(', ') + (names.length > 5 ? ` and ${names.length-5} more` : '') + ' enabled.' }] });
+    }
+    function bulkDisable() {
+      let changed = 0; const names = [];
+      selected.forEach(id => { const r = insights.find(x => x.id === id); if (r && r.enabled) { r.enabled = false; changed++; names.push(r.name); } });
+      renderRows();
+      showSuccessToast({ title: `Disabled ${changed} insight${changed===1?'':'s'}`, items: changed === 0 ? [{ skipped: true, html: 'All selected insights were already disabled.' }] : [{ html: names.slice(0,5).map(n => `<b>${n}</b>`).join(', ') + (names.length > 5 ? ` and ${names.length-5} more` : '') + ' disabled.' }] });
+    }
+    function toggleInsight(id, cb) {
+      const r = insights.find(x => x.id === id); if (!r) return;
+      r.enabled = cb.checked; renderRows();
+      showSuccessToast({ title: `${r.name} ${cb.checked?'enabled':'disabled'}`, items: [{ html: `<b>${r.name}</b> is now <b>${cb.checked?'active':'inactive'}</b>.` }] });
+    }
 
     /* L2 bulk modals */
     function initialsOf(name) { return name.split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
     function randBg() { const opts = [['#EBF0F7','#193458'],['#DCE3EE','#193458'],['#B5C2D6','#0E1F36'],['#7B92B3','#FFFFFF'],['#4A6890','#FFFFFF']]; return opts[Math.floor(Math.random()*opts.length)]; }
 
-    /* ──── Control Center · Manage user ──── */
-    let _mucName = '';
-    let _mucScopeMode = 'all'; // 'all' | 'selected' | 'plant'
+    /* ──── Control Center · Manage ──── */
+    let _mucNames = [];               // array of names (chip list)
+    let _mucScopeMode = 'all';         // 'all' | 'selected' | 'plant'
     const _mucScopePlants = new Set();
-    let _mucBulkChannels = [1, 0, 0, 0]; // Email default
+    let _mucBulkChannels = [1, 0, 0, 0];
     function openMasterUserModal() {
-      _mucName = '';
-      // If user opened from row selection, default to "selected"; otherwise "all"
+      _mucNames = [];
       _mucScopeMode = selected.size > 0 ? 'selected' : 'all';
       _mucScopePlants.clear();
       _mucBulkChannels = [1, 0, 0, 0];
@@ -1620,10 +1729,40 @@
       _renderMucScopeChips();
       _renderMucChannelChips();
       _renderMucPlantPicker();
+      _renderMucNameChips();
       _updateMucScopeNote();
-      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Pick a scope, type a name. We\'ll show every insight & level the user is on. The action bar lets you add or remove in one click.</div>';
+      document.getElementById('mucResults').innerHTML = '<div class="muc-empty">Pick a scope, type one or more names (press <b>Enter</b> after each), then add or remove in one click.</div>';
       document.getElementById('masterUserModal').classList.add('open');
       setTimeout(() => document.getElementById('mucInput').focus(), 50);
+    }
+    function _renderMucNameChips() {
+      const wrap = document.getElementById('mucChipList');
+      if (!wrap) return;
+      wrap.innerHTML = _mucNames.map((n, i) => `<span class="muc-name-chip">${n}<span class="muc-name-chip-x" onclick="mucRemoveNameChip(${i})" title="Remove">×</span></span>`).join('');
+    }
+    function _commitTypedName() {
+      const inp = document.getElementById('mucInput');
+      const v = inp.value.trim();
+      if (!v) return false;
+      if (!_mucNames.find(x => x.toLowerCase() === v.toLowerCase())) _mucNames.push(v);
+      inp.value = '';
+      _renderMucNameChips();
+      document.getElementById('mucSuggest').innerHTML = '';
+      document.getElementById('mucBulkBar').style.display = '';
+      renderMasterUserResults();
+      return true;
+    }
+    function mucNameKey(e) {
+      if (e.key === 'Enter' || e.key === ',' || e.key === 'Tab') {
+        if (e.target.value.trim()) { e.preventDefault(); _commitTypedName(); }
+      } else if (e.key === 'Backspace' && e.target.value === '' && _mucNames.length > 0) {
+        _mucNames.pop(); _renderMucNameChips(); renderMasterUserResults();
+      }
+    }
+    function mucRemoveNameChip(i) {
+      _mucNames.splice(i, 1); _renderMucNameChips();
+      if (_mucNames.length === 0 && !document.getElementById('mucInput').value.trim()) document.getElementById('mucBulkBar').style.display = 'none';
+      renderMasterUserResults();
     }
     function closeMasterUserModal() { document.getElementById('masterUserModal').classList.remove('open'); }
     document.getElementById('masterUserModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMasterUserModal(); });
@@ -1634,7 +1773,7 @@
       document.getElementById('mucPlantPicker').style.display = mode === 'plant' ? '' : 'none';
       if (mode === 'plant') _renderMucPlantPicker();
       _updateMucScopeNote();
-      if (_mucName) renderMasterUserResults(_mucName);
+      if (_activeNames().length) renderMasterUserResults();
     }
     function _renderMucScopeChips() {
       document.querySelectorAll('#masterUserModal [data-scope]').forEach(b => {
@@ -1652,7 +1791,7 @@
       if (_mucScopePlants.has(id)) _mucScopePlants.delete(id); else _mucScopePlants.add(id);
       _renderMucPlantPicker();
       _updateMucScopeNote();
-      if (_mucName) renderMasterUserResults(_mucName);
+      if (_activeNames().length) renderMasterUserResults();
     }
     function _renderMucChannelChips() {
       const wrap = document.getElementById('mucBulkChannels');
@@ -1695,12 +1834,12 @@
       const sug = document.getElementById('mucSuggest');
       if (q.length === 0) {
         sug.innerHTML = '';
-        document.getElementById('mucBulkBar').style.display = 'none';
-        renderMasterUserResults('');
+        if (_mucNames.length === 0) document.getElementById('mucBulkBar').style.display = 'none';
+        renderMasterUserResults();
         return;
       }
       const all = _allKnownUsers();
-      const matches = all.filter(u => u.name.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
+      const matches = all.filter(u => u.name.toLowerCase().includes(q.toLowerCase()) && !_mucNames.find(n => n.toLowerCase() === u.name.toLowerCase())).slice(0, 6);
       sug.innerHTML = matches.length === 0 ? '' : `<div class="muc-suggest">${matches.map(u => `
         <div class="muc-suggest-item" onclick="mucPickUser('${u.name.replace(/'/g, "\\'")}')">
           <div class="user-avatar" style="background:${u.bg};color:${u.tc};width:24px;height:24px;font-size:9px">${u.init}</div>
@@ -1708,13 +1847,14 @@
           <span class="muc-suggest-meta">on ${u.count} level${u.count>1?'s':''}</span>
         </div>`).join('')}</div>`;
       document.getElementById('mucBulkBar').style.display = '';
-      renderMasterUserResults(q);
+      renderMasterUserResults();
     }
     function mucPickUser(name) {
-      _mucName = name;
-      document.getElementById('mucInput').value = name;
+      if (!_mucNames.find(x => x.toLowerCase() === name.toLowerCase())) _mucNames.push(name);
+      document.getElementById('mucInput').value = '';
       document.getElementById('mucSuggest').innerHTML = '';
-      renderMasterUserResults(name);
+      _renderMucNameChips();
+      renderMasterUserResults();
     }
 
     function _findUserPlacements(name) {
@@ -1733,91 +1873,153 @@
         ${comm.map((on, i) => `<span class="comm-icon ${on?'comm-on':'comm-off'}" style="width:18px;height:18px;font-size:9px">${commLabels[i]}</span>`).join('')}
       </span>`;
     }
-    function renderMasterUserResults(name) {
+    function _activeNames() {
+      const typed = (document.getElementById('mucInput')?.value || '').trim();
+      const list = [..._mucNames];
+      if (typed && !list.find(x => x.toLowerCase() === typed.toLowerCase())) list.push(typed);
+      return list;
+    }
+    function renderMasterUserResults() {
       const out = document.getElementById('mucResults');
-      _mucName = name;
       _updateMucScopeNote();
-      if (!name || !name.trim()) { out.innerHTML = '<div class="muc-empty">Type a name above. We\'ll show every insight & level the user is on.</div>'; return; }
-      const matches = _findUserPlacements(name);
+      const names = _activeNames();
+      if (names.length === 0) { out.innerHTML = '<div class="muc-empty">Type one or more names above (Enter after each).</div>'; return; }
       const scope = _mucScope();
-      if (scope.length === 0) {
-        out.innerHTML = '<div class="muc-empty">Scope is empty — pick rows or plants first.</div>';
-        return;
-      }
-      if (matches.length === 0) {
-        out.innerHTML = `<div class="muc-empty"><b>${name}</b> isn't on any insight in the current scope yet.<br/>Use the bar above to add them to a level in one click.</div>`;
-        return;
-      }
-      out.innerHTML = matches.map(m => {
-        const plant = plants.find(p => p.id === m.insight.plant);
-        return `<div class="muc-insight-card">
-          <div class="muc-insight-head">
-            <span class="muc-insight-name">${m.insight.name}</span>
-            <span class="muc-insight-plant">${plant?plant.name:''}</span>
-          </div>
-          <div>
-            ${m.placements.map(pl => `<span class="muc-level-tag removable lbadge ${pl.kind==='notify'?'lbn':(pl.cls||'lb1')}">
-              ${pl.label}${_placementCommHTML(pl.comm)}
-              <span class="muc-level-tag-x" onclick="mucRemoveOne(${m.insight.id}, '${pl.levelIdx}', ${pl.userIdx}, '${name.replace(/'/g, "\\'")}')" title="Remove from this level">×</span>
-            </span>`).join('')}
-          </div>
-        </div>`;
-      }).join('');
+      if (scope.length === 0) { out.innerHTML = '<div class="muc-empty">Scope is empty — pick rows or plants first.</div>'; return; }
+      let html = '';
+      names.forEach(nm => {
+        const matches = _findUserPlacements(nm);
+        if (matches.length === 0) {
+          html += `<div class="muc-insight-card" style="border-color:var(--brand-200);background:var(--brand-25)">
+            <div class="muc-insight-head"><span class="muc-insight-name">${nm}</span><span class="muc-insight-plant" style="color:var(--brand-700)">not on any insight in scope</span></div>
+          </div>`;
+        } else {
+          matches.forEach(m => {
+            const plant = plants.find(p => p.id === m.insight.plant);
+            html += `<div class="muc-insight-card">
+              <div class="muc-insight-head">
+                <span class="muc-insight-name">${nm} · ${m.insight.name}</span>
+                <span class="muc-insight-plant">${plant?plant.name:''}</span>
+              </div>
+              <div>
+                ${m.placements.map(pl => `<span class="muc-level-tag removable lbadge ${pl.kind==='notify'?'lbn':(pl.cls||'lb1')}">
+                  ${pl.label}${_placementCommHTML(pl.comm)}
+                  <span class="muc-level-tag-x" onclick="mucRemoveOne(${m.insight.id}, '${pl.levelIdx}', ${pl.userIdx}, '${nm.replace(/'/g, "\\'")}')" title="Remove from this level">×</span>
+                </span>`).join('')}
+              </div>
+            </div>`;
+          });
+        }
+      });
+      out.innerHTML = html;
+    }
+
+    function _bulkLvlLabel(lvl) {
+      if (lvl === 'all') return 'every existing level';
+      if (lvl === 'notify') return 'Notify';
+      return 'Level ' + (parseInt(lvl,10) + 1);
     }
 
     function masterBulkAdd() {
-      if (!_mucName || !_mucName.trim()) return;
+      _commitTypedName();
+      const names = _activeNames();
+      if (names.length === 0) { alert('Add at least one name.'); return; }
       const lvl = document.getElementById('mucBulkLevel').value;
-      if (_mucBulkChannels.every(c => !c)) { alert('Pick at least one channel for the user.'); return; }
+      if (_mucBulkChannels.every(c => !c)) { alert('Pick at least one channel.'); return; }
       const scope = _mucScope();
       if (scope.length === 0) { alert('Scope is empty — pick rows or plants first.'); return; }
-      const [bg, tc] = randBg();
-      let added = 0;
-      scope.forEach(r => {
-        const targetLevels = lvl === 'all'
-          ? [{ kind: 'notify' }, ...r.escLevels.map((lv, i) => ({ kind: 'level', idx: i }))]
-          : lvl === 'notify' ? [{ kind: 'notify' }] : [{ kind: 'level', idx: parseInt(lvl, 10) }];
-        targetLevels.forEach(tl => {
-          const list = tl.kind === 'notify' ? r.notify.users : r.escLevels[tl.idx]?.users;
-          if (!list) return;
-          // Avoid duplicate (same name) — update channels if already present
-          const existing = list.find(u => u.name.toLowerCase() === _mucName.toLowerCase());
-          if (existing) { existing.comm = [..._mucBulkChannels]; }
-          else { list.push({ init: initialsOf(_mucName), bg, tc, name: _mucName, comm: [..._mucBulkChannels] }); added++; }
+
+      const summary = []; // {name, added, updated}
+      names.forEach(nm => {
+        const [bg, tc] = randBg();
+        let added = 0, updated = 0;
+        scope.forEach(r => {
+          const targetLevels = lvl === 'all'
+            ? [{ kind: 'notify' }, ...r.escLevels.map((lv, i) => ({ kind: 'level', idx: i }))]
+            : lvl === 'notify' ? [{ kind: 'notify' }] : [{ kind: 'level', idx: parseInt(lvl, 10) }];
+          targetLevels.forEach(tl => {
+            const list = tl.kind === 'notify' ? r.notify.users : r.escLevels[tl.idx]?.users;
+            if (!list) return;
+            const existing = list.find(u => u.name.toLowerCase() === nm.toLowerCase());
+            if (existing) {
+              const before = existing.comm.join('');
+              existing.comm = [..._mucBulkChannels];
+              if (existing.comm.join('') !== before) updated++;
+            } else {
+              list.push({ init: initialsOf(nm), bg, tc, name: nm, comm: [..._mucBulkChannels] });
+              added++;
+            }
+          });
         });
+        summary.push({ name: nm, added, updated });
       });
       renderRows();
-      renderMasterUserResults(_mucName);
-      showUndoToast({ msg: `Added <b>${_mucName}</b> to ${added} level${added===1?'':'s'}.`, onUndo: () => {} });
+      renderMasterUserResults();
+      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => _mucBulkChannels[i]).join(' / ');
+      const items = summary.map(s => {
+        if (s.added === 0 && s.updated === 0) return { skipped: true, html: `<b>${s.name}</b> — no change (already configured with these channels).` };
+        const parts = [];
+        if (s.added) parts.push(`added to ${s.added} level${s.added===1?'':'s'}`);
+        if (s.updated) parts.push(`channels updated on ${s.updated} level${s.updated===1?'':'s'}`);
+        return { html: `<b>${s.name}</b> — ${parts.join(', ')}.` };
+      });
+      const totalAdded = summary.reduce((a, s) => a + s.added, 0);
+      const totalUpdated = summary.reduce((a, s) => a + s.updated, 0);
+      const title = totalAdded + totalUpdated === 0
+        ? `No new placements needed`
+        : `${totalAdded ? totalAdded + ' new placement' + (totalAdded===1?'':'s') : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' channel update' + (totalUpdated===1?'':'s') : ''} to ${_bulkLvlLabel(lvl)}`;
+      const scopeLine = `Scope: ${_scopeText()} · Channels: ${channelLabels}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: scopeLine }] });
     }
     function masterBulkRemove() {
-      if (!_mucName || !_mucName.trim()) return;
+      _commitTypedName();
+      const names = _activeNames();
+      if (names.length === 0) { alert('Add at least one name.'); return; }
       const lvl = document.getElementById('mucBulkLevel').value;
-      const q = _mucName.toLowerCase();
       const scope = _mucScope();
-      let removed = 0;
-      scope.forEach(r => {
-        const before = (list) => list.length;
-        const strip = (list) => { const b = list.length; const out = list.filter(u => u.name.toLowerCase() !== q); removed += b - out.length; return out; };
-        if (lvl === 'all' || lvl === 'notify') r.notify.users = strip(r.notify.users);
-        if (lvl === 'all') r.escLevels.forEach(lv => lv.users = strip(lv.users));
-        else if (lvl !== 'notify') {
-          const idx = parseInt(lvl, 10);
-          if (r.escLevels[idx]) r.escLevels[idx].users = strip(r.escLevels[idx].users);
-        }
+      if (scope.length === 0) { alert('Scope is empty — pick rows or plants first.'); return; }
+      const summary = [];
+      names.forEach(nm => {
+        const q = nm.toLowerCase();
+        let removed = 0;
+        scope.forEach(r => {
+          const strip = (list) => { const b = list.length; const out = list.filter(u => u.name.toLowerCase() !== q); removed += b - out.length; return out; };
+          if (lvl === 'all' || lvl === 'notify') r.notify.users = strip(r.notify.users);
+          if (lvl === 'all') r.escLevels.forEach(lv => lv.users = strip(lv.users));
+          else if (lvl !== 'notify') {
+            const idx = parseInt(lvl, 10);
+            if (r.escLevels[idx]) r.escLevels[idx].users = strip(r.escLevels[idx].users);
+          }
+        });
+        summary.push({ name: nm, removed });
       });
       renderRows();
-      renderMasterUserResults(_mucName);
-      showUndoToast({ msg: `Removed <b>${_mucName}</b> from ${removed} placement${removed===1?'':'s'}.`, onUndo: () => {} });
+      renderMasterUserResults();
+      const items = summary.map(s => s.removed === 0
+        ? { skipped: true, html: `<b>${s.name}</b> — wasn't on this scope, nothing removed.` }
+        : { html: `<b>${s.name}</b> — removed from ${s.removed} placement${s.removed===1?'':'s'}.` });
+      const total = summary.reduce((a, s) => a + s.removed, 0);
+      const title = total === 0 ? `Nothing to remove` : `Removed ${total} placement${total===1?'':'s'} from ${_bulkLvlLabel(lvl)}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeText()}` }] });
+    }
+    function _scopeText() {
+      if (_mucScopeMode === 'selected') return `${selected.size} selected row${selected.size===1?'':'s'}`;
+      if (_mucScopeMode === 'plant') {
+        const names = [..._mucScopePlants].map(id => plants.find(p => p.id === id)?.name).filter(Boolean);
+        return names.length === 0 ? 'no plants' : names.join(', ');
+      }
+      return 'all insights';
     }
 
     function mucRemoveOne(insightId, levelIdx, userIdx, name) {
       const r = insights.find(x => x.id === insightId);
       if (!r) return;
+      const lvlLabel = levelIdx === 'notify' ? 'Notify' : ('Level ' + (parseInt(levelIdx,10)+1));
       if (levelIdx === 'notify') r.notify.users.splice(userIdx, 1);
       else r.escLevels[parseInt(levelIdx,10)]?.users.splice(userIdx, 1);
       renderRows();
-      renderMasterUserResults(name);
+      renderMasterUserResults();
+      showSuccessToast({ title: `Removed ${name}`, items: [{ html: `<b>${name}</b> removed from <b>${lvlLabel}</b> on <b>${r.name}</b>.` }] });
     }
 
     /* ──── Add Insight (multi-level + per-user channels) ──── */
@@ -1859,13 +2061,15 @@
       const wrap = document.getElementById('aiLevels');
       let html = '';
       // Notify block
-      html += `<div class="ai-level" style="border-left:3px solid var(--brand-900)">
+      html += `<div class="ai-level notify">
         <div class="ai-level-head">
           <span class="lbadge lbn">Notify</span>
-          <span class="ai-level-title" style="color:var(--color-text-secondary);font-weight:500">Immediate alert · fires the instant the trigger opens</span>
+          <span class="ai-level-title">Immediate · fires the instant the trigger opens</span>
         </div>
-        ${aiBuilder.notify.map((u, i) => _aiUserRow('notify', i, u)).join('')}
-        <button class="ai-add-user-btn" onclick="aiAddUser('notify')">＋ Add user to Notify</button>
+        <div class="ai-level-body">
+          ${aiBuilder.notify.map((u, i) => _aiUserRow('notify', i, u)).join('')}
+          <button class="ai-add-user-btn" onclick="aiAddUser('notify')"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Add user</button>
+        </div>
       </div>`;
       // Levels
       const clsMap = ['lb1','lb2','lb3'];
@@ -1873,11 +2077,14 @@
         html += `<div class="ai-level">
           <div class="ai-level-head">
             <span class="lbadge ${clsMap[li]||'lbc'}">${lv.label}</span>
+            <span class="ai-level-title">Time-based escalation</span>
             <span class="ai-level-delay">+<input type="number" min="0" value="${lv.delay}" oninput="aiSetDelay(${li},this.value)"/>min after trigger</span>
             <button class="ai-level-remove" onclick="aiRemoveLevel(${li})" title="Remove level">×</button>
           </div>
-          ${lv.users.map((u, ui) => _aiUserRow(li, ui, u)).join('')}
-          <button class="ai-add-user-btn" onclick="aiAddUser(${li})">＋ Add user to ${lv.label}</button>
+          <div class="ai-level-body">
+            ${lv.users.map((u, ui) => _aiUserRow(li, ui, u)).join('')}
+            <button class="ai-add-user-btn" onclick="aiAddUser(${li})"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Add user</button>
+          </div>
         </div>`;
       });
       wrap.innerHTML = html;
@@ -1951,10 +2158,13 @@
       insights.push(insight);
       closeAddInsightModal();
       renderRows();
-      showUndoToast({
-        msg: `Created <b>${name}</b> in ${plants.find(p => p.id === plant)?.name}.`,
-        onUndo: () => { const i = insights.findIndex(x => x.id === newId); if (i >= 0) insights.splice(i, 1); renderRows(); }
-      });
+      const plantName = plants.find(p => p.id === plant)?.name;
+      const items = [
+        { html: `<b>${name}</b> created in <b>${plantName}</b> · <b>${typeLabels[type]}</b> · ${equipment}.` },
+        { html: `Notify users: <b>${insight.notify.users.length}</b> · Escalation levels: <b>${insight.escLevels.length}</b> · Total assigned users: <b>${insight.escLevels.reduce((a, l) => a + l.users.length, 0) + insight.notify.users.length}</b>.` },
+      ];
+      if (insight.notify.users.length === 0) items.push({ skipped: true, html: 'Heads up: Notify is empty — nobody will be alerted on trigger.' });
+      showSuccessToast({ title: 'Insight created', items });
     }
 
     function openBulkTimingModal() { if (selected.size === 0) return; document.getElementById('bulkTimingSub').textContent = `Adjust escalation delay for ${selected.size} selected insight${selected.size>1?'s':''}`; document.getElementById('bulkTimingModal').classList.add('open'); }
@@ -2114,6 +2324,7 @@
           renderL3Escalation();
         }
       });
+      showSuccessToast({ title: `Added ${name} to ${levelLabel}`, items: [{ html: `<b>${r.name}</b> — <b>${name}</b> added to <b>${levelLabel}</b> with default channel <b>Email</b>.` }, { skipped: true, html: 'You can apply across the whole plant from the undo toast.' }] });
     }
     function removeL3User(levelIdx, userIdx) {
       const r = getCurrentInsight();
@@ -2141,8 +2352,20 @@
           renderL3Escalation();
         }
       });
+      showSuccessToast({ title: `Removed ${removed.name} from ${levelLabel}`, items: [{ html: `<b>${r.name}</b> — <b>${removed.name}</b> removed from <b>${levelLabel}</b>.` }] });
     }
     function toggleComm(levelIdx, userIdx, commIdx) {
+      const r = getCurrentInsight();
+      const users = levelIdx === 'notify' ? r.notify.users : r.escLevels[parseInt(levelIdx,10)].users;
+      const u = users[userIdx];
+      const wasOn = u.comm[commIdx];
+      u.comm[commIdx] = wasOn ? 0 : 1;
+      renderL3Escalation();
+      const ch = ['Email','SMS','WhatsApp','Call'][commIdx];
+      const lvlLabel = levelIdx === 'notify' ? 'Notify' : ('Level ' + (parseInt(levelIdx,10)+1));
+      showSuccessToast({ title: `${ch} ${wasOn?'disabled':'enabled'} for ${u.name}`, items: [{ html: `<b>${u.name}</b> on <b>${lvlLabel}</b> — ${ch} channel ${wasOn?'turned off':'turned on'}.` }] });
+    }
+    function _legacy_toggleComm(levelIdx, userIdx, commIdx) {
       const r = getCurrentInsight();
       const users = levelIdx === 'notify' ? r.notify.users : r.escLevels[parseInt(levelIdx,10)].users;
       users[userIdx].comm[commIdx] = users[userIdx].comm[commIdx] ? 0 : 1;
@@ -2155,8 +2378,10 @@
     }
     function toggleHooterChip(levelIdx) {
       const r = getCurrentInsight();
-      r.escLevels[levelIdx].hooter = !r.escLevels[levelIdx].hooter;
+      const lv = r.escLevels[levelIdx];
+      lv.hooter = !lv.hooter;
       renderL3Escalation();
+      showSuccessToast({ title: `Hooter ${lv.hooter?'enabled':'disabled'} on ${lv.label}`, items: [{ html: `<b>${r.name}</b> — ${lv.label} will ${lv.hooter?'now sound':'no longer sound'} the hooter alarm when this level fires.` }] });
     }
     function toggleHooter(levelIdx, cb) {
       const r = getCurrentInsight();
@@ -2178,8 +2403,36 @@
         desc: 'Choose whether to add this level only to the current insight, or to every insight in this plant.',
         applyAll: () => { insights.forEach(ins => ins.escLevels.push(buildLevel(ins.escLevels))); },
         applyOne: () => { const r = getCurrentInsight(); r.escLevels.push(buildLevel(r.escLevels)); },
-        done: () => { renderL3Escalation(); }
+        done: () => {
+          renderL3Escalation();
+          const newest = (getCurrentInsight().escLevels.filter(l => !l.oneOff && l.cls !== 'lbc').slice(-1)[0]) || { label: 'Level' };
+          showSuccessToast({ title: `${newest.label} added`, items: [{ html: `<b>${getCurrentInsight().name}</b> — added <b>${newest.label}</b> with a +${newest.delay}m delay.` }] });
+        }
       });
+    }
+
+    /* Success summary toast */
+    let _sucToastTimer = null;
+    function showSuccessToast({ title, items = [], duration = 5500 }) {
+      const el = document.getElementById('successToast');
+      document.getElementById('successToastTitle').textContent = title || 'Done';
+      const list = document.getElementById('successToastList');
+      list.innerHTML = items.length === 0
+        ? '<div class="success-toast-item">No changes were necessary.</div>'
+        : items.map(it => {
+            const cls = it.skipped ? 'success-toast-item skipped' : 'success-toast-item';
+            return `<div class="${cls}">${it.html || it.text || ''}</div>`;
+          }).join('');
+      el.classList.add('open');
+      const prog = document.getElementById('successToastProgress');
+      prog.style.transition = 'none'; prog.style.width = '100%';
+      requestAnimationFrame(() => { prog.style.transition = `width ${duration}ms linear`; prog.style.width = '0%'; });
+      if (_sucToastTimer) clearTimeout(_sucToastTimer);
+      _sucToastTimer = setTimeout(() => dismissSuccessToast(), duration);
+    }
+    function dismissSuccessToast() {
+      if (_sucToastTimer) { clearTimeout(_sucToastTimer); _sucToastTimer = null; }
+      document.getElementById('successToast')?.classList.remove('open');
     }
 
     /* Doherty-threshold undo toast */
