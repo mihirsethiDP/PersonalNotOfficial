@@ -83,6 +83,14 @@
     .ux-hint.error .ux-hint-icon { color: var(--sev-alert-accent); }
     .ux-hint.info .ux-hint-icon { color: var(--brand-500); }
 
+    /* L3 as a modal overlay (was a separate page) */
+    .l3-as-modal { position: fixed; inset: 0; background: rgba(14,31,54,.42); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 200; padding: 32px 20px; overflow-y: auto; }
+    .l3-as-modal .page { max-width: 880px; margin: 0 auto; background: #fff; border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; box-shadow: 0 12px 40px rgba(14,31,54,0.18); animation: pop .26s var(--ease-out); position: relative; }
+    .l3-as-modal .layout { display: block; }
+    .l3-as-modal .layout > div { width: 100%; }
+    .l3-close-btn { position: fixed; top: 24px; right: 24px; width: 36px; height: 36px; border-radius: 50%; border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); cursor: pointer; font-size: 16px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; z-index: 250; box-shadow: 0 4px 12px rgba(14,31,54,0.16); transition: all .14s var(--ease-out); }
+    .l3-close-btn:hover { background: var(--brand-50); color: var(--brand-800); border-color: var(--brand-300); transform: scale(1.04); }
+
     /* Section tabs (Plants | Insights) */
     .section-tabs { display: flex; gap: 4px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 18px; padding: 0 2px; }
     .section-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--color-text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: color .14s var(--ease-out), border-color .14s var(--ease-out); margin-bottom: -1px; }
@@ -240,6 +248,9 @@
     .action-pop-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; }
     .action-pop-input, .action-pop-select { height: 30px; padding: 0 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-size: 12px; font-family: var(--font-sans); background: #fff; outline: none; transition: border-color .14s var(--ease-out); }
     .action-pop-input:focus, .action-pop-select:focus { border-color: var(--brand-500); }
+    .ap-save-group { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; margin: 8px 0 4px; background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 5px; font-size: 11.5px; color: var(--brand-800); cursor: pointer; user-select: none; }
+    .ap-save-group input[type="checkbox"] { accent-color: var(--brand-800); margin-right: 6px; }
+    .ap-save-group span { display: inline-flex; align-items: center; }
     .action-pop-actions { display: flex; gap: 6px; justify-content: flex-end; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); }
     .action-pop-actions button { height: 28px; padding: 0 12px; border-radius: 5px; font-size: 12px; cursor: pointer; font-family: var(--font-sans); }
     .action-pop-actions .pop-cancel { background: #fff; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); }
@@ -967,17 +978,10 @@
       </div>
     </div>
 
-    <!-- ══════════════════ L3 — Insight detail ══════════════════ -->
-    <div id="view-l3" class="view">
+    <!-- ══════════════════ L3 — Insight detail (modal overlay) ══════════════════ -->
+    <div id="view-l3" class="view l3-as-modal">
+      <button class="l3-close-btn" onclick="closeL3Modal()" aria-label="Close">✕</button>
       <div class="page">
-        <div class="breadcrumb">
-          <a onclick="showView('l1')">Insights</a>
-          <span class="breadcrumb-sep">›</span>
-          <a onclick="showView('l2')">Insights</a>
-          <span class="breadcrumb-sep">›</span>
-          <span style="color:var(--color-text-primary);font-weight:500">Boiler pressure threshold exceeded</span>
-        </div>
-
         <div class="top-bar">
           <div>
             <div class="insight-title">Boiler pressure threshold exceeded</div>
@@ -1007,7 +1011,7 @@
             </div>
 
             <!-- Conditions (collapsible) -->
-            <details class="card" open>
+            <details class="card">
               <summary>
                 <span class="summary-title"><span class="summary-chev">›</span>Opening &amp; closing conditions <span class="summary-meta">PT-101 ≥ 12.5 bar &nbsp;→&nbsp; PT-101 &lt; 11.0 bar</span></span>
                 <button class="card-title-action" id="editCondBtn" onclick="event.preventDefault();event.stopPropagation();toggleConditionEdit()">Edit</button>
@@ -1110,7 +1114,7 @@
 
           <!-- RIGHT — escalation (collapsible) -->
           <div>
-            <details class="card" open style="padding:0;overflow:hidden">
+            <details class="card" style="padding:0;overflow:hidden">
               <summary>
                 <span class="summary-title"><span class="summary-chev">›</span>Escalation matrix</span>
                 <span style="font-size:11px;color:var(--color-text-tertiary)">overrides plant default</span>
@@ -1643,11 +1647,17 @@
     const plantDigests = {};
     plants.forEach(p => { plantDigests[p.id] = []; });
 
-    /* Reusable user groups (plant-scoped) — keyed by plant id, list of {name, members:[{name, comm}]} */
-    const plantGroups = {};
-    plants.forEach(p => { plantGroups[p.id] = []; });
-    /* Global cross-plant groups too */
-    const globalGroups = [];
+    /* Reusable user groups — global list. Each: { id, name, members: [name, ...] } */
+    const userGroups = [];
+    let _groupIdSeq = 1;
+    function _saveGroup(name, members) {
+      if (!name || members.length === 0) return null;
+      const existing = userGroups.find(g => g.name.toLowerCase() === name.toLowerCase());
+      if (existing) { existing.members = [...members]; return existing; }
+      const g = { id: _groupIdSeq++, name, members: [...members] };
+      userGroups.push(g);
+      return g;
+    }
 
     /* Per-plant escalation defaults — new insights inherit these */
     const plantDefaults = {};
@@ -2495,7 +2505,27 @@
         </div>`;
       }).join('');
     }
-    function handleRowClick(id) { showView('l3'); }
+    function handleRowClick(id) {
+      // Open L3 as a modal overlay over the current L2 page (no view switch).
+      setL3Insight(id);
+      const l3 = document.getElementById('view-l3');
+      l3.classList.add('active');
+      l3.scrollTop = 0;
+      try { renderL3Escalation(); } catch (e) { /* noop */ }
+      document.body.style.overflow = 'hidden';
+    }
+    function closeL3Modal() {
+      document.getElementById('view-l3').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    /* Close on backdrop click (anywhere outside the .page card inside the modal) */
+    document.getElementById('view-l3')?.addEventListener('click', (e) => {
+      if (e.target.id === 'view-l3') closeL3Modal();
+    });
+    /* Close on Esc */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('view-l3')?.classList.contains('active')) closeL3Modal();
+    });
     function toggleSelect(id, cb) { if (cb.checked) selected.add(id); else selected.delete(id); updateBulkBar(); renderRows(); }
     function toggleAll(cb) {
       const ids = insights.filter(r => matchesFilters(r) && (!document.getElementById('searchInput').value || r.name.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()))).map(r => r.id);
@@ -2941,9 +2971,15 @@
       `;
       let html = '';
       if (kind === 'add') {
-        html = `<div class="action-pop-title">Add user to ${selected.size} selected insight${selected.size===1?'':'s'}</div>
-          <div class="action-pop-row"><span class="action-pop-label">User name</span>
-            <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma" oninput="apUpdateUserHelper('add')"/>
+        const groupOpts = userGroups.length === 0
+          ? '<option value="">— no saved groups yet —</option>'
+          : '<option value="">— pick a saved group —</option>' + userGroups.map(g => `<option value="${g.id}">${g.name} · ${g.members.length} member${g.members.length===1?'':'s'}</option>`).join('');
+        html = `<div class="action-pop-title">Add user${userGroups.length?' or group':''} to ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-row"><span class="action-pop-label">Use saved group</span>
+            <select class="action-pop-select" id="ap-add-group" onchange="apApplyGroup('add')" ${userGroups.length===0?'disabled':''}>${groupOpts}</select>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">User name${userGroups.length?'(s)':''}</span>
+            <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma · separate multiple with commas" oninput="apUpdateUserHelper('add')"/>
             <div class="user-helper-hint empty" id="ap-add-helper">Type a name to see where this user is already configured.</div>
             <div id="ap-add-perm" style="display:none"></div>
           </div>
@@ -2953,13 +2989,24 @@
           <div class="action-pop-row"><span class="action-pop-label">Channels</span>
             <div class="channel-chips" id="ap-add-channels">${channelChips}</div>
           </div>
+          <label class="ap-save-group">
+            <input type="checkbox" id="ap-add-savegroup" onchange="apToggleSaveGroup('add')"/>
+            <span>Save as a reusable group</span>
+            <input class="action-pop-input" id="ap-add-savegroup-name" placeholder="Group name (e.g. Boiler responders)" style="display:none;width:100%;margin-top:4px"/>
+          </label>
           <div class="action-pop-actions">
             <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
-            <button class="pop-confirm" onclick="apActionAdd()">Add user</button>
+            <button class="pop-confirm" onclick="apActionAdd()">Add</button>
           </div>`;
       } else if (kind === 'remove') {
-        html = `<div class="action-pop-title">Remove user from ${selected.size} selected insight${selected.size===1?'':'s'}</div>
-          <div class="action-pop-row"><span class="action-pop-label">User name (exact match)</span>
+        const groupOpts = userGroups.length === 0
+          ? '<option value="">— no saved groups yet —</option>'
+          : '<option value="">— pick a saved group —</option>' + userGroups.map(g => `<option value="${g.id}">${g.name} · ${g.members.length} member${g.members.length===1?'':'s'}</option>`).join('');
+        html = `<div class="action-pop-title">Remove user${userGroups.length?' or group':''} from ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-row"><span class="action-pop-label">Use saved group</span>
+            <select class="action-pop-select" id="ap-rm-group" onchange="apApplyGroup('rm')" ${userGroups.length===0?'disabled':''}>${groupOpts}</select>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">User name${userGroups.length?'(s)':''} (comma-separated)</span>
             <input class="action-pop-input" id="ap-rm-name" placeholder="e.g. Rahul Sharma" oninput="apUpdateUserHelper('rm')"/>
             <div class="user-helper-hint empty" id="ap-rm-helper">Type a name to see this user's current placements.</div>
           </div>
@@ -3327,18 +3374,40 @@
       apActionAdd(true);
     }
 
+    function _parseNames(raw) {
+      return raw.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    function apApplyGroup(which) {
+      const sel = document.getElementById(which === 'add' ? 'ap-add-group' : 'ap-rm-group');
+      const id = parseInt(sel.value, 10);
+      if (isNaN(id)) return;
+      const g = userGroups.find(x => x.id === id);
+      if (!g) return;
+      const inp = document.getElementById(which === 'add' ? 'ap-add-name' : 'ap-rm-name');
+      inp.value = g.members.join(', ');
+      apUpdateUserHelper(which === 'add' ? 'add' : 'rm');
+    }
+    function apToggleSaveGroup(which) {
+      const cb = document.getElementById('ap-' + which + '-savegroup');
+      const inp = document.getElementById('ap-' + which + '-savegroup-name');
+      if (inp) inp.style.display = cb.checked ? '' : 'none';
+      if (cb.checked && inp) setTimeout(() => inp.focus(), 30);
+    }
+
     function apActionAdd(skipPermissionCheck) {
-      const name = document.getElementById('ap-add-name').value.trim();
-      if (!name) { document.getElementById('ap-add-name').focus(); return; }
-      // Permission gate — block submission until the user has access to every target plant
+      const raw = document.getElementById('ap-add-name').value.trim();
+      if (!raw) { document.getElementById('ap-add-name').focus(); return; }
+      const names = _parseNames(raw);
+      if (names.length === 0) return;
+      // Permission gate — only checks the first name; multi-name flow grants for everyone behind one click
       if (!skipPermissionCheck) {
         const scope = _selectedScope();
         const targetPlants = [...new Set(scope.map(r => r.plant))];
-        const missing = targetPlants.filter(pid => !userHasAccess(name, pid));
-        if (missing.length > 0) {
-          // Make sure the gate is visible — call helper update once to render it
-          apUpdateUserHelper('add');
-          // Pulse the perm gate so the user notices
+        const missingPerName = names.map(nm => ({ nm, missing: targetPlants.filter(pid => !userHasAccess(nm, pid)) })).filter(x => x.missing.length > 0);
+        if (missingPerName.length > 0) {
+          // Render gate using the first lacking user; document multiple if more
+          const first = missingPerName[0];
+          _renderPermissionGateMulti(first.nm, missingPerName);
           const permEl = document.getElementById('ap-add-perm');
           if (permEl) { permEl.classList.remove('shake'); void permEl.offsetWidth; permEl.classList.add('shake'); }
           return;
@@ -3348,21 +3417,53 @@
       if (delay == null) { showSuccessToast({ title: 'Pick a time window', items: [{ skipped: true, html: 'Choose a preset (Immediate / +5m / +15m / +30m / +1h) or enter a positive custom delay.' }] }); return; }
       const channels = _readChannels('ap-add-channels');
       if (channels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before adding.' }] }); return; }
-      _runAddByDelay(_selectedScope(), [name], delay, channels);
+      _runAddByDelay(_selectedScope(), names, delay, channels);
+      // Save as group?
+      const saveCb = document.getElementById('ap-add-savegroup');
+      if (saveCb && saveCb.checked) {
+        const gname = (document.getElementById('ap-add-savegroup-name')?.value || '').trim();
+        if (gname && names.length > 0) {
+          const g = _saveGroup(gname, names);
+          if (g) showSuccessToast({ title: `Group "${g.name}" saved`, items: [{ html: `<b>${g.members.join(', ')}</b> grouped as <b>${g.name}</b> — pick this group from the dropdown next time.` }] });
+        }
+      }
       closeAllActionPops();
     }
+    function _renderPermissionGateMulti(_first, missingPerName) {
+      const permEl = document.getElementById('ap-add-perm'); if (!permEl) return;
+      const lines = missingPerName.map(x => {
+        const names = x.missing.map(pid => plants.find(p => p.id === pid)?.name).filter(Boolean).join(', ');
+        return `<b>${x.nm}</b> → ${names}`;
+      }).join('<br/>');
+      const allMissing = missingPerName.flatMap(x => x.missing.map(pid => ({ name: x.nm, pid })));
+      permEl.innerHTML = `<div class="perm-gate">
+        <span class="perm-gate-icon">🔒</span>
+        <div class="perm-gate-text">${missingPerName.length === 1 ? '1 user lacks access' : missingPerName.length + ' users lack access'} to plants in this scope:<br/>${lines}<br/>Grant access to add them all here.</div>
+        <button class="perm-gate-btn" onclick="_grantAndAddAll(${JSON.stringify(allMissing).replace(/"/g,'&quot;')})">Grant access &amp; add</button>
+      </div>`;
+      permEl.style.display = '';
+    }
+    function _grantAndAddAll(allMissing) {
+      // Group by name then grant
+      const byName = {};
+      allMissing.forEach(x => { (byName[x.name] = byName[x.name] || []).push(x.pid); });
+      Object.keys(byName).forEach(nm => grantUserAccess(nm, byName[nm]));
+      apUpdateUserHelper('add');
+      apActionAdd(true);
+    }
     function apActionRemove() {
-      const name = document.getElementById('ap-rm-name').value.trim();
-      if (!name) { document.getElementById('ap-rm-name').focus(); return; }
+      const raw = document.getElementById('ap-rm-name').value.trim();
+      if (!raw) { document.getElementById('ap-rm-name').focus(); return; }
+      const names = _parseNames(raw);
+      if (names.length === 0) return;
       const typeFilter = document.querySelector('#ap-rm-types .tw-chip.on')?.dataset.rmtyp || 'all';
-      // Scope = selected rows, optionally narrowed by type
       let scope = _selectedScope();
       if (typeFilter !== 'all') scope = scope.filter(r => r.type === typeFilter);
       if (scope.length === 0) {
         showSuccessToast({ title: 'No matches', items: [{ skipped: true, html: typeFilter === 'all' ? 'Selection is empty.' : `None of the selected insights are <b>${typeFilter}</b> type.` }] });
         return;
       }
-      _runRemove(scope, [name], 'all');
+      _runRemove(scope, names, 'all');
       closeAllActionPops();
     }
     function apActionTiming() {
@@ -3913,12 +4014,30 @@
     }
 
     /* ════════════════════ L3 ════════════════════ */
-    const currentInsightId = 1;
+    let _l3CurrentId = 1;
     let l3Insight = null;
 
     function getCurrentInsight() {
-      if (!l3Insight) l3Insight = JSON.parse(JSON.stringify(insights.find(i => i.id === currentInsightId)));
+      if (!l3Insight || l3Insight.id !== _l3CurrentId) {
+        const src = insights.find(i => i.id === _l3CurrentId) || insights[0];
+        l3Insight = JSON.parse(JSON.stringify(src));
+      }
       return l3Insight;
+    }
+    function setL3Insight(id) {
+      _l3CurrentId = id;
+      l3Insight = null; // force reload from source
+      const src = insights.find(i => i.id === id);
+      if (src) {
+        const titleEl = document.querySelector('#view-l3 .insight-title');
+        if (titleEl) titleEl.textContent = src.name;
+        const metaEl = document.querySelector('#view-l3 .insight-meta');
+        const plant = plants.find(p => p.id === src.plant);
+        if (metaEl) metaEl.innerHTML = `<span class="badge b-${src.type === 'incident'?'inc':src.type}"><span class="b-dot"></span>${typeLabels[src.type]}</span>
+          <span class="badge b-active"><span class="b-dot"></span>${src.lastTrigActive ? src.lastTrig : 'Resolved'}</span>
+          <span class="badge b-plant">${plant?plant.name:''}</span>
+          <span class="badge b-plant">Equipment: ${src.equipment}</span>`;
+      }
     }
 
     function renderL3Escalation() {
