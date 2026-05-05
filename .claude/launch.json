@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["-y", "http-server", ".", "-p", "8765", "-c-1"],
       "port": 8765
+    },
+    {
+      "name": "insights-ps",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "$ErrorActionPreference='Stop';$l=New-Object System.Net.HttpListener;$l.Prefixes.Add('http://localhost:8778/');$l.Start();while($l.IsListening){try{$ctx=$l.GetContext();$p=$ctx.Request.Url.LocalPath;if($p -eq '/'){$p='/index.html'};$f=Join-Path '.' $p.TrimStart('/');if(Test-Path $f){$b=[IO.File]::ReadAllBytes($f);$ctx.Response.ContentType=if($f -match '\\.html$'){'text/html'}elseif($f -match '\\.js$'){'application/javascript'}elseif($f -match '\\.css$'){'text/css'}else{'application/octet-stream'};$ctx.Response.OutputStream.Write($b,0,$b.Length)}else{$ctx.Response.StatusCode=404};$ctx.Response.Close()}catch{}}"],
+      "port": 8778
     }
   ]
 }

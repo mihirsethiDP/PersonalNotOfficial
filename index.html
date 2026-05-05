@@ -2150,6 +2150,8 @@
       showSuccessToast({ title: `${plantName} defaults saved`, items: [...items, { skipped: true, html: 'These settings will be applied to every new insight created in this plant.' }] });
       closePlantDefaults();
     }
+
+    function renderRows() {
       const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
       const c = document.getElementById('rowsContainer');
       if (!c) return;
