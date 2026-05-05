@@ -83,6 +83,75 @@
     .ux-hint.error .ux-hint-icon { color: var(--sev-alert-accent); }
     .ux-hint.info .ux-hint-icon { color: var(--brand-500); }
 
+    /* Section tabs (Plants | Insights) */
+    .section-tabs { display: flex; gap: 4px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 18px; padding: 0 2px; }
+    .section-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--color-text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: color .14s var(--ease-out), border-color .14s var(--ease-out); margin-bottom: -1px; }
+    .section-tab:hover { color: var(--brand-700); }
+    .section-tab.active { color: var(--brand-800); border-bottom-color: var(--brand-800); font-weight: 600; }
+    .section-tab-count { font-size: 11px; padding: 1px 7px; border-radius: 10px; background: var(--color-background-secondary); color: var(--color-text-tertiary); font-weight: 500; }
+    .section-tab.active .section-tab-count { background: var(--brand-100); color: var(--brand-800); }
+
+    /* Plants grid */
+    .plant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .plant-card { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; padding: 14px 16px; transition: border-color .14s var(--ease-out), box-shadow .14s var(--ease-out); animation: fadeUp .22s var(--ease-out) both; }
+    .plant-card:hover { border-color: var(--brand-200); box-shadow: var(--elev-1); }
+    .plant-card-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .plant-card-name { font-size: 14px; font-weight: 600; color: var(--color-text-primary); flex: 1; line-height: 1.3; }
+    .plant-card-loc { font-size: 11.5px; color: var(--color-text-tertiary); margin-top: 2px; }
+    .plant-card-stats { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+    .plant-stat { font-size: 10.5px; padding: 2px 8px; border-radius: 10px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+    .plant-stat.s-incident { background: var(--brand-900); color: #fff; }
+    .plant-stat.s-issue { background: var(--sev-alert-bg); color: var(--sev-alert-ink); }
+    .plant-stat.s-warning { background: var(--sev-warn-bg); color: var(--sev-warn-ink); }
+    .plant-stat.s-zero { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    .plant-card-actions { display: flex; gap: 6px; margin-top: 6px; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .plant-card-btn { flex: 1; height: 30px; padding: 0 10px; border-radius: 5px; border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); font-size: 11.5px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: all .14s var(--ease-out); }
+    .plant-card-btn:hover { background: var(--brand-50); border-color: var(--brand-300); color: var(--brand-800); }
+    .plant-card-btn.primary { background: var(--brand-800); border-color: var(--brand-800); color: #fff; }
+    .plant-card-btn.primary:hover { background: var(--brand-700); border-color: var(--brand-700); color: #fff; }
+
+    /* Plant defaults modal */
+    .pd-section { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+    .pd-section:last-child { margin-bottom: 0; }
+    .pd-section-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--brand-25); }
+    .pd-section-head .pd-sev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .pd-section-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); flex: 1; }
+    .pd-section-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .pd-level { background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; padding: 8px 10px; }
+    .pd-level-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .pd-level-label { font-size: 11px; font-weight: 600; color: var(--brand-800); padding: 2px 8px; background: var(--brand-100); border-radius: 4px; }
+    .pd-level-delay { font-size: 11px; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; }
+    .pd-level-delay input { width: 60px; height: 24px; padding: 0 6px; font-size: 11.5px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-family: var(--font-sans); background: #fff; outline: none; text-align: center; }
+    .pd-level-remove { margin-left: auto; width: 22px; height: 22px; border-radius: 4px; background: transparent; border: 0.5px solid transparent; color: var(--color-text-tertiary); cursor: pointer; font-size: 14px; }
+    .pd-level-remove:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
+    .pd-users { display: flex; flex-direction: column; gap: 4px; }
+    .pd-add-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
+    .pd-add-input { height: 28px; padding: 0 10px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; font-family: var(--font-sans); background: #fff; outline: none; }
+    .pd-add-input:focus { border-color: var(--brand-500); }
+    .pd-add-btn { height: 28px; padding: 0 12px; border-radius: 4px; border: 0.5px solid var(--brand-800); background: var(--brand-800); color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); }
+    .pd-add-level-btn { width: 100%; padding: 8px; border: 0.5px dashed var(--color-border-secondary); border-radius: 5px; background: transparent; color: var(--color-text-secondary); font-size: 12px; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+    .pd-add-level-btn:hover { background: var(--brand-25); border-color: var(--brand-300); color: var(--brand-800); border-style: solid; }
+    .pd-user { display: flex; align-items: center; gap: 8px; padding: 4px 6px; background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; font-size: 12px; }
+    .pd-user-name { flex: 1; color: var(--color-text-primary); }
+    .pd-user-channels { display: inline-flex; gap: 2px; }
+    .pd-user-channels .ci { width: 18px; height: 18px; font-size: 9px; }
+    .pd-user-x { width: 18px; height: 18px; border-radius: 4px; background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 12px; line-height: 1; }
+    .pd-user-x:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); }
+
+    /* User helper hint inside Add User popover */
+    .user-helper-hint { background: var(--brand-25); border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-500); border-radius: 5px; padding: 8px 10px; font-size: 11.5px; color: var(--brand-800); line-height: 1.5; margin-top: 4px; animation: fadeUp .18s var(--ease-out); }
+    .user-helper-hint.empty { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); border-left-color: var(--color-border-secondary); color: var(--color-text-tertiary); }
+    .user-helper-line { display: block; }
+    .user-helper-line + .user-helper-line { margin-top: 3px; }
+    .user-helper-tag { display: inline-block; padding: 1px 6px; background: var(--brand-100); color: var(--brand-800); border-radius: 8px; font-size: 10px; font-weight: 500; margin-right: 3px; }
+
+    /* Time-window chips inside Add User popover */
+    .tw-chips { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+    .tw-chip { padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 14px; background: #fff; color: var(--color-text-secondary); font-size: 11.5px; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); }
+    .tw-chip:hover { background: var(--brand-25); border-color: var(--brand-300); color: var(--brand-800); }
+    .tw-chip.on { background: var(--brand-800); border-color: var(--brand-800); color: #fff; font-weight: 500; }
+    .tw-custom-input { width: 70px; height: 26px; padding: 0 8px; font-size: 11.5px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-family: var(--font-sans); outline: none; }
+
     /* Persistent action toolbar (replaces transient bulk-bar) */
     .action-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px 12px; background: var(--brand-25); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 12px; transition: background .18s var(--ease-out), border-color .18s var(--ease-out); position: relative; }
     .action-bar[data-empty="true"] { background: var(--color-background-secondary); border-style: dashed; }
@@ -646,9 +715,55 @@
   </div>
   <div class="app-shell">
 
-    <!-- ══════════════════ L2 — Insights (homepage) ══════════════════ -->
+    <!-- ══════════════════ L2 — Plants & Insights ══════════════════ -->
     <div id="view-l2" class="view active">
       <div class="page">
+        <!-- Section tabs: Plants / Insights -->
+        <div class="section-tabs">
+          <button class="section-tab" data-section="plants" onclick="setSection('plants')">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="2" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="8" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+            Plants
+            <span class="section-tab-count" id="sectionTabPlantCount"></span>
+          </button>
+          <button class="section-tab active" data-section="insights" onclick="setSection('insights')">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h7M2 10.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Insights
+            <span class="section-tab-count" id="sectionTabInsightCount"></span>
+          </button>
+        </div>
+
+        <!-- Plants pane -->
+        <div class="section-pane" id="pane-plants" style="display:none">
+          <div class="top-bar">
+            <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+              <span class="page-title">Plants</span>
+              <span style="font-size:12.5px;color:var(--color-text-secondary)" id="plantsCount"></span>
+            </div>
+          </div>
+
+          <!-- Plant search + status filter (no Plant filter here — we are the plants) -->
+          <div style="margin-bottom:10px">
+            <input class="search-input" style="width:100%" placeholder="Search plants by name or location…" type="text" id="plantSearchInput" oninput="renderPlantsPane()"/>
+          </div>
+          <div class="filter-static-bar">
+            <span style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:2px">Filter</span>
+            <div class="filter-group">
+              <button class="filter-pop-btn" data-filter="pstatus" onclick="togglePlantFilterPop(this)">
+                <span>Has insight type</span>
+                <span class="filter-pop-count" id="fpc-pstatus">All</span>
+                <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="filter-pop" id="fp-pstatus"></div>
+            </div>
+            <button class="filter-pop-btn filter-clear" onclick="plantClearFilters()" id="plantFilterClearBtn" style="display:none">Clear</button>
+          </div>
+
+          <div class="plant-grid" id="plantGrid"></div>
+          <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Click <b>Configure defaults</b> on any plant to set escalation chains per insight type — every new insight in that plant inherits these settings.</div>
+        </div>
+
+        <!-- Insights pane (existing content) -->
+        <div class="section-pane" id="pane-insights">
         <div class="top-bar">
           <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
             <span class="page-title">Insights</span>
@@ -792,6 +907,7 @@
           <div id="rowsContainer"></div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--color-text-tertiary)">Hover the escalation icon on any insight to see configured levels · Click a row to open · Use <b>Manage</b> to find anyone across every insight at once</div>
+        </div><!-- /pane-insights -->
       </div>
     </div>
 
@@ -1097,6 +1213,25 @@
   </div>
 
   <!-- ══════════════════ Add Insight modal ══════════════════ -->
+  <!-- ══════════════════ Plant defaults modal ══════════════════ -->
+  <div class="modal-bg" id="plantDefaultsModal">
+    <div class="modal" style="width:680px">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="pdTitle">Plant defaults</div>
+          <div class="modal-sub">Set the default escalation chain for each insight type. New insights created in this plant inherit these settings.</div>
+        </div>
+        <button class="modal-close" onclick="closePlantDefaults()">✕</button>
+      </div>
+      <div class="modal-body" id="pdBody"></div>
+      <div class="modal-footer">
+        <span style="font-size:11.5px;color:var(--color-text-tertiary);flex:1" id="pdFooterHint">Existing insights are not modified by changes here.</span>
+        <button class="btn-ghost" onclick="closePlantDefaults()">Close</button>
+        <button class="btn-primary" onclick="savePlantDefaults()">Save defaults</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-bg" id="addInsightModal">
     <div class="modal ai-modal" style="width:680px">
       <div class="modal-head ai-head">
@@ -1325,7 +1460,7 @@
       { id: 'epsilon', name: 'Epsilon Packaging Hub', location: 'Chennai, TN', insights: 14, active: 13, off: 1, allOn: true, statusDot: 'dot-green' },
     ];
 
-    const MAX_ESC_LEVELS = 3; // Cap escalation depth at 3 standard levels
+    const MAX_ESC_LEVELS = 99; // Cap effectively removed — escalation chains can be arbitrary length
 
     const insights = [
       { id: 1, name: 'Boiler pressure threshold exceeded', type: 'incident', equipment: 'tank', enabled: true, task: true, lastTrig: 'Active since 2h 14m', lastTrigActive: true,
@@ -1402,6 +1537,16 @@
     insights.forEach((r,i) => { r.plant = _plantAssign[i] || 'alpha'; });
     /* Per-plant master switch (drives global Activate/Deactivate) */
     const plantMaster = Object.fromEntries(plants.map(p => [p.id, p.allOn]));
+
+    /* Per-plant escalation defaults — new insights inherit these */
+    const plantDefaults = {};
+    plants.forEach(p => {
+      plantDefaults[p.id] = {
+        incident: { notify: { users: [] }, escLevels: [{ delay: 0, users: [], hooter: false }, { delay: 15, users: [], hooter: true }, { delay: 30, users: [], hooter: false }] },
+        issue:    { notify: { users: [] }, escLevels: [{ delay: 0, users: [], hooter: false }, { delay: 15, users: [], hooter: false }] },
+        warning:  { notify: { users: [] }, escLevels: [{ delay: 5, users: [], hooter: false }] },
+      };
+    });
 
     const commLabels = ['✉', '✆', 'W', '☏'];
     const typeLabels = { warning: 'Warning', issue: 'Issue', incident: 'Incident', achievement: 'Achievement', improvement: 'Improvement' };
@@ -1759,7 +1904,208 @@
       return `<span class="status-badge ${cls}"><span class="s-dot"></span>${typeLabels[r.type]}</span>`;
     }
 
-    function renderRows() {
+    /* ──── Plants section + tabs ──── */
+    let _section = 'insights';            // 'plants' | 'insights'
+    let _plantStatusFilter = '';          // '' | 'incident' | 'issue' | 'warning'
+
+    function setSection(s) {
+      _section = s;
+      document.querySelectorAll('.section-tab').forEach(t => t.classList.toggle('active', t.dataset.section === s));
+      document.getElementById('pane-plants').style.display   = s === 'plants'   ? '' : 'none';
+      document.getElementById('pane-insights').style.display = s === 'insights' ? '' : 'none';
+      if (s === 'plants') renderPlantsPane();
+    }
+
+    function _plantSeverityCounts(plantId) {
+      const list = insights.filter(r => r.plant === plantId && r.lastTrigActive);
+      return {
+        incident: list.filter(r => r.type === 'incident').length,
+        issue:    list.filter(r => r.type === 'issue').length,
+        warning:  list.filter(r => r.type === 'warning').length,
+      };
+    }
+
+    function renderPlantsPane() {
+      const grid = document.getElementById('plantGrid'); if (!grid) return;
+      const q = (document.getElementById('plantSearchInput')?.value || '').toLowerCase();
+      const list = plants.filter(p => {
+        if (q && !p.name.toLowerCase().includes(q) && !(p.location||'').toLowerCase().includes(q)) return false;
+        if (_plantStatusFilter) {
+          const c = _plantSeverityCounts(p.id);
+          if ((c[_plantStatusFilter]||0) === 0) return false;
+        }
+        return true;
+      });
+      document.getElementById('plantsCount').textContent = `${list.length} of ${plants.length}`;
+      document.getElementById('sectionTabPlantCount').textContent = plants.length;
+      if (list.length === 0) {
+        grid.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary);grid-column:1/-1">No plants match the current filters</div>';
+        return;
+      }
+      grid.innerHTML = list.map(p => {
+        const c = _plantSeverityCounts(p.id);
+        const total = insights.filter(r => r.plant === p.id).length;
+        const stats = [
+          c.incident ? `<span class="plant-stat s-incident">${c.incident} incident</span>` : '',
+          c.issue    ? `<span class="plant-stat s-issue">${c.issue} issue</span>` : '',
+          c.warning  ? `<span class="plant-stat s-warning">${c.warning} warning</span>` : '',
+          (c.incident + c.issue + c.warning) === 0 ? `<span class="plant-stat s-zero">all clear</span>` : '',
+        ].filter(Boolean).join('');
+        return `<div class="plant-card">
+          <div class="plant-card-head">
+            <div style="flex:1">
+              <div class="plant-card-name">${p.name}</div>
+              <div class="plant-card-loc">${p.location||''} · ${total} insight${total===1?'':'s'}</div>
+            </div>
+          </div>
+          <div class="plant-card-stats">${stats}</div>
+          <div class="plant-card-actions">
+            <button class="plant-card-btn" onclick="openPlantInsights('${p.id}')" title="Filter the Insights tab to this plant">View insights</button>
+            <button class="plant-card-btn primary" onclick="openPlantDefaults('${p.id}')" title="Set the escalation chain for new insights in this plant">Configure defaults</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function openPlantInsights(plantId) {
+      filterState.plants = new Set([plantId]);
+      setSection('insights');
+      renderRows();
+      updateFilterCountBadge();
+    }
+    function togglePlantFilterPop(btn) {
+      const pop = document.getElementById('fp-pstatus');
+      const wasOpen = pop.classList.contains('open');
+      document.querySelectorAll('.filter-pop.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.filter-pop-btn.active').forEach(b => b.classList.remove('active'));
+      if (!wasOpen) {
+        pop.innerHTML = `<div class="filter-pop-section">
+          <div class="filter-pop-section-title">Has active insights of type</div>
+          <label class="filter-pop-row"><input type="radio" name="ps" ${_plantStatusFilter===''?'checked':''} onchange="setPlantStatusFilter('')" style="accent-color:var(--brand-800)"/><span>Any</span></label>
+          <label class="filter-pop-row"><input type="radio" name="ps" ${_plantStatusFilter==='incident'?'checked':''} onchange="setPlantStatusFilter('incident')" style="accent-color:var(--brand-800)"/><span>Incident</span></label>
+          <label class="filter-pop-row"><input type="radio" name="ps" ${_plantStatusFilter==='issue'?'checked':''} onchange="setPlantStatusFilter('issue')" style="accent-color:var(--brand-800)"/><span>Issue</span></label>
+          <label class="filter-pop-row"><input type="radio" name="ps" ${_plantStatusFilter==='warning'?'checked':''} onchange="setPlantStatusFilter('warning')" style="accent-color:var(--brand-800)"/><span>Warning</span></label>
+        </div>`;
+        pop.classList.add('open'); btn.classList.add('active'); _openPop = 'pstatus';
+      } else { _openPop = null; }
+    }
+    function setPlantStatusFilter(v) {
+      _plantStatusFilter = v;
+      document.getElementById('fpc-pstatus').textContent = v ? v[0].toUpperCase() + v.slice(1) : 'All';
+      document.querySelector('[data-filter="pstatus"]').classList.toggle('active', !!v);
+      document.getElementById('plantFilterClearBtn').style.display = v ? '' : 'none';
+      renderPlantsPane();
+    }
+    function plantClearFilters() {
+      _plantStatusFilter = '';
+      document.getElementById('plantSearchInput').value = '';
+      document.getElementById('fpc-pstatus').textContent = 'All';
+      document.querySelector('[data-filter="pstatus"]').classList.remove('active');
+      document.getElementById('plantFilterClearBtn').style.display = 'none';
+      renderPlantsPane();
+    }
+
+    /* ──── Plant defaults modal ──── */
+    let _pdEditingPlantId = null;
+    let _pdDraft = null;            // deep clone of plantDefaults[plantId]
+    function openPlantDefaults(plantId) {
+      _pdEditingPlantId = plantId;
+      _pdDraft = JSON.parse(JSON.stringify(plantDefaults[plantId]));
+      document.getElementById('pdTitle').textContent = (plants.find(p => p.id === plantId)?.name || 'Plant') + ' · escalation defaults';
+      _renderPdBody();
+      document.getElementById('plantDefaultsModal').classList.add('open');
+    }
+    function closePlantDefaults() { document.getElementById('plantDefaultsModal').classList.remove('open'); }
+    document.getElementById('plantDefaultsModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePlantDefaults(); });
+
+    const SEV_DOT_COLOR = { incident: 'var(--brand-900)', issue: 'var(--sev-alert-accent)', warning: 'var(--sev-warn-accent)' };
+    const SEV_LABEL = { incident: 'Incident', issue: 'Issue', warning: 'Warning' };
+    function _renderPdBody() {
+      const body = document.getElementById('pdBody');
+      const sev = ['incident','issue','warning'];
+      body.innerHTML = sev.map(t => {
+        const cfg = _pdDraft[t];
+        return `<div class="pd-section">
+          <div class="pd-section-head">
+            <span class="pd-sev-dot" style="background:${SEV_DOT_COLOR[t]}"></span>
+            <span class="pd-section-title">${SEV_LABEL[t]} default chain</span>
+          </div>
+          <div class="pd-section-body">
+            <div class="pd-level">
+              <div class="pd-level-head">
+                <span class="pd-level-label" style="background:var(--brand-900);color:#fff">Notify</span>
+                <span class="pd-level-delay">immediate · fires on trigger</span>
+              </div>
+              <div class="pd-users">${cfg.notify.users.map((u, i) => _renderPdUser(t, 'notify', i, u)).join('')}</div>
+              <div class="pd-add-row" style="margin-top:6px">
+                <input class="pd-add-input" id="pd-add-${t}-notify" placeholder="Add user to Notify…" onkeydown="if(event.key==='Enter')pdAddUser('${t}','notify')"/>
+                <button class="pd-add-btn" onclick="pdAddUser('${t}','notify')">Add</button>
+              </div>
+            </div>
+            ${cfg.escLevels.map((lv, li) => `<div class="pd-level">
+              <div class="pd-level-head">
+                <span class="pd-level-label">Level ${li+1}</span>
+                <span class="pd-level-delay">+<input type="number" min="0" value="${lv.delay}" oninput="pdSetDelay('${t}',${li},this.value)"/>min after trigger</span>
+                <button class="pd-level-remove" onclick="pdRemoveLevel('${t}',${li})" title="Remove level">×</button>
+              </div>
+              <div class="pd-users">${lv.users.map((u, ui) => _renderPdUser(t, li, ui, u)).join('')}</div>
+              <div class="pd-add-row" style="margin-top:6px">
+                <input class="pd-add-input" id="pd-add-${t}-${li}" placeholder="Add user…" onkeydown="if(event.key==='Enter')pdAddUser('${t}',${li})"/>
+                <button class="pd-add-btn" onclick="pdAddUser('${t}',${li})">Add</button>
+              </div>
+            </div>`).join('')}
+            <button class="pd-add-level-btn" onclick="pdAddLevel('${t}')">+ Add another level</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function _renderPdUser(t, lvKey, ui, u) {
+      const channels = u.comm.map((on, i) => `<div class="ci ${on?'ci-on':'ci-off'}" onclick="pdToggleChan('${t}','${lvKey}',${ui},${i})">${commLabels[i]}</div>`).join('');
+      return `<div class="pd-user">
+        <span class="pd-user-name">${u.name}</span>
+        <div class="pd-user-channels">${channels}</div>
+        <button class="pd-user-x" onclick="pdRemoveUser('${t}','${lvKey}',${ui})">×</button>
+      </div>`;
+    }
+    function pdAddUser(t, lvKey) {
+      const id = 'pd-add-' + t + '-' + lvKey;
+      const inp = document.getElementById(id); const v = inp.value.trim(); if (!v) return; inp.value = '';
+      const [bg, tc] = randBg();
+      const user = { init: initialsOf(v), bg, tc, name: v, comm: [1,0,0,0] };
+      const list = lvKey === 'notify' ? _pdDraft[t].notify.users : _pdDraft[t].escLevels[lvKey].users;
+      list.push(user);
+      _renderPdBody();
+    }
+    function pdRemoveUser(t, lvKey, ui) {
+      const list = lvKey === 'notify' ? _pdDraft[t].notify.users : _pdDraft[t].escLevels[lvKey].users;
+      list.splice(ui, 1); _renderPdBody();
+    }
+    function pdToggleChan(t, lvKey, ui, ci) {
+      const list = lvKey === 'notify' ? _pdDraft[t].notify.users : _pdDraft[t].escLevels[lvKey].users;
+      list[ui].comm[ci] = list[ui].comm[ci] ? 0 : 1; _renderPdBody();
+    }
+    function pdSetDelay(t, li, v) {
+      const d = parseInt(v, 10);
+      if (!isNaN(d) && d >= 0) _pdDraft[t].escLevels[li].delay = d;
+    }
+    function pdRemoveLevel(t, li) { _pdDraft[t].escLevels.splice(li, 1); _renderPdBody(); }
+    function pdAddLevel(t) {
+      const last = _pdDraft[t].escLevels[_pdDraft[t].escLevels.length - 1];
+      const nextDelay = (last ? last.delay : 0) + 15;
+      _pdDraft[t].escLevels.push({ delay: nextDelay, users: [], hooter: false });
+      _renderPdBody();
+    }
+    function savePlantDefaults() {
+      plantDefaults[_pdEditingPlantId] = JSON.parse(JSON.stringify(_pdDraft));
+      const plantName = plants.find(p => p.id === _pdEditingPlantId)?.name;
+      const items = ['incident','issue','warning'].map(t => {
+        const c = _pdDraft[t];
+        const totalUsers = c.notify.users.length + c.escLevels.reduce((a, l) => a + l.users.length, 0);
+        const levelStr = c.escLevels.map(l => `+${l.delay}m`).join(' / ') || '—';
+        return { html: `<b>${SEV_LABEL[t]}</b> — ${c.escLevels.length} level${c.escLevels.length===1?'':'s'} (${levelStr}), <b>${totalUsers}</b> default user${totalUsers===1?'':'s'}.` };
+      });
+      showSuccessToast({ title: `${plantName} defaults saved`, items: [...items, { skipped: true, html: 'These settings will be applied to every new insight created in this plant.' }] });
+      closePlantDefaults();
+    }
       const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
       const c = document.getElementById('rowsContainer');
       if (!c) return;
@@ -2232,16 +2578,24 @@
 
     function renderActionPop(kind) {
       const pop = document.getElementById('ap-' + kind);
-      const lvlOpts = `<option value="notify">Notify (immediate)</option><option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option><option value="all">All existing levels</option>`;
       const channelChips = ['✉ Email', '✆ SMS', 'W WhatsApp', '☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${i===0?' on':''}" data-ch="${i}">${lbl}</button>`).join('');
+      const twChips = `
+        <button type="button" class="tw-chip on" data-tw="0">Immediate</button>
+        <button type="button" class="tw-chip" data-tw="5">+5m</button>
+        <button type="button" class="tw-chip" data-tw="15">+15m</button>
+        <button type="button" class="tw-chip" data-tw="30">+30m</button>
+        <button type="button" class="tw-chip" data-tw="60">+1h</button>
+        <button type="button" class="tw-chip" data-tw="custom">Custom…</button>
+      `;
       let html = '';
       if (kind === 'add') {
         html = `<div class="action-pop-title">Add user to ${selected.size} selected insight${selected.size===1?'':'s'}</div>
           <div class="action-pop-row"><span class="action-pop-label">User name</span>
-            <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma"/>
+            <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma" oninput="apUpdateUserHelper('add')"/>
+            <div class="user-helper-hint empty" id="ap-add-helper">Type a name to see where this user is already configured.</div>
           </div>
-          <div class="action-pop-row"><span class="action-pop-label">Add to level</span>
-            <select class="action-pop-select" id="ap-add-lvl">${lvlOpts}</select>
+          <div class="action-pop-row"><span class="action-pop-label">Send after (time window)</span>
+            <div class="tw-chips" id="ap-add-tw">${twChips}<input class="tw-custom-input" id="ap-add-tw-custom" type="number" min="0" placeholder="min" style="display:none" oninput="apTwCustomChange()"/></div>
           </div>
           <div class="action-pop-row"><span class="action-pop-label">Channels</span>
             <div class="channel-chips" id="ap-add-channels">${channelChips}</div>
@@ -2253,10 +2607,11 @@
       } else if (kind === 'remove') {
         html = `<div class="action-pop-title">Remove user from ${selected.size} selected insight${selected.size===1?'':'s'}</div>
           <div class="action-pop-row"><span class="action-pop-label">User name (exact match)</span>
-            <input class="action-pop-input" id="ap-rm-name" placeholder="e.g. Rahul Sharma"/>
+            <input class="action-pop-input" id="ap-rm-name" placeholder="e.g. Rahul Sharma" oninput="apUpdateUserHelper('rm')"/>
+            <div class="user-helper-hint empty" id="ap-rm-helper">Type a name to see this user's current placements.</div>
           </div>
-          <div class="action-pop-row"><span class="action-pop-label">Remove from level</span>
-            <select class="action-pop-select" id="ap-rm-lvl">${lvlOpts}</select>
+          <div class="action-pop-row"><span class="action-pop-label">Remove from</span>
+            <select class="action-pop-select" id="ap-rm-lvl"><option value="all">All placements</option><option value="notify">Notify only</option><option value="0">Level 1</option><option value="1">Level 2</option><option value="2">Level 3</option></select>
           </div>
           <div class="action-pop-actions">
             <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
@@ -2336,13 +2691,80 @@
       return out;
     }
 
+    /* Time-window state inside the Add popover */
+    let _twSelected = '0';   // '0' / '5' / '15' / '30' / '60' / 'custom'
+    function _readTw() {
+      const el = document.querySelector('#ap-add-tw .tw-chip.on'); if (!el) return 0;
+      const v = el.dataset.tw;
+      if (v === 'custom') {
+        const c = parseInt(document.getElementById('ap-add-tw-custom')?.value, 10);
+        return isNaN(c) || c < 0 ? null : c;
+      }
+      return parseInt(v, 10);
+    }
+    function apTwCustomChange() { /* live update — preview not needed */ }
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('#ap-add-tw .tw-chip');
+      if (!chip) return;
+      document.querySelectorAll('#ap-add-tw .tw-chip').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      _twSelected = chip.dataset.tw;
+      const customInp = document.getElementById('ap-add-tw-custom');
+      if (customInp) customInp.style.display = _twSelected === 'custom' ? '' : 'none';
+      if (_twSelected === 'custom') setTimeout(() => customInp?.focus(), 30);
+    });
+
+    /* User helper — show this user's existing placements */
+    function _findAllPlacements(name) {
+      const q = name.toLowerCase();
+      const found = [];
+      insights.forEach(r => {
+        const places = [];
+        if (r.notify.users.some(u => u.name.toLowerCase() === q)) places.push({ label: 'Notify', delay: 0 });
+        r.escLevels.forEach((lv, i) => {
+          if (lv.users.some(u => u.name.toLowerCase() === q)) places.push({ label: 'Level ' + (i+1), delay: lv.delay });
+        });
+        if (places.length) found.push({ insight: r, places });
+      });
+      return found;
+    }
+    function apUpdateUserHelper(which) {
+      const inp = document.getElementById(which === 'add' ? 'ap-add-name' : 'ap-rm-name');
+      const helper = document.getElementById(which === 'add' ? 'ap-add-helper' : 'ap-rm-helper');
+      if (!inp || !helper) return;
+      const name = inp.value.trim();
+      if (!name) {
+        helper.classList.add('empty');
+        helper.textContent = which === 'add'
+          ? 'Type a name to see where this user is already configured.'
+          : 'Type a name to see this user\'s current placements.';
+        return;
+      }
+      const found = _findAllPlacements(name);
+      if (found.length === 0) {
+        helper.classList.remove('empty');
+        helper.classList.add('empty');
+        helper.innerHTML = `<b>${name}</b> is not on any insight yet.`;
+        return;
+      }
+      helper.classList.remove('empty');
+      const total = found.reduce((a, f) => a + f.places.length, 0);
+      const sample = found.slice(0, 3).map(f => {
+        const placeTags = f.places.map(p => `<span class="user-helper-tag">${p.label}${p.delay > 0 ? ' +' + p.delay + 'm' : ''}</span>`).join('');
+        return `<span class="user-helper-line">${placeTags}<b>${f.insight.name}</b></span>`;
+      }).join('');
+      const more = found.length > 3 ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">+ ${found.length - 3} more insight${(found.length - 3)===1?'':'s'}</span>` : '';
+      helper.innerHTML = `<b>${name}</b> is already on <b>${total}</b> placement${total===1?'':'s'} across <b>${found.length}</b> insight${found.length===1?'':'s'}:${sample}${more}`;
+    }
+
     function apActionAdd() {
       const name = document.getElementById('ap-add-name').value.trim();
       if (!name) { document.getElementById('ap-add-name').focus(); return; }
-      const lvl = document.getElementById('ap-add-lvl').value;
+      const delay = _readTw();
+      if (delay == null) { showSuccessToast({ title: 'Pick a time window', items: [{ skipped: true, html: 'Choose a preset (Immediate / +5m / +15m / +30m / +1h) or enter a positive custom delay.' }] }); return; }
       const channels = _readChannels('ap-add-channels');
       if (channels.every(c => !c)) { showSuccessToast({ title: 'Pick a channel', items: [{ skipped: true, html: 'Select at least one channel before adding.' }] }); return; }
-      _runAdd(_selectedScope(), [name], lvl, channels);
+      _runAddByDelay(_selectedScope(), [name], delay, channels);
       closeAllActionPops();
     }
     function apActionRemove() {
@@ -2390,6 +2812,78 @@
 
     /* Shared runners — used by both the Manage modal and the inline action popovers */
     function _scopeLineFor(scope) { return scope === _mucScope() ? _scopeText() : `${scope.length} selected row${scope.length===1?'':'s'}`; }
+
+    /* Runner that places a user at an arbitrary delay — finds an existing level
+       with the same delay or creates a new level inserted in delay-order. */
+    function _runAddByDelay(scope, names, delay, channels) {
+      const summary = [];
+      names.forEach(nm => {
+        const [bg, tc] = randBg();
+        let added = 0, updated = 0;
+        scope.forEach(r => {
+          if (delay === 0) {
+            // Goes into Notify
+            const list = r.notify.users;
+            const existing = list.find(u => u.name.toLowerCase() === nm.toLowerCase());
+            if (existing) {
+              const before = existing.comm.join('');
+              existing.comm = [...channels];
+              if (existing.comm.join('') !== before) updated++;
+            } else {
+              list.push({ init: initialsOf(nm), bg, tc, name: nm, comm: [...channels] });
+              added++;
+            }
+            return;
+          }
+          // Find a standard level (not custom group, not one-off) with matching delay
+          let lv = r.escLevels.find(l => !l.oneOff && l.cls !== 'lbc' && l.delay === delay);
+          if (!lv) {
+            // Create a new level at the right position
+            lv = { label: 'Level ?', cls: 'lb1', delay, users: [], hooter: false };
+            const standardLevels = r.escLevels.filter(l => !l.oneOff && l.cls !== 'lbc');
+            // Insert sorted by delay among standard levels
+            let insertIdx = r.escLevels.length;
+            for (let i = 0; i < r.escLevels.length; i++) {
+              const cand = r.escLevels[i];
+              if (cand.oneOff || cand.cls === 'lbc') continue;
+              if (cand.delay > delay) { insertIdx = i; break; }
+            }
+            r.escLevels.splice(insertIdx, 0, lv);
+            // Re-label all standard levels in order
+            const clsMap = ['lb1','lb2','lb3'];
+            let ord = 0;
+            r.escLevels.forEach(l => { if (!l.oneOff && l.cls !== 'lbc') { l.label = 'Level ' + (ord+1); l.cls = clsMap[Math.min(ord, 2)]; ord++; } });
+          }
+          const existing = lv.users.find(u => u.name.toLowerCase() === nm.toLowerCase());
+          if (existing) {
+            const before = existing.comm.join('');
+            existing.comm = [...channels];
+            if (existing.comm.join('') !== before) updated++;
+          } else {
+            lv.users.push({ init: initialsOf(nm), bg, tc, name: nm, comm: [...channels] });
+            added++;
+          }
+        });
+        summary.push({ name: nm, added, updated });
+      });
+      renderRows();
+      if (typeof renderMasterUserResults === 'function') renderMasterUserResults();
+      const channelLabels = ['Email','SMS','WhatsApp','Call'].filter((_, i) => channels[i]).join(' / ');
+      const items = summary.map(s => {
+        if (s.added === 0 && s.updated === 0) return { skipped: true, html: `<b>${s.name}</b> — no change (already configured at this time window with the same channels).` };
+        const parts = [];
+        if (s.added) parts.push(`added to <b>${s.added}</b> insight${s.added===1?'':'s'}`);
+        if (s.updated) parts.push(`channels updated on <b>${s.updated}</b> insight${s.updated===1?'':'s'}`);
+        return { html: `<b>${s.name}</b> — ${parts.join(', ')}.` };
+      });
+      const totalAdded = summary.reduce((a, s) => a + s.added, 0);
+      const totalUpdated = summary.reduce((a, s) => a + s.updated, 0);
+      const winLabel = delay === 0 ? 'Notify (immediate)' : `+${delay} min after trigger`;
+      const title = (totalAdded + totalUpdated) === 0
+        ? `No changes were necessary`
+        : `${totalAdded ? totalAdded + ' added' : ''}${totalAdded && totalUpdated ? ' · ' : ''}${totalUpdated ? totalUpdated + ' updated' : ''} at ${winLabel}`;
+      showSuccessToast({ title, items: [...items, { skipped: true, html: `Scope: ${_scopeLineFor(scope)} · Channels: ${channelLabels}` }] });
+    }
 
     function _runAdd(scope, names, lvl, channels) {
       const summary = [];
@@ -2676,6 +3170,38 @@
         })),
         _conditions: { sensor, op, val, unit, close },
       };
+      // Inherit plant defaults for this severity type (Issue/Warning/Incident)
+      let inheritedUsers = 0, inheritedLevels = 0;
+      const defaults = plantDefaults[plant]?.[type];
+      if (defaults) {
+        // Merge default Notify users (skip duplicates by name)
+        defaults.notify.users.forEach(u => {
+          if (!insight.notify.users.find(x => x.name.toLowerCase() === u.name.toLowerCase())) {
+            insight.notify.users.push({ ...u, comm: [...u.comm] });
+            inheritedUsers++;
+          }
+        });
+        // For each default level (by delay), merge into existing or append
+        defaults.escLevels.forEach(dl => {
+          let lv = insight.escLevels.find(l => l.delay === dl.delay && !l.oneOff && l.cls !== 'lbc');
+          if (!lv) {
+            lv = { label: 'Level ?', cls: 'lb1', delay: dl.delay, users: [], hooter: dl.hooter };
+            insight.escLevels.push(lv);
+            inheritedLevels++;
+          }
+          dl.users.forEach(u => {
+            if (!lv.users.find(x => x.name.toLowerCase() === u.name.toLowerCase())) {
+              lv.users.push({ ...u, comm: [...u.comm] });
+              inheritedUsers++;
+            }
+          });
+        });
+        // Re-label/re-class standard levels in delay order
+        insight.escLevels.sort((a, b) => (a.cls === 'lbc' || a.oneOff) ? 1 : (b.cls === 'lbc' || b.oneOff) ? -1 : a.delay - b.delay);
+        let ord = 0;
+        const clsMap = ['lb1','lb2','lb3'];
+        insight.escLevels.forEach(l => { if (!l.oneOff && l.cls !== 'lbc') { l.label = 'Level ' + (ord+1); l.cls = clsMap[Math.min(ord, 2)]; ord++; } });
+      }
       // Ensure at least one level even if user removed all
       if (insight.escLevels.length === 0) insight.escLevels.push({ label: 'Level 1', cls: 'lb1', delay: 0, users: [], hooter: false });
       insights.push(insight);
@@ -2686,6 +3212,7 @@
         { html: `<b>${name}</b> created in <b>${plantName}</b> · <b>${typeLabels[type]}</b> · ${equipment}.` },
         { html: `Notify users: <b>${insight.notify.users.length}</b> · Escalation levels: <b>${insight.escLevels.length}</b> · Total assigned users: <b>${insight.escLevels.reduce((a, l) => a + l.users.length, 0) + insight.notify.users.length}</b>.` },
       ];
+      if (inheritedUsers > 0) items.push({ skipped: true, html: `Inherited <b>${inheritedUsers}</b> default user${inheritedUsers===1?'':'s'} from ${plantName}'s ${SEV_LABEL[type]||type} defaults.` });
       if (insight.notify.users.length === 0) items.push({ skipped: true, html: 'Heads up: Notify is empty — nobody will be alerted on trigger.' });
       showSuccessToast({ title: 'Insight created', items });
     }
@@ -3091,6 +3618,8 @@
     renderRows();
     updateFilterCountBadge();
     updateBulkBar();
+    document.getElementById('sectionTabPlantCount').textContent = plants.length;
+    document.getElementById('sectionTabInsightCount').textContent = insights.length;
     document.getElementById('navBack').disabled = true;
     document.getElementById('navForward').disabled = true;
   </script>
