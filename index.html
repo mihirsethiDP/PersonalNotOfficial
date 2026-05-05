@@ -145,6 +145,15 @@
     .user-helper-line + .user-helper-line { margin-top: 3px; }
     .user-helper-tag { display: inline-block; padding: 1px 6px; background: var(--brand-100); color: var(--brand-800); border-radius: 8px; font-size: 10px; font-weight: 500; margin-right: 3px; }
 
+    /* Permission gate inside Add User popover */
+    .perm-gate { display: flex; align-items: flex-start; gap: 8px; padding: 9px 11px; background: var(--sev-warn-bg); border: 0.5px solid var(--sev-warn-line); border-left: 3px solid var(--sev-warn-accent); border-radius: 6px; margin-top: 6px; flex-wrap: wrap; animation: fadeUp .18s var(--ease-out); }
+    .perm-gate-icon { font-size: 14px; flex-shrink: 0; }
+    .perm-gate-text { flex: 1; min-width: 200px; font-size: 11.5px; color: var(--sev-warn-ink); line-height: 1.45; }
+    .perm-gate-btn { height: 28px; padding: 0 12px; border-radius: 5px; border: 0.5px solid var(--sev-warn-accent); background: var(--sev-warn-accent); color: #fff; font-size: 11.5px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); white-space: nowrap; transition: background .14s; }
+    .perm-gate-btn:hover { background: var(--sev-warn-ink); border-color: var(--sev-warn-ink); }
+    .perm-gate.shake { animation: shake .35s var(--ease-out); }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
     /* Time-window chips inside Add User popover */
     .tw-chips { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
     .tw-chip { padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 14px; background: #fff; color: var(--color-text-secondary); font-size: 11.5px; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); }
@@ -885,6 +894,13 @@
             <div class="action-pop" id="ap-remove"></div>
           </div>
           <div class="action-group">
+            <button class="action-btn" data-needs-selection onclick="toggleActionPop('digest', this)" title="Set up an insights digest for one or more recipients">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="1.5" y="1.5" width="8" height="2" rx=".4" stroke="currentColor" stroke-width="1.2"/><rect x="1.5" y="5" width="8" height="2" rx=".4" stroke="currentColor" stroke-width="1.2"/><rect x="1.5" y="8.5" width="5" height="1.5" rx=".4" stroke="currentColor" stroke-width="1.2"/></svg>
+              Digest
+            </button>
+            <div class="action-pop" id="ap-digest"></div>
+          </div>
+          <div class="action-group">
             <button class="action-btn" data-needs-selection onclick="toggleActionPop('more', this)" title="More actions">
               ⋯
             </button>
@@ -1537,6 +1553,34 @@
     insights.forEach((r,i) => { r.plant = _plantAssign[i] || 'alpha'; });
     /* Per-plant master switch (drives global Activate/Deactivate) */
     const plantMaster = Object.fromEntries(plants.map(p => [p.id, p.allOn]));
+
+    /* Per-user plant access — auto-populated from existing assignments below */
+    const userPermissions = {};
+    function _addUserPlantAccess(name, plantId) {
+      const k = name.toLowerCase();
+      if (!userPermissions[k]) userPermissions[k] = { display: name, plants: new Set() };
+      userPermissions[k].plants.add(plantId);
+    }
+    function userHasAccess(name, plantId) {
+      const k = name.toLowerCase();
+      return userPermissions[k]?.plants?.has(plantId) || false;
+    }
+    function userPlantNames(name) {
+      const k = name.toLowerCase();
+      const ids = [...(userPermissions[k]?.plants || [])];
+      return ids.map(id => plants.find(p => p.id === id)?.name).filter(Boolean);
+    }
+    function grantUserAccess(name, plantIds) {
+      const k = name.toLowerCase();
+      if (!userPermissions[k]) userPermissions[k] = { display: name, plants: new Set() };
+      plantIds.forEach(pid => userPermissions[k].plants.add(pid));
+    }
+    /* Auto-populate from existing user assignments — anyone already on an insight has access to that plant */
+    insights.forEach(r => {
+      [...r.notify.users, ...r.escLevels.flatMap(l => l.users)].forEach(u => _addUserPlantAccess(u.name, r.plant));
+    });
+    /* Sprinkle a few additional plant memberships so testing isn't trivially "everyone has all access" */
+    /* (No-op — leave as-is; permission gaps surface naturally when a user is added to a new plant.) */
 
     /* Per-plant escalation defaults — new insights inherit these */
     const plantDefaults = {};
@@ -2593,6 +2637,7 @@
           <div class="action-pop-row"><span class="action-pop-label">User name</span>
             <input class="action-pop-input" id="ap-add-name" placeholder="e.g. Rahul Sharma" oninput="apUpdateUserHelper('add')"/>
             <div class="user-helper-hint empty" id="ap-add-helper">Type a name to see where this user is already configured.</div>
+            <div id="ap-add-perm" style="display:none"></div>
           </div>
           <div class="action-pop-row"><span class="action-pop-label">Send after (time window)</span>
             <div class="tw-chips" id="ap-add-tw">${twChips}<input class="tw-custom-input" id="ap-add-tw-custom" type="number" min="0" placeholder="min" style="display:none" oninput="apTwCustomChange()"/></div>
@@ -2616,6 +2661,53 @@
           <div class="action-pop-actions">
             <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
             <button class="pop-confirm danger" onclick="apActionRemove()">Remove user</button>
+          </div>`;
+      } else if (kind === 'digest') {
+        _dgRecipients = []; // fresh session each open
+        html = `<div class="action-pop-title">Insights digest for ${selected.size} selected insight${selected.size===1?'':'s'}</div>
+          <div class="action-pop-hint">Sends a periodic email/SMS bundle with the matching insights from the selected scope. Pick recipients, what to include, and how often.</div>
+          <div class="action-pop-row"><span class="action-pop-label">Recipients</span>
+            <div class="muc-chip-input" id="ap-dg-chipwrap" onclick="document.getElementById('ap-dg-name').focus()" style="margin-bottom:0">
+              <div class="muc-chip-list" id="ap-dg-chiplist"></div>
+              <input class="muc-input-inline" id="ap-dg-name" placeholder="Type a name and press Enter…" onkeydown="dgNameKey(event)"/>
+            </div>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Historical range</span>
+            <div class="tw-chips" id="ap-dg-range">
+              <button type="button" class="tw-chip" data-rng="6">Last 6h</button>
+              <button type="button" class="tw-chip on" data-rng="12">Last 12h</button>
+              <button type="button" class="tw-chip" data-rng="24">Last 24h</button>
+              <button type="button" class="tw-chip" data-rng="168">Last 7d</button>
+              <button type="button" class="tw-chip" data-rng="custom">Custom…</button>
+              <input class="tw-custom-input" id="ap-dg-range-custom" type="number" min="1" placeholder="hrs" style="display:none"/>
+            </div>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Insight types</span>
+            <div class="tw-chips" id="ap-dg-types">
+              <button type="button" class="tw-chip on" data-typ="incident">Incident</button>
+              <button type="button" class="tw-chip on" data-typ="issue">Issue</button>
+              <button type="button" class="tw-chip" data-typ="warning">Warning</button>
+            </div>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Status</span>
+            <div class="tw-chips" id="ap-dg-status">
+              <button type="button" class="tw-chip on" data-st="open">Open</button>
+              <button type="button" class="tw-chip" data-st="closed">Closed</button>
+              <button type="button" class="tw-chip" data-st="both">Both</button>
+            </div>
+          </div>
+          <div class="action-pop-row"><span class="action-pop-label">Cadence</span>
+            <div class="tw-chips" id="ap-dg-cadence">
+              <button type="button" class="tw-chip" data-cad="now">Send now</button>
+              <button type="button" class="tw-chip" data-cad="hourly">Hourly</button>
+              <button type="button" class="tw-chip on" data-cad="daily">Daily 9 AM</button>
+              <button type="button" class="tw-chip" data-cad="weekly">Weekly Mon 9 AM</button>
+            </div>
+          </div>
+          <div class="user-helper-hint" id="ap-dg-preview" style="margin-top:0">Add at least one recipient to enable Schedule.</div>
+          <div class="action-pop-actions">
+            <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
+            <button class="pop-confirm" onclick="apActionDigest()">Schedule digest</button>
           </div>`;
       } else if (kind === 'more') {
         // Hick's law — secondary actions tucked here
@@ -2663,6 +2755,8 @@
       pop.innerHTML = html;
       // Wire channel-chip toggles
       pop.querySelectorAll('.channel-chip[data-ch]').forEach(c => c.addEventListener('click', () => c.classList.toggle('on')));
+      // Initial digest preview after render
+      if (kind === 'digest') _dgUpdatePreview();
     }
 
     /* Sub-actions opened from the More menu — render into a dedicated host pop */
@@ -2714,6 +2808,113 @@
       if (_twSelected === 'custom') setTimeout(() => customInp?.focus(), 30);
     });
 
+    /* ──── Digest popover ──── */
+    let _dgRecipients = [];
+    function _renderDgChips() {
+      const wrap = document.getElementById('ap-dg-chiplist'); if (!wrap) return;
+      wrap.innerHTML = _dgRecipients.map((n, i) => `<span class="muc-name-chip">${n}<span class="muc-name-chip-x" onclick="_dgRemoveName(${i})" title="Remove">×</span></span>`).join('');
+      _dgUpdatePreview();
+    }
+    function _dgRemoveName(i) { _dgRecipients.splice(i, 1); _renderDgChips(); }
+    function dgNameKey(e) {
+      if (e.key === 'Enter' || e.key === ',' || e.key === 'Tab') {
+        const v = e.target.value.trim();
+        if (v) { e.preventDefault(); if (!_dgRecipients.find(x => x.toLowerCase() === v.toLowerCase())) _dgRecipients.push(v); e.target.value = ''; _renderDgChips(); }
+      } else if (e.key === 'Backspace' && e.target.value === '' && _dgRecipients.length > 0) {
+        _dgRecipients.pop(); _renderDgChips();
+      }
+    }
+    function _dgReadSingle(rootId, attr) {
+      const el = document.querySelector(`#${rootId} .tw-chip.on`); return el ? el.dataset[attr] : null;
+    }
+    function _dgReadMulti(rootId, attr) {
+      return [...document.querySelectorAll(`#${rootId} .tw-chip.on`)].map(c => c.dataset[attr]);
+    }
+    function _dgUpdatePreview() {
+      const el = document.getElementById('ap-dg-preview'); if (!el) return;
+      const recipients = _dgRecipients.slice();
+      const typedV = (document.getElementById('ap-dg-name')?.value || '').trim();
+      if (typedV && !recipients.find(x => x.toLowerCase() === typedV.toLowerCase())) recipients.push(typedV);
+      const rng = _dgReadSingle('ap-dg-range', 'rng');
+      const types = _dgReadMulti('ap-dg-types', 'typ');
+      const st = _dgReadSingle('ap-dg-status', 'st');
+      const cad = _dgReadSingle('ap-dg-cadence', 'cad');
+      const issues = [];
+      if (recipients.length === 0) issues.push('add at least one recipient');
+      if (types.length === 0) issues.push('pick at least one insight type');
+      if (issues.length) { el.classList.add('empty'); el.innerHTML = `<b>Almost there</b> — ${issues.join(', ')} to enable Schedule.`; return; }
+      el.classList.remove('empty');
+      const rngLabel = rng === 'custom' ? `last ${parseInt(document.getElementById('ap-dg-range-custom')?.value, 10) || '?'}h` : { '6':'last 6h', '12':'last 12h', '24':'last 24h', '168':'last 7d' }[rng];
+      const typeLabel = types.length === 3 ? 'all types' : types.join(' / ');
+      const stLabel = { open: 'open', closed: 'closed', both: 'open + closed' }[st];
+      const cadLabel = { now: 'right now', hourly: 'every hour', daily: 'every day at 9 AM', weekly: 'every Monday at 9 AM' }[cad];
+      el.innerHTML = `Send <b>${typeLabel}</b> insights (status: <b>${stLabel}</b>, ${rngLabel}) from <b>${selected.size}</b> selected insight${selected.size===1?'':'s'} to <b>${recipients.length}</b> recipient${recipients.length===1?'':'s'}, ${cadLabel}.`;
+    }
+    /* Single document-level click listener for ANY tw-chip in any digest pop */
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('#ap-dg-range .tw-chip, #ap-dg-status .tw-chip, #ap-dg-cadence .tw-chip');
+      if (chip) {
+        chip.parentElement.querySelectorAll('.tw-chip').forEach(c => c.classList.remove('on'));
+        chip.classList.add('on');
+        // For Custom range, show input
+        if (chip.dataset.rng === 'custom') {
+          const cinp = document.getElementById('ap-dg-range-custom');
+          if (cinp) { cinp.style.display = ''; setTimeout(() => cinp.focus(), 30); }
+        } else if (chip.parentElement.id === 'ap-dg-range') {
+          const cinp = document.getElementById('ap-dg-range-custom');
+          if (cinp) cinp.style.display = 'none';
+        }
+        _dgUpdatePreview();
+        return;
+      }
+      // Multi-select: types
+      const tchip = e.target.closest('#ap-dg-types .tw-chip');
+      if (tchip) { tchip.classList.toggle('on'); _dgUpdatePreview(); return; }
+      // Live preview when typing in chip-input
+      if (e.target?.id === 'ap-dg-name') _dgUpdatePreview();
+    });
+    document.addEventListener('input', (e) => {
+      if (e.target?.id === 'ap-dg-name' || e.target?.id === 'ap-dg-range-custom') _dgUpdatePreview();
+    });
+
+    function apActionDigest() {
+      const typedV = (document.getElementById('ap-dg-name')?.value || '').trim();
+      if (typedV && !_dgRecipients.find(x => x.toLowerCase() === typedV.toLowerCase())) _dgRecipients.push(typedV);
+      const rng = _dgReadSingle('ap-dg-range', 'rng');
+      const types = _dgReadMulti('ap-dg-types', 'typ');
+      const st = _dgReadSingle('ap-dg-status', 'st');
+      const cad = _dgReadSingle('ap-dg-cadence', 'cad');
+      if (_dgRecipients.length === 0) { showSuccessToast({ title: 'Pick a recipient', items: [{ skipped: true, html: 'Add at least one name (Enter to commit) before scheduling.' }] }); return; }
+      if (types.length === 0) { showSuccessToast({ title: 'Pick a type', items: [{ skipped: true, html: 'Choose at least one insight type for the digest.' }] }); return; }
+      const rngHrs = rng === 'custom' ? parseInt(document.getElementById('ap-dg-range-custom')?.value, 10) : parseInt(rng, 10);
+      if (isNaN(rngHrs) || rngHrs <= 0) { showSuccessToast({ title: 'Pick a range', items: [{ skipped: true, html: 'Choose a preset range or enter a positive number of hours.' }] }); return; }
+      // Permission check — note any plant where a recipient lacks access
+      const scope = _selectedScope();
+      const targetPlants = [...new Set(scope.map(r => r.plant))];
+      const permIssues = [];
+      _dgRecipients.forEach(nm => {
+        const missing = targetPlants.filter(pid => !userHasAccess(nm, pid));
+        if (missing.length) permIssues.push({ name: nm, plants: missing.map(pid => plants.find(p => p.id === pid)?.name) });
+      });
+      const rngLabel = rng === 'custom' ? `last ${rngHrs}h` : { '6':'last 6h','12':'last 12h','24':'last 24h','168':'last 7d' }[rng];
+      const cadLabel = { now: 'right now', hourly: 'hourly', daily: 'daily 9 AM', weekly: 'weekly Mon 9 AM' }[cad];
+      const items = [];
+      items.push({ html: `Recipients: <b>${_dgRecipients.join(', ')}</b>.` });
+      items.push({ html: `Window: <b>${rngLabel}</b> · types <b>${types.join(' / ')}</b> · status <b>${st}</b> · cadence <b>${cadLabel}</b>.` });
+      items.push({ html: `Source: <b>${scope.length}</b> selected insight${scope.length===1?'':'s'} across <b>${targetPlants.length}</b> plant${targetPlants.length===1?'':'s'}.` });
+      if (permIssues.length === 0) {
+        items.push({ skipped: true, html: 'All recipients have access to every source plant.' });
+      } else {
+        permIssues.forEach(p => {
+          items.push({ skipped: true, html: `⚠ <b>${p.name}</b> lacks access to: ${p.plants.join(', ')} — they'll see only the plants they're entitled to until granted.` });
+        });
+      }
+      const verb = cad === 'now' ? 'Sent' : 'Scheduled';
+      showSuccessToast({ title: `${verb} digest for ${_dgRecipients.length} recipient${_dgRecipients.length===1?'':'s'}`, items, duration: 7000 });
+      _dgRecipients = [];
+      closeAllActionPops();
+    }
+
     /* User helper — show this user's existing placements */
     function _findAllPlacements(name) {
       const q = name.toLowerCase();
@@ -2733,6 +2934,9 @@
       const helper = document.getElementById(which === 'add' ? 'ap-add-helper' : 'ap-rm-helper');
       if (!inp || !helper) return;
       const name = inp.value.trim();
+      // Hide permission warning by default
+      const permEl = document.getElementById('ap-add-perm');
+      if (permEl) permEl.style.display = 'none';
       if (!name) {
         helper.classList.add('empty');
         helper.textContent = which === 'add'
@@ -2741,25 +2945,66 @@
         return;
       }
       const found = _findAllPlacements(name);
+      const accessPlants = userPlantNames(name);
+      const accessLine = accessPlants.length === 0
+        ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">No plant access yet.</span>`
+        : `<span class="user-helper-line" style="color:var(--color-text-secondary)">Plant access: <b>${accessPlants.length}</b> plant${accessPlants.length===1?'':'s'} — ${accessPlants.join(', ')}</span>`;
       if (found.length === 0) {
         helper.classList.remove('empty');
-        helper.classList.add('empty');
-        helper.innerHTML = `<b>${name}</b> is not on any insight yet.`;
+        helper.innerHTML = `<b>${name}</b> is not on any insight yet.${accessLine}`;
+        if (which === 'add') _renderPermissionGate(name);
         return;
       }
       helper.classList.remove('empty');
       const total = found.reduce((a, f) => a + f.places.length, 0);
       const sample = found.slice(0, 3).map(f => {
         const placeTags = f.places.map(p => `<span class="user-helper-tag">${p.label}${p.delay > 0 ? ' +' + p.delay + 'm' : ''}</span>`).join('');
-        return `<span class="user-helper-line">${placeTags}<b>${f.insight.name}</b></span>`;
+        const plantName = plants.find(p => p.id === f.insight.plant)?.name || '';
+        return `<span class="user-helper-line">${placeTags}<b>${f.insight.name}</b> <span style="color:var(--color-text-tertiary)">· ${plantName}</span></span>`;
       }).join('');
       const more = found.length > 3 ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">+ ${found.length - 3} more insight${(found.length - 3)===1?'':'s'}</span>` : '';
-      helper.innerHTML = `<b>${name}</b> is already on <b>${total}</b> placement${total===1?'':'s'} across <b>${found.length}</b> insight${found.length===1?'':'s'}:${sample}${more}`;
+      helper.innerHTML = `<b>${name}</b> is on <b>${total}</b> placement${total===1?'':'s'} across <b>${found.length}</b> insight${found.length===1?'':'s'}:${sample}${more}${accessLine}`;
+      if (which === 'add') _renderPermissionGate(name);
+    }
+    function _renderPermissionGate(name) {
+      const permEl = document.getElementById('ap-add-perm'); if (!permEl) return;
+      const scope = _selectedScope();
+      const targetPlants = [...new Set(scope.map(r => r.plant))];
+      const missing = targetPlants.filter(pid => !userHasAccess(name, pid));
+      if (missing.length === 0) { permEl.style.display = 'none'; return; }
+      const missingNames = missing.map(pid => plants.find(p => p.id === pid)?.name || pid);
+      permEl.innerHTML = `<div class="perm-gate">
+        <span class="perm-gate-icon">🔒</span>
+        <div class="perm-gate-text"><b>${name}</b> doesn't have access to ${missingNames.length} plant${missingNames.length===1?'':'s'}: <b>${missingNames.join(', ')}</b>. Grant access to add them here.</div>
+        <button class="perm-gate-btn" onclick="_grantAndAdd('${name.replace(/'/g, "\\'")}', ${JSON.stringify(missing).replace(/"/g,'&quot;')})">Grant access &amp; add</button>
+      </div>`;
+      permEl.style.display = '';
+    }
+    function _grantAndAdd(name, missingPlantIds) {
+      grantUserAccess(name, missingPlantIds);
+      // Re-render the helper so the gate disappears
+      apUpdateUserHelper('add');
+      // Then run the same flow as Add user
+      apActionAdd(true);
     }
 
-    function apActionAdd() {
+    function apActionAdd(skipPermissionCheck) {
       const name = document.getElementById('ap-add-name').value.trim();
       if (!name) { document.getElementById('ap-add-name').focus(); return; }
+      // Permission gate — block submission until the user has access to every target plant
+      if (!skipPermissionCheck) {
+        const scope = _selectedScope();
+        const targetPlants = [...new Set(scope.map(r => r.plant))];
+        const missing = targetPlants.filter(pid => !userHasAccess(name, pid));
+        if (missing.length > 0) {
+          // Make sure the gate is visible — call helper update once to render it
+          apUpdateUserHelper('add');
+          // Pulse the perm gate so the user notices
+          const permEl = document.getElementById('ap-add-perm');
+          if (permEl) { permEl.classList.remove('shake'); void permEl.offsetWidth; permEl.classList.add('shake'); }
+          return;
+        }
+      }
       const delay = _readTw();
       if (delay == null) { showSuccessToast({ title: 'Pick a time window', items: [{ skipped: true, html: 'Choose a preset (Immediate / +5m / +15m / +30m / +1h) or enter a positive custom delay.' }] }); return; }
       const channels = _readChannels('ap-add-channels');
