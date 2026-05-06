@@ -166,17 +166,22 @@
     .plant-card-btn.primary { background: var(--brand-800); border-color: var(--brand-800); color: #fff; }
     .plant-card-btn.primary:hover { background: var(--brand-700); border-color: var(--brand-700); color: #fff; }
 
-    /* Plant digest modal */
-    .pdg-helper { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; background: var(--brand-25); border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-500); border-radius: 6px; font-size: 12px; color: var(--brand-800); line-height: 1.5; margin-bottom: 14px; }
-    .pdg-section-title { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin: 6px 0 8px; }
-    .pdg-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
-    .pdg-empty { padding: 12px 14px; background: var(--color-background-secondary); border: 0.5px dashed var(--color-border-secondary); border-radius: 6px; font-size: 12px; color: var(--color-text-tertiary); text-align: center; }
-    .pdg-row { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #fff; border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid var(--brand-500); border-radius: 6px; }
-    .pdg-row-text { flex: 1; font-size: 12px; color: var(--color-text-primary); line-height: 1.5; }
-    .pdg-row-x { width: 24px; height: 24px; border-radius: 4px; background: transparent; border: 0.5px solid transparent; color: var(--color-text-tertiary); cursor: pointer; font-size: 13px; }
+    /* Plant digest modal — light-touch sizing */
+    .pdg-helper { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: var(--brand-25); border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-500); border-radius: 5px; font-size: 11.5px; color: var(--brand-800); line-height: 1.5; margin-bottom: 14px; }
+    .pdg-section-title { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin: 6px 0 6px; }
+    .pdg-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+    .pdg-empty { padding: 10px 12px; background: var(--color-background-secondary); border: 0.5px dashed var(--color-border-secondary); border-radius: 5px; font-size: 11.5px; color: var(--color-text-tertiary); text-align: center; }
+    .pdg-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: #fff; border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid var(--brand-500); border-radius: 5px; }
+    .pdg-row-text { flex: 1; font-size: 11.5px; color: var(--color-text-primary); line-height: 1.5; }
+    .pdg-row-x { width: 22px; height: 22px; border-radius: 4px; background: transparent; border: 0.5px solid transparent; color: var(--color-text-tertiary); cursor: pointer; font-size: 12px; }
     .pdg-row-x:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
-    .pdg-add-card { background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
-    .pdg-preview { background: #fff; border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-700); border-radius: 6px; padding: 10px 12px; font-size: 12px; color: var(--brand-800); line-height: 1.5; margin-top: 4px; }
+    .pdg-add-card { background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 9px; }
+    .pdg-add-card .cc-field { gap: 4px; }
+    .pdg-add-card .cc-field-label { font-size: 10px; }
+    .pdg-add-card .tw-chip, .pdg-add-card .cc-sev-chip, .pdg-add-card .cc-channel-chip { padding: 3px 9px; font-size: 11px; border-radius: 12px; }
+    .pdg-add-card .muc-chip-input { padding: 4px 6px; min-height: 32px; }
+    .pdg-add-card .muc-input-inline { font-size: 12px; min-width: 140px; height: 22px; }
+    .pdg-preview { background: #fff; border: 0.5px solid var(--brand-200); border-left: 3px solid var(--brand-700); border-radius: 5px; padding: 8px 10px; font-size: 11.5px; color: var(--brand-800); line-height: 1.5; margin-top: 4px; }
     .pdg-preview.muted { background: var(--color-background-secondary); border-color: var(--color-border-secondary); border-left-color: var(--color-border-secondary); color: var(--color-text-tertiary); }
 
     /* Plant defaults modal — list-based per-type layout */
@@ -322,7 +327,12 @@
     .filter-pop-btn.active .filter-pop-count { color: #fff; background: var(--brand-700); padding: 1px 7px; border-radius: 8px; font-weight: 500; font-size: 10.5px; }
     .filter-clear { color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
     .filter-clear:hover { background: var(--sev-alert-bg); color: var(--sev-alert-accent); border-color: var(--sev-alert-line); }
-    .filter-pop { position: absolute; top: 42px; left: 0; min-width: 240px; max-width: 320px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); z-index: 60; padding: 10px; display: none; animation: fadeUp .18s var(--ease-out); }
+    .filter-pop { position: absolute; top: 42px; left: 0; min-width: 260px; max-width: 320px; background: #fff; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); box-shadow: var(--elev-3); z-index: 60; padding: 10px; display: none; animation: fadeUp .18s var(--ease-out); box-sizing: border-box; }
+    .time-window-grid { display: grid; grid-template-columns: 1fr auto 1fr 60px; gap: 6px; align-items: center; }
+    .time-window-input { width: 100%; min-width: 0; height: 30px; padding: 0 8px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-family: var(--font-sans); background: #fff; outline: none; }
+    .time-window-input:focus { border-color: var(--brand-500); }
+    .time-window-sep { font-size: 11px; color: var(--color-text-tertiary); }
+    .time-window-unit { width: 100%; min-width: 0; height: 30px; padding: 0 4px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-family: var(--font-sans); background: #fff; outline: none; }
     .filter-pop.open { display: block; }
     .filter-pop-section { margin-bottom: 10px; }
     .filter-pop-section:last-child { margin-bottom: 0; }
@@ -346,6 +356,7 @@
     .channel-legend-title { font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; }
     .channel-legend-item { display: inline-flex; align-items: center; gap: 4px; }
     .channel-legend-glyph { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; background: var(--brand-100); color: var(--brand-800); border: 0.5px solid var(--brand-200); font-size: 10px; font-weight: 500; }
+    .channel-legend-glyph.wa-glyph::before { content: ''; display: inline-block; width: 11px; height: 11px; background: currentColor; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1.4C4.4 1.4 1.4 4.3 1.4 7.9c0 1.2.3 2.3.9 3.4L1.3 14.7l3.4-.9c1 .6 2.2.9 3.3.9 3.6 0 6.6-2.9 6.6-6.5S11.6 1.4 8 1.4zm0 11.9c-1 0-2-.3-2.9-.8l-.2-.1-2.1.6.6-2-.1-.2c-.6-.9-.9-1.9-.9-3 0-3 2.5-5.4 5.6-5.4s5.6 2.4 5.6 5.4-2.5 5.5-5.6 5.5zm3-4c-.2-.1-1-.5-1.1-.5-.2-.1-.3-.1-.4.1-.1.2-.4.5-.5.6-.1.1-.2.1-.3 0-.2-.1-.7-.3-1.4-.9-.5-.4-.8-1-.9-1.1-.1-.2 0-.3.1-.4.1-.1.2-.2.3-.3.1-.1.1-.2.2-.3.1-.1 0-.2 0-.3-.1-.1-.4-1-.6-1.4-.1-.3-.3-.3-.4-.3h-.3c-.1 0-.3 0-.4.2-.1.2-.6.6-.6 1.4 0 .8.6 1.6.7 1.7.1.1 1.2 1.8 2.9 2.5.4.2.7.3.9.3.4.1.7.1 1 .1.3 0 1-.4 1.1-.7.1-.4.1-.7.1-.7 0-.1-.1-.1-.3-.2z'/></svg>") center / contain no-repeat; -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1.4C4.4 1.4 1.4 4.3 1.4 7.9c0 1.2.3 2.3.9 3.4L1.3 14.7l3.4-.9c1 .6 2.2.9 3.3.9 3.6 0 6.6-2.9 6.6-6.5S11.6 1.4 8 1.4zm0 11.9c-1 0-2-.3-2.9-.8l-.2-.1-2.1.6.6-2-.1-.2c-.6-.9-.9-1.9-.9-3 0-3 2.5-5.4 5.6-5.4s5.6 2.4 5.6 5.4-2.5 5.5-5.6 5.5zm3-4c-.2-.1-1-.5-1.1-.5-.2-.1-.3-.1-.4.1-.1.2-.4.5-.5.6-.1.1-.2.1-.3 0-.2-.1-.7-.3-1.4-.9-.5-.4-.8-1-.9-1.1-.1-.2 0-.3.1-.4.1-.1.2-.2.3-.3.1-.1.1-.2.2-.3.1-.1 0-.2 0-.3-.1-.1-.4-1-.6-1.4-.1-.3-.3-.3-.4-.3h-.3c-.1 0-.3 0-.4.2-.1.2-.6.6-.6 1.4 0 .8.6 1.6.7 1.7.1.1 1.2 1.8 2.9 2.5.4.2.7.3.9.3.4.1.7.1 1 .1.3 0 1-.4 1.1-.7.1-.4.1-.7.1-.7 0-.1-.1-.1-.3-.2z'/></svg>") center / contain no-repeat; }
     .channel-chips { display: inline-flex; gap: 4px; flex-wrap: wrap; }
     .channel-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: #fff; cursor: pointer; font-size: 11.5px; color: var(--color-text-secondary); transition: all .14s var(--ease-out); user-select: none; font-family: var(--font-sans); }
     .channel-chip:hover { background: var(--brand-25); border-color: var(--brand-200); }
@@ -907,7 +918,6 @@
 
         <!-- 2. Filter bar (below search) — progressive disclosure popovers -->
         <div class="filter-static-bar" id="filterStaticBar">
-          <span style="font-size:10.5px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-right:2px">Filter</span>
           <div class="filter-group">
             <button class="filter-pop-btn" data-filter="plant" onclick="toggleFilterPop('plant', this)">
               <span>Plant</span>
@@ -958,7 +968,7 @@
           </div>
           <div class="filter-group">
             <button class="filter-pop-btn" data-filter="time" onclick="toggleFilterPop('time', this)">
-              <span>Esc. time</span>
+              <span>Escalation Time</span>
               <span class="filter-pop-count" id="fpc-time">Any</span>
               <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 3.5l2.5 2.5L7 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
@@ -1008,10 +1018,11 @@
             <div class="action-pop" id="ap-remove"></div>
           </div>
           <div class="action-group">
-            <button class="action-btn" data-needs-selection onclick="toggleActionPop('more', this)" title="More actions">
-              ⋯
+            <button class="action-btn" data-needs-selection onclick="toggleActionPop('channel', this)" title="Edit notification channels for an existing user across selected insights">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="3" width="9" height="6" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.7 3.2l4.3 3 4.3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Edit channels
             </button>
-            <div class="action-pop" id="ap-more"></div>
+            <div class="action-pop" id="ap-channel"></div>
           </div>
           <div class="action-divider"></div>
           <button class="action-btn ghost" data-needs-selection onclick="clearSelection()">Clear</button>
@@ -1052,8 +1063,6 @@
               <label class="toggle"><input type="checkbox" checked id="mainToggle"><span class="slider"></span></label>
               <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Insight enabled</span>
             </span>
-            <span class="l3-status-spacer"></span>
-            <span class="l3-status-meta">First triggered: <b>Today, 08:41 AM</b></span>
           </div>
         </div>
 
@@ -1324,7 +1333,7 @@
           <span class="channel-legend-title">Channels</span>
           <span class="channel-legend-item"><span class="channel-legend-glyph">✉</span>Email</span>
           <span class="channel-legend-item"><span class="channel-legend-glyph">✆</span>SMS</span>
-          <span class="channel-legend-item"><span class="channel-legend-glyph">W</span>WhatsApp</span>
+          <span class="channel-legend-item"><span class="channel-legend-glyph wa-glyph"></span>WhatsApp</span>
           <span class="channel-legend-item"><span class="channel-legend-glyph">☏</span>Call</span>
         </div>
 
@@ -1461,7 +1470,7 @@
             <div class="channel-legend ai-channel-legend">
               <span class="channel-legend-item"><span class="channel-legend-glyph">✉</span>Email</span>
               <span class="channel-legend-item"><span class="channel-legend-glyph">✆</span>SMS</span>
-              <span class="channel-legend-item"><span class="channel-legend-glyph">W</span>WA</span>
+              <span class="channel-legend-item"><span class="channel-legend-glyph wa-glyph"></span>WA</span>
               <span class="channel-legend-item"><span class="channel-legend-glyph">☏</span>Call</span>
             </div>
           </header>
@@ -1722,17 +1731,18 @@
       return g;
     }
 
-    /* Per-plant escalation defaults — new insights inherit these */
+    /* Per-plant escalation defaults — start empty (Notify only). Users add via suggestions. */
     const plantDefaults = {};
     plants.forEach(p => {
       plantDefaults[p.id] = {
-        incident: { notify: { users: [] }, escLevels: [{ delay: 0, users: [], hooter: false }, { delay: 15, users: [], hooter: true }, { delay: 30, users: [], hooter: false }] },
-        issue:    { notify: { users: [] }, escLevels: [{ delay: 0, users: [], hooter: false }, { delay: 15, users: [], hooter: false }] },
-        warning:  { notify: { users: [] }, escLevels: [{ delay: 5, users: [], hooter: false }] },
+        incident: { notify: { users: [] }, escLevels: [] },
+        issue:    { notify: { users: [] }, escLevels: [] },
+        warning:  { notify: { users: [] }, escLevels: [] },
       };
     });
 
-    const commLabels = ['✉', '✆', 'W', '☏'];
+    const WA_SVG = '<svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" style="display:inline-block;vertical-align:-1px"><path d="M8 1.4C4.4 1.4 1.4 4.3 1.4 7.9c0 1.2.3 2.3.9 3.4L1.3 14.7l3.4-.9c1 .6 2.2.9 3.3.9 3.6 0 6.6-2.9 6.6-6.5S11.6 1.4 8 1.4zm0 11.9c-1 0-2-.3-2.9-.8l-.2-.1-2.1.6.6-2-.1-.2c-.6-.9-.9-1.9-.9-3 0-3 2.5-5.4 5.6-5.4s5.6 2.4 5.6 5.4-2.5 5.5-5.6 5.5zm3-4c-.2-.1-1-.5-1.1-.5-.2-.1-.3-.1-.4.1-.1.2-.4.5-.5.6-.1.1-.2.1-.3 0-.2-.1-.7-.3-1.4-.9-.5-.4-.8-1-.9-1.1-.1-.2 0-.3.1-.4.1-.1.2-.2.3-.3.1-.1.1-.2.2-.3.1-.1 0-.2 0-.3-.1-.1-.4-1-.6-1.4-.1-.3-.3-.3-.4-.3h-.3c-.1 0-.3 0-.4.2-.1.2-.6.6-.6 1.4 0 .8.6 1.6.7 1.7.1.1 1.2 1.8 2.9 2.5.4.2.7.3.9.3.4.1.7.1 1 .1.3 0 1-.4 1.1-.7.1-.4.1-.7.1-.7 0-.1-.1-.1-.3-.2z"/></svg>';
+    const commLabels = ['✉', '✆', WA_SVG, '☏'];
     const typeLabels = { warning: 'Warning', issue: 'Issue', incident: 'Incident', achievement: 'Achievement', improvement: 'Improvement' };
 
     /* ════════════════════ L2 — global insights view ════════════════════ */
@@ -1873,13 +1883,20 @@
           <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:4px;line-height:1.5">Insights where at least one user uses any of the picked channels.</div>
         </div>`;
       } else if (key === 'time') {
+        const unit = filterState.timeUnit || 'min';
         html = `<div class="filter-pop-section">
-          <div class="filter-pop-section-title">Escalation time window (min)</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <input class="ai-input" type="number" min="0" placeholder="Min" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)" style="height:32px;font-size:12px"/>
-            <input class="ai-input" type="number" min="0" placeholder="Max" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)" style="height:32px;font-size:12px"/>
+          <div class="filter-pop-section-title">Escalation time window</div>
+          <div class="time-window-grid">
+            <input class="time-window-input" type="number" min="0" placeholder="Min" value="${filterState.timeMin??''}" oninput="ddSetTime('min',this.value)"/>
+            <span class="time-window-sep">to</span>
+            <input class="time-window-input" type="number" min="0" placeholder="Max" value="${filterState.timeMax??''}" oninput="ddSetTime('max',this.value)"/>
+            <select class="time-window-unit" onchange="ddSetTimeUnit(this.value)">
+              <option value="min" ${unit==='min'?'selected':''}>min</option>
+              <option value="hr"  ${unit==='hr' ?'selected':''}>hr</option>
+              <option value="day" ${unit==='day'?'selected':''}>day</option>
+            </select>
           </div>
-          <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:6px;line-height:1.5">Show insights with at least one escalation level whose delay falls inside this range.</div>
+          <div style="font-size:10.5px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.5">Show insights with at least one escalation step that fires inside this window.</div>
         </div>`;
       } else if (key === 'repeats') {
         html = `<div class="filter-pop-section">
@@ -1910,6 +1927,7 @@
     }
     function ddSetState(v) { filterState.state = v; renderRows(); renderFilterPop(_openPop); }
     function ddSetUser(v)  { filterState.user = v;  renderRows(); updateFilterCountBadge(); }
+    function ddSetTimeUnit(u) { filterState.timeUnit = u; renderRows(); updateFilterCountBadge(); }
     function ddSetTime(which, v) {
       if (which === 'min') filterState.timeMin = v;
       else filterState.timeMax = v;
@@ -1938,29 +1956,43 @@
       });
     }
 
+    /* Combine same-category multi-values into a single pill ("Type: Warning, Issue") */
     function renderActivePills() {
       const wrap = document.getElementById('filterActivePills');
       if (!wrap) return;
       const pills = [];
-      filterState.plants.forEach(v => { const p = plants.find(x => x.id === v); pills.push({ k: 'plants', v, l: 'Plant: ' + (p?.name||v) }); });
-      filterState.types.forEach(v => pills.push({ k: 'types', v, l: 'Type: ' + (TYPE_OPTS.find(o=>o.v===v)?.l) }));
-      filterState.equipment.forEach(v => pills.push({ k: 'equipment', v, l: 'Equip: ' + (EQUIP_OPTS.find(o=>o.v===v)?.l) }));
-      filterState.channels.forEach(v => pills.push({ k: 'channels', v, l: 'Channel: ' + (CHANNEL_OPTS.find(o=>o.v===v)?.l) }));
-      if (filterState.state !== 'all') pills.push({ k: 'state', v: filterState.state, l: 'State: ' + (STATE_OPTS.find(o=>o.v===filterState.state)?.l) });
-      if (filterState.user) pills.push({ k: 'user', v: filterState.user, l: 'User: ' + filterState.user });
+      if (filterState.plants.size > 0) {
+        const names = [...filterState.plants].map(v => plants.find(x => x.id === v)?.name || v).join(', ');
+        pills.push({ k: 'plants', l: 'Plant: ' + names });
+      }
+      if (filterState.types.size > 0) {
+        const labels = [...filterState.types].map(v => TYPE_OPTS.find(o => o.v === v)?.l || v).join(', ');
+        pills.push({ k: 'types', l: 'Type: ' + labels });
+      }
+      if (filterState.equipment.size > 0) {
+        const labels = [...filterState.equipment].map(v => EQUIP_OPTS.find(o => o.v === v)?.l || v).join(', ');
+        pills.push({ k: 'equipment', l: 'Equipment: ' + labels });
+      }
+      if (filterState.channels.size > 0) {
+        const labels = [...filterState.channels].map(v => CHANNEL_OPTS.find(o => o.v === v)?.l || v).join(', ');
+        pills.push({ k: 'channels', l: 'Channel: ' + labels });
+      }
+      if (filterState.state !== 'all') pills.push({ k: 'state', l: 'State: ' + (STATE_OPTS.find(o=>o.v===filterState.state)?.l) });
+      if (filterState.user) pills.push({ k: 'user', l: 'User: ' + filterState.user });
       const a = filterState.timeMin, b = filterState.timeMax;
-      const tStr = (a !== '' && a != null && b !== '' && b != null) ? `${a}–${b} min`
-                 : (a !== '' && a != null) ? `≥ ${a} min`
-                 : (b !== '' && b != null) ? `≤ ${b} min` : '';
-      if (tStr) pills.push({ k: 'time', v: '', l: 'Time: ' + tStr });
-      if (filterState.repeats) pills.push({ k: 'repeats', v: true, l: 'Repeat users' });
-      wrap.innerHTML = pills.map(p => `<span class="filter-active-pill">${p.l}<button onclick="removePill('${p.k}','${String(p.v).replace(/'/g,"\\'")}')">×</button></span>`).join('');
+      const u = (filterState.timeUnit || 'min');
+      const tStr = (a !== '' && a != null && b !== '' && b != null) ? `${a}–${b} ${u}`
+                 : (a !== '' && a != null) ? `≥ ${a} ${u}`
+                 : (b !== '' && b != null) ? `≤ ${b} ${u}` : '';
+      if (tStr) pills.push({ k: 'time', l: 'Escalation time: ' + tStr });
+      if (filterState.repeats) pills.push({ k: 'repeats', l: 'Repeat users' });
+      wrap.innerHTML = pills.map(p => `<span class="filter-active-pill">${p.l}<button onclick="removePill('${p.k}')">×</button></span>`).join('');
     }
-    function removePill(k, v) {
-      if (k === 'plants') filterState.plants.delete(v);
-      else if (k === 'types') filterState.types.delete(v);
-      else if (k === 'equipment') filterState.equipment.delete(v);
-      else if (k === 'channels') filterState.channels.delete(parseInt(v,10));
+    function removePill(k) {
+      if (k === 'plants') filterState.plants.clear();
+      else if (k === 'types') filterState.types.clear();
+      else if (k === 'equipment') filterState.equipment.clear();
+      else if (k === 'channels') filterState.channels.clear();
       else if (k === 'state') filterState.state = 'all';
       else if (k === 'user') filterState.user = '';
       else if (k === 'time') { filterState.timeMin = ''; filterState.timeMax = ''; }
@@ -2244,8 +2276,8 @@
           <div class="cc-field"><span class="cc-field-label">Historical range</span><div class="tw-chips">${ranges}</div></div>
           <div class="cc-field"><span class="cc-field-label">Cadence</span><div class="tw-chips">${cads}</div></div>
           <div class="pdg-preview" id="pdg-preview">Add at least one recipient and one type to enable Save.</div>
-          <div style="display:flex;justify-content:flex-end;margin-top:10px">
-            <button class="btn-primary" id="pdg-save-btn" onclick="pdgSave()">+ Save digest</button>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+            <button class="btn-primary pdg-save-btn" id="pdg-save-btn" onclick="pdgSave()" style="font-size:12px;padding:6px 12px">+ Save digest</button>
           </div>
         </div>`;
       _renderPdgChips();
@@ -2379,7 +2411,7 @@
       const tabs = ['incident','issue','warning'].map(s => `<button class="pd-tab${s===t?' active':''}" onclick="setPdType('${s}')">
         <span class="pd-sev-dot" style="background:${SEV_DOT_COLOR[s]}"></span>${SEV_LABEL[s]}
       </button>`).join('');
-      const channelChips = ['✉ Email','✆ SMS','W WhatsApp','☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${_pdAddChannels[i]?' on':''}" onclick="pdToggleAddChannel(${i})">${lbl}</button>`).join('');
+      const channelChips = ['✉ Email','✆ SMS',WA_SVG + ' WhatsApp','☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${_pdAddChannels[i]?' on':''}" onclick="pdToggleAddChannel(${i})">${lbl}</button>`).join('');
       // Suggestions: filter out delays already used
       const usedDelays = new Set(_pdRows(t).map(r => r.delay));
       const suggestions = [5, 10, 15, 30, 60, 120].filter(d => !usedDelays.has(d));
@@ -2465,7 +2497,7 @@
             <div class="channel-chips" id="pd-row-channels-${t}-${r.id}">
               <button type="button" class="channel-chip on" data-pdch="0">✉ Email</button>
               <button type="button" class="channel-chip" data-pdch="1">✆ SMS</button>
-              <button type="button" class="channel-chip" data-pdch="2">W WhatsApp</button>
+              <button type="button" class="channel-chip" data-pdch="2">${WA_SVG} WhatsApp</button>
               <button type="button" class="channel-chip" data-pdch="3">☏ Call</button>
             </div>
           </div>
@@ -2872,7 +2904,7 @@
     }
     function _renderMucChannelChips() {
       const wrap = document.getElementById('mucBulkChannels');
-      wrap.innerHTML = ['✉ Email', '✆ SMS', 'W WhatsApp', '☏ Call'].map((lbl, i) => `
+      wrap.innerHTML = ['✉ Email', '✆ SMS', WA_SVG + ' WhatsApp', '☏ Call'].map((lbl, i) => `
         <button class="channel-chip${_mucBulkChannels[i]?' on':''}" onclick="toggleMucChannel(${i})">${lbl}</button>
       `).join('');
     }
@@ -3054,7 +3086,7 @@
 
     function renderActionPop(kind) {
       const pop = document.getElementById('ap-' + kind);
-      const channelChips = ['✉ Email', '✆ SMS', 'W WhatsApp', '☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${i===0?' on':''}" data-ch="${i}">${lbl}</button>`).join('');
+      const channelChips = ['✉ Email', '✆ SMS', WA_SVG + ' WhatsApp', '☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${i===0?' on':''}" data-ch="${i}">${lbl}</button>`).join('');
       const twChips = `
         <button type="button" class="tw-chip on" data-tw="0">Immediate</button>
         <button type="button" class="tw-chip" data-tw="5">+5m</button>
@@ -3425,18 +3457,21 @@
           : 'Type a name to see this user\'s current placements.';
         return;
       }
-      const found = _findAllPlacements(name);
-      const accessPlants = userPlantNames(name);
+      const primaryName = ((typeof _parseNames === 'function') ? _parseNames(name)[0] : name) || name;
+      const found = _findAllPlacements(primaryName);
+      const accessPlants = userPlantNames(primaryName);
       const accessLine = accessPlants.length === 0
         ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">No plant access yet.</span>`
         : `<span class="user-helper-line" style="color:var(--color-text-secondary)">Plant access: <b>${accessPlants.length}</b> plant${accessPlants.length===1?'':'s'} — ${accessPlants.join(', ')}</span>`;
       if (found.length === 0) {
         helper.classList.remove('empty');
-        helper.innerHTML = `<b>${name}</b> is not on any insight yet.${accessLine}`;
-        if (which === 'add') _renderPermissionGate(name);
+        helper.innerHTML = `<b>${primaryName}</b> is not on any insight yet.${accessLine}`;
         return;
       }
       helper.classList.remove('empty');
+      // Multi-name aware helper: show first matched user's placements.
+      const queryNames = _parseNames ? _parseNames(name) : [name];
+      const primary = queryNames[0];
       const total = found.reduce((a, f) => a + f.places.length, 0);
       const sample = found.slice(0, 3).map(f => {
         const placeTags = f.places.map(p => `<span class="user-helper-tag">${p.label}${p.delay > 0 ? ' +' + p.delay + 'm' : ''}</span>`).join('');
@@ -3444,8 +3479,9 @@
         return `<span class="user-helper-line">${placeTags}<b>${f.insight.name}</b> <span style="color:var(--color-text-tertiary)">· ${plantName}</span></span>`;
       }).join('');
       const more = found.length > 3 ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">+ ${found.length - 3} more insight${(found.length - 3)===1?'':'s'}</span>` : '';
-      helper.innerHTML = `<b>${name}</b> is on <b>${total}</b> placement${total===1?'':'s'} across <b>${found.length}</b> insight${found.length===1?'':'s'}:${sample}${more}${accessLine}`;
-      if (which === 'add') _renderPermissionGate(name);
+      const others = queryNames.length > 1 ? `<span class="user-helper-line" style="color:var(--color-text-tertiary)">+ ${queryNames.length - 1} more name${queryNames.length-1===1?'':'s'} typed — placements shown for <b>${primary}</b>.</span>` : '';
+      helper.innerHTML = `<b>${primary}</b> is on <b>${total}</b> placement${total===1?'':'s'} across <b>${found.length}</b> insight${found.length===1?'':'s'}:${sample}${more}${accessLine}${others}`;
+      // NOTE: permission gate is checked on Add submit only — not on every keystroke.
     }
     function _renderPermissionGate(name) {
       const permEl = document.getElementById('ap-add-perm'); if (!permEl) return;
@@ -3910,7 +3946,7 @@
     });
 
     function _aiUserRow(scope, idx, user) {
-      const channels = ['✉','✆','W','☏'].map((g, ci) => `<button type="button" class="channel-chip${user.comm[ci]?' on':''}" onclick="aiToggleChan('${scope}',${idx},${ci})">${g}</button>`).join('');
+      const channels = commLabels.map((g, ci) => `<button type="button" class="channel-chip${user.comm[ci]?' on':''}" onclick="aiToggleChan('${scope}',${idx},${ci})">${g}</button>`).join('');
       const isNotify = scope === 'notify';
       const ph = isNotify ? 'User to notify (immediate)…' : 'User name…';
       return `<div class="ai-level-user-row">
@@ -4198,8 +4234,11 @@
         if (titleEl) titleEl.textContent = src.name;
         const metaEl = document.querySelector('#view-l3 .insight-meta');
         const plant = plants.find(p => p.id === src.plant);
+        const stateBadge = src.lastTrigActive
+          ? `<span class="badge b-active"><span class="b-dot"></span>${src.lastTrig}</span>`
+          : `<span class="badge b-plant"><span class="b-dot"></span>Closed</span>`;
         if (metaEl) metaEl.innerHTML = `<span class="badge b-${src.type === 'incident'?'inc':src.type}"><span class="b-dot"></span>${typeLabels[src.type]}</span>
-          <span class="badge b-active"><span class="b-dot"></span>${src.lastTrigActive ? src.lastTrig : 'Resolved'}</span>
+          ${stateBadge}
           <span class="badge b-plant">${plant?plant.name:''}</span>
           <span class="badge b-plant">Equipment: ${src.equipment}</span>`;
         const eqEl = document.getElementById('l3DetailEquipment');
@@ -4217,7 +4256,7 @@
         <span class="channel-legend-title">Channels</span>
         <span class="channel-legend-item"><span class="channel-legend-glyph" style="width:16px;height:16px">✉</span>Email</span>
         <span class="channel-legend-item"><span class="channel-legend-glyph" style="width:16px;height:16px">✆</span>SMS</span>
-        <span class="channel-legend-item"><span class="channel-legend-glyph" style="width:16px;height:16px">W</span>WhatsApp</span>
+        <span class="channel-legend-item"><span class="channel-legend-glyph wa-glyph" style="width:16px;height:16px"></span>WhatsApp</span>
         <span class="channel-legend-item"><span class="channel-legend-glyph" style="width:16px;height:16px">☏</span>Call</span>
       </div>`;
       // Notify level (always first)
