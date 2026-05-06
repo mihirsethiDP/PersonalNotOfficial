@@ -83,11 +83,53 @@
     .ux-hint.error .ux-hint-icon { color: var(--sev-alert-accent); }
     .ux-hint.info .ux-hint-icon { color: var(--brand-500); }
 
+    /* Live sensor readings inside L3 modal */
+    .sensor-card { background: #fff; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; transition: border-color .14s var(--ease-out); }
+    .sensor-card:last-child { margin-bottom: 0; }
+    .sensor-card.alert { border-left: 3px solid var(--sev-alert-accent); background: linear-gradient(90deg, var(--sev-alert-bg) 0%, #fff 12%); }
+    .sensor-card.normal { border-left: 3px solid var(--brand-500); }
+    .sensor-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .sensor-name { font-size: 12.5px; font-weight: 600; color: var(--color-text-primary); }
+    .sensor-desc { font-size: 11px; color: var(--color-text-tertiary); }
+    .sensor-reading { display: flex; align-items: baseline; gap: 4px; margin-left: auto; }
+    .sensor-value { font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -.01em; }
+    .sensor-card.alert .sensor-value { color: var(--sev-alert-accent); }
+    .sensor-card.normal .sensor-value { color: var(--brand-700); }
+    .sensor-unit { font-size: 12px; color: var(--color-text-secondary); }
+    .sensor-thresh { font-size: 11px; color: var(--color-text-tertiary); }
+    .sensor-thresh b { color: var(--color-text-secondary); font-weight: 500; }
+    .sensor-graph { width: 100%; height: 56px; display: block; margin-top: 6px; }
+    .sensor-graph .grid-line { stroke: var(--color-border-tertiary); stroke-width: 0.5; stroke-dasharray: 2 3; }
+    .sensor-graph .threshold-line { stroke: var(--sev-alert-accent); stroke-width: 1; stroke-dasharray: 4 3; opacity: .6; }
+    .sensor-graph .data-line { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+    .sensor-card.alert .data-line { stroke: var(--sev-alert-accent); }
+    .sensor-card.normal .data-line { stroke: var(--brand-700); }
+    .sensor-graph .data-area { opacity: .12; }
+    .sensor-card.alert .data-area { fill: var(--sev-alert-accent); }
+    .sensor-card.normal .data-area { fill: var(--brand-500); }
+    .sensor-graph .now-dot { stroke-width: 2; fill: #fff; r: 3; }
+    .sensor-card.alert .now-dot { stroke: var(--sev-alert-accent); }
+    .sensor-card.normal .now-dot { stroke: var(--brand-700); }
+
+    /* L3 modal header — title, badges, status strip */
+    #view-l3.l3-as-modal .l3-header { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    #view-l3.l3-as-modal .insight-title { margin-bottom: 8px; }
+    #view-l3.l3-as-modal .insight-meta { margin-bottom: 14px; }
+    #view-l3.l3-as-modal .l3-status-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    #view-l3.l3-as-modal .l3-toggle-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px 5px 7px; background: var(--brand-25); border: 0.5px solid var(--brand-200); border-radius: 18px; }
+    #view-l3.l3-as-modal .l3-status-spacer { flex: 1; }
+    #view-l3.l3-as-modal .l3-status-meta { font-size: 11.5px; color: var(--color-text-tertiary); }
+    #view-l3.l3-as-modal .l3-status-meta b { color: var(--color-text-secondary); font-weight: 500; }
+    #view-l3.l3-as-modal .top-bar { display: none; }
+
     /* L3 as a modal overlay (was a separate page) */
     .l3-as-modal { position: fixed; inset: 0; background: rgba(14,31,54,.42); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 200; padding: 32px 20px; overflow-y: auto; }
     .l3-as-modal .page { max-width: 880px; margin: 0 auto; background: #fff; border-radius: 14px; border: 0.5px solid var(--color-border-secondary); padding: 28px 32px; box-shadow: 0 12px 40px rgba(14,31,54,0.18); animation: pop .26s var(--ease-out); position: relative; }
-    .l3-as-modal .layout { display: block; }
-    .l3-as-modal .layout > div { width: 100%; }
+    #view-l3.l3-as-modal .layout { display: block; }
+    #view-l3.l3-as-modal .layout > div { width: 100%; margin-bottom: 0; }
+    #view-l3.l3-as-modal .layout > div + div { margin-top: 0; }
+    /* Drop the section labels in modal mode — they reference an old layout */
+    #view-l3.l3-as-modal .section-label { display: none; }
     .l3-close-btn { position: fixed; top: 24px; right: 24px; width: 36px; height: 36px; border-radius: 50%; border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); cursor: pointer; font-size: 16px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; z-index: 250; box-shadow: 0 4px 12px rgba(14,31,54,0.16); transition: all .14s var(--ease-out); }
     .l3-close-btn:hover { background: var(--brand-50); color: var(--brand-800); border-color: var(--brand-300); transform: scale(1.04); }
 
@@ -163,6 +205,16 @@
     .pd-row-edit-list { display: flex; flex-direction: column; gap: 4px; }
     .pd-row-edit-add { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
     .pd-row-edit-timing { display: inline-flex; align-items: center; gap: 6px; padding-top: 6px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .pd-row-edit-channels { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+    .pd-row-edit-channels-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; }
+    .pd-suggest-wrap { background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 8px; padding: 12px 14px; }
+    .pd-suggest-title { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .pd-suggest-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pd-suggest-chip { padding: 6px 12px; border: 0.5px solid var(--brand-200); border-radius: 16px; background: #fff; color: var(--brand-800); font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: all .14s var(--ease-out); }
+    .pd-suggest-chip:hover { background: var(--brand-100); border-color: var(--brand-500); transform: translateY(-1px); box-shadow: var(--elev-1); }
+    .pd-suggest-custom { border-style: dashed; background: transparent; color: var(--color-text-secondary); border-color: var(--color-border-secondary); }
+    .pd-suggest-custom:hover { background: var(--brand-50); color: var(--brand-800); border-color: var(--brand-300); }
+    .pd-suggest-hint { font-size: 10.5px; color: var(--color-text-tertiary); margin-top: 8px; line-height: 1.5; }
     .pd-add-row-wrap { background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 8px; padding: 12px 14px; }
     .pd-add-row-title { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
     .pd-add-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
@@ -248,9 +300,10 @@
     .action-pop-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; }
     .action-pop-input, .action-pop-select { height: 30px; padding: 0 10px; border: 0.5px solid var(--color-border-secondary); border-radius: 5px; font-size: 12px; font-family: var(--font-sans); background: #fff; outline: none; transition: border-color .14s var(--ease-out); }
     .action-pop-input:focus, .action-pop-select:focus { border-color: var(--brand-500); }
-    .ap-save-group { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; margin: 8px 0 4px; background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 5px; font-size: 11.5px; color: var(--brand-800); cursor: pointer; user-select: none; }
-    .ap-save-group input[type="checkbox"] { accent-color: var(--brand-800); margin-right: 6px; }
-    .ap-save-group span { display: inline-flex; align-items: center; }
+    .ap-save-group { display: block; padding: 8px 10px; margin: 8px 0 4px; background: var(--brand-25); border: 0.5px dashed var(--brand-300); border-radius: 5px; font-size: 11.5px; color: var(--brand-800); cursor: pointer; user-select: none; }
+    .ap-save-group-row { display: flex; align-items: center; gap: 6px; }
+    .ap-save-group input[type="checkbox"] { accent-color: var(--brand-800); margin: 0; flex-shrink: 0; }
+    .ap-save-group span { line-height: 1.3; }
     .action-pop-actions { display: flex; gap: 6px; justify-content: flex-end; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); }
     .action-pop-actions button { height: 28px; padding: 0 12px; border-radius: 5px; font-size: 12px; cursor: pointer; font-family: var(--font-sans); }
     .action-pop-actions .pop-cancel { background: #fff; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); }
@@ -606,6 +659,10 @@
     #view-l2 .insight-row { display: grid; grid-template-columns: 28px 2.4fr 1fr 1fr 1fr 36px 90px 60px; padding: 11px 14px 11px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; position: relative; transition: background .14s var(--ease-out); cursor: pointer; gap: 10px; box-shadow: inset 3px 0 0 transparent; }
     #view-l2 .insight-row:last-child { border-bottom: none; }
     #view-l2 .insight-row:hover { background: var(--brand-25); box-shadow: inset 3px 0 0 var(--brand-500); }
+    /* Von Restorff — make active alerts stand out */
+    #view-l2 .insight-row.row-alert { box-shadow: inset 3px 0 0 var(--sev-alert-accent); }
+    #view-l2 .insight-row.row-alert:hover { background: var(--sev-alert-bg); box-shadow: inset 3px 0 0 var(--sev-alert-accent); }
+    #view-l2 .insight-row.row-alert .iname-text::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--sev-alert-accent); margin-right: 8px; vertical-align: middle; animation: pulseSoft 1.8s ease-in-out infinite; }
     #view-l2 .insight-row:hover .row-chevron { color: var(--brand-700); }
     #view-l2 .insight-row.selected { background: var(--brand-50); box-shadow: inset 3px 0 0 var(--brand-800); }
     #view-l2 .insight-row.selected:hover { background: var(--brand-100); }
@@ -982,21 +1039,21 @@
     <div id="view-l3" class="view l3-as-modal">
       <button class="l3-close-btn" onclick="closeL3Modal()" aria-label="Close">✕</button>
       <div class="page">
-        <div class="top-bar">
-          <div>
-            <div class="insight-title">Boiler pressure threshold exceeded</div>
-            <div class="insight-meta">
-              <span class="badge b-inc"><span class="b-dot"></span>Incident</span>
-              <span class="badge b-active"><span class="b-dot"></span>Active · 2h 14m</span>
-              <span class="badge b-plant">Alpha Manufacturing Unit</span>
-              <span class="badge b-plant">Equipment: Boiler (Tank)</span>
-            </div>
+        <div class="l3-header">
+          <div class="insight-title">Boiler pressure threshold exceeded</div>
+          <div class="insight-meta">
+            <span class="badge b-inc"><span class="b-dot"></span>Incident</span>
+            <span class="badge b-active"><span class="b-dot"></span>Active · 2h 14m</span>
+            <span class="badge b-plant">Alpha Manufacturing Unit</span>
+            <span class="badge b-plant">Equipment: Boiler (Tank)</span>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="toggle-row">
+          <div class="l3-status-strip">
+            <span class="l3-toggle-pill">
               <label class="toggle"><input type="checkbox" checked id="mainToggle"><span class="slider"></span></label>
-              <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Enabled</span>
-            </div>
+              <span style="font-size:12px;color:var(--color-text-secondary)" id="toggleLbl">Insight enabled</span>
+            </span>
+            <span class="l3-status-spacer"></span>
+            <span class="l3-status-meta">First triggered: <b>Today, 08:41 AM</b></span>
           </div>
         </div>
 
@@ -1096,15 +1153,21 @@
               </div>
             </details>
 
+            <!-- Live sensor readings (multi-sensor with graphs) -->
+            <details class="card" id="l3SensorDetails">
+              <summary>
+                <span class="summary-title"><span class="summary-chev">›</span>Live sensor readings <span class="summary-meta" id="l3SensorSummary">—</span></span>
+              </summary>
+              <div class="details-body" id="l3SensorBody"></div>
+            </details>
+
             <!-- Details (collapsible) -->
             <details class="card">
               <summary>
-                <span class="summary-title"><span class="summary-chev">›</span>Details <span class="summary-meta">Sensor, readings, timestamps</span></span>
+                <span class="summary-title"><span class="summary-chev">›</span>Details <span class="summary-meta">Equipment, timestamps, ownership</span></span>
               </summary>
               <div class="details-body">
-              <div class="detail-row"><span class="detail-key">Sensor</span><span class="detail-val">PT-101 · Pressure transducer</span></div>
-              <div class="detail-row"><span class="detail-key">Equipment</span><span class="detail-val">Boiler (Tank)</span></div>
-              <div class="detail-row"><span class="detail-key">Current reading</span><span class="detail-val red">17.2 bar (live)</span></div>
+              <div class="detail-row"><span class="detail-key">Equipment</span><span class="detail-val" id="l3DetailEquipment">Boiler (Tank)</span></div>
               <div class="detail-row"><span class="detail-key">First triggered</span><span class="detail-val">Today, 08:41 AM</span></div>
               <div class="detail-row"><span class="detail-key">Last resolved</span><span class="detail-val">Yesterday, 11:22 PM · Manual by Priya Kumar</span></div>
               <div class="detail-row"><span class="detail-key">Created by</span><span class="detail-val">Amit Mehta · 14 Jan 2025</span></div>
@@ -2317,6 +2380,14 @@
         <span class="pd-sev-dot" style="background:${SEV_DOT_COLOR[s]}"></span>${SEV_LABEL[s]}
       </button>`).join('');
       const channelChips = ['✉ Email','✆ SMS','W WhatsApp','☏ Call'].map((lbl, i) => `<button type="button" class="channel-chip${_pdAddChannels[i]?' on':''}" onclick="pdToggleAddChannel(${i})">${lbl}</button>`).join('');
+      // Suggestions: filter out delays already used
+      const usedDelays = new Set(_pdRows(t).map(r => r.delay));
+      const suggestions = [5, 10, 15, 30, 60, 120].filter(d => !usedDelays.has(d));
+      const suggestionChips = suggestions.map(d => {
+        const lbl = d >= 60 ? `+ ${d/60} hr` : `+ ${d} min`;
+        return `<button class="pd-suggest-chip" onclick="pdAddSuggestion('${t}', ${d})">${lbl}</button>`;
+      }).join('');
+      const customChip = `<button class="pd-suggest-chip pd-suggest-custom" onclick="pdAddCustom('${t}')">Custom…</button>`;
       body.innerHTML = `
         <div class="pd-helper">
           <span style="font-size:14px">ⓘ</span>
@@ -2325,34 +2396,37 @@
         <div class="pd-tabs">${tabs}</div>
         <div class="pd-list">
           <div class="pd-list-head">
-            <span style="flex:0 0 110px">Trigger / Timing</span>
+            <span style="flex:0 0 110px">When</span>
             <span style="flex:1">Users</span>
             <span style="flex:0 0 70px;text-align:right">Edit</span>
           </div>
           ${rows.map(r => _pdRowHTML(t, r)).join('')}
         </div>
 
-        <div class="pd-add-row-wrap">
-          <div class="pd-add-row-title">Add another timing rule</div>
-          <div class="pd-add-row-grid">
-            <div class="pd-add-row-field">
-              <span class="pd-add-row-label">Repeat after</span>
-              <div class="pd-add-row-inline">
-                <input class="pd-add-input" type="number" min="0" id="pd-new-delay" value="${_pdAddDelay}" oninput="_pdAddDelay=parseInt(this.value,10)||0" style="width:80px"/>
-                <span style="font-size:12px;color:var(--color-text-secondary)">minutes</span>
-              </div>
-            </div>
-            <div class="pd-add-row-field">
-              <span class="pd-add-row-label">User name</span>
-              <input class="pd-add-input" id="pd-new-name" placeholder="e.g. Rahul Sharma" onkeydown="if(event.key==='Enter')pdAddNewRow()"/>
-            </div>
-            <div class="pd-add-row-field" style="grid-column:1/-1">
-              <span class="pd-add-row-label">Channels</span>
-              <div class="channel-chips" id="pd-new-channels">${channelChips}</div>
-            </div>
-            <button class="pd-add-btn" style="grid-column:1/-1;justify-self:end" onclick="pdAddNewRow()">+ Add timing rule</button>
-          </div>
+        <div class="pd-suggest-wrap">
+          <div class="pd-suggest-title">Add a repeat-notification time</div>
+          <div class="pd-suggest-row">${suggestionChips}${customChip}</div>
+          <div class="pd-suggest-hint">Click a suggestion or pick a custom time to add a new repeat. Once added, click the pencil to put users on it.</div>
         </div>`;
+    }
+    function pdAddSuggestion(t, delay) {
+      // If a row at this delay already exists (defensive), focus it; otherwise add empty
+      let lv = _pdDraft[t].escLevels.find(l => l.delay === delay);
+      if (!lv) {
+        lv = { delay, users: [], hooter: false };
+        _pdDraft[t].escLevels.push(lv);
+        _pdDraft[t].escLevels.sort((a, b) => a.delay - b.delay);
+      }
+      // Auto-open the editor for this new row
+      const idx = _pdDraft[t].escLevels.findIndex(l => l === lv);
+      _pdEditingRowId = String(idx);
+      _renderPdBody();
+    }
+    function pdAddCustom(t) {
+      const v = prompt('Repeat after how many minutes? (e.g. 45)');
+      const m = parseInt(v, 10);
+      if (isNaN(m) || m < 1) { showSuccessToast({ title: 'Invalid time', items: [{ skipped: true, html: 'Enter a positive number of minutes.' }] }); return; }
+      pdAddSuggestion(t, m);
     }
     function setPdType(t) { _pdActiveType = t; _pdEditingRowId = null; _renderPdBody(); }
     function pdToggleAddChannel(i) { _pdAddChannels[i] = _pdAddChannels[i] ? 0 : 1; _renderPdBody(); /* preserve typed name across re-render */ }
@@ -2383,8 +2457,17 @@
             }).join('') || '<div style="font-size:11.5px;color:var(--color-text-tertiary);padding:4px 0">No users on this rule yet.</div>'}
           </div>
           <div class="pd-row-edit-add">
-            <input class="pd-add-input" id="pd-row-add-${t}-${r.id}" placeholder="Add a user to this rule…" onkeydown="if(event.key==='Enter')pdAddUserToRow('${t}','${r.id}')"/>
+            <input class="pd-add-input" id="pd-row-add-${t}-${r.id}" placeholder="Type a name…" onkeydown="if(event.key==='Enter')pdAddUserToRow('${t}','${r.id}')"/>
             <button class="pd-add-btn" onclick="pdAddUserToRow('${t}','${r.id}')">Add</button>
+          </div>
+          <div class="pd-row-edit-channels">
+            <span class="pd-row-edit-channels-label">Channels for the user being added:</span>
+            <div class="channel-chips" id="pd-row-channels-${t}-${r.id}">
+              <button type="button" class="channel-chip on" data-pdch="0">✉ Email</button>
+              <button type="button" class="channel-chip" data-pdch="1">✆ SMS</button>
+              <button type="button" class="channel-chip" data-pdch="2">W WhatsApp</button>
+              <button type="button" class="channel-chip" data-pdch="3">☏ Call</button>
+            </div>
           </div>
           ${r.kind === 'level' ? `<div class="pd-row-edit-timing">
             <span style="font-size:11px;color:var(--color-text-secondary)">Repeat after</span>
@@ -2408,11 +2491,21 @@
       const id = 'pd-row-add-' + t + '-' + lvKey;
       const inp = document.getElementById(id); const v = inp.value.trim(); if (!v) return; inp.value = '';
       const [bg, tc] = randBg();
-      const user = { init: initialsOf(v), bg, tc, name: v, comm: [1,0,0,0] };
+      // Read channel chip state from this row's channel chips
+      const chRoot = document.getElementById('pd-row-channels-' + t + '-' + lvKey);
+      const comm = [0,0,0,0];
+      chRoot?.querySelectorAll('.channel-chip.on').forEach(c => comm[parseInt(c.dataset.pdch, 10)] = 1);
+      if (comm.every(c => !c)) comm[0] = 1; // default Email
+      const user = { init: initialsOf(v), bg, tc, name: v, comm };
       const list = lvKey === 'notify' ? _pdDraft[t].notify.users : _pdDraft[t].escLevels[parseInt(lvKey,10)].users;
       list.push(user);
       _renderPdBody();
     }
+    /* Channel-chip toggle inside plant defaults add-row */
+    document.addEventListener('click', (e) => {
+      const c = e.target.closest('[data-pdch]');
+      if (c) c.classList.toggle('on');
+    });
     function pdRemoveUser(t, lvKey, ui) {
       const list = lvKey === 'notify' ? _pdDraft[t].notify.users : _pdDraft[t].escLevels[parseInt(lvKey,10)].users;
       list.splice(ui, 1); _renderPdBody();
@@ -2484,7 +2577,8 @@
       c.innerHTML = rows.map(r => {
         const isSel = selected.has(r.id);
         const plant = plants.find(p => p.id === r.plant);
-        return `<div class="insight-row${isSel?' selected':''}" onclick="handleRowClick(${r.id})">
+        const isAlert = r.lastTrigActive && (r.type === 'incident' || r.type === 'issue');
+        return `<div class="insight-row${isSel?' selected':''}${isAlert?' row-alert':''}" onclick="handleRowClick(${r.id})">
           <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#193458"/></div>
           <div class="iname">
             <span class="iname-text">${r.name}<span class="iname-meta">· ${r.equipment}</span></span>
@@ -2494,7 +2588,7 @@
           <div class="last-trig${r.lastTrigActive?' active':''}">${r.lastTrig}</div>
           <div class="esc-cell" onclick="event.stopPropagation()">
             <div class="esc-trigger esc-trigger-v2">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-label="Escalation"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3.2l2 1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-label="Escalation chain"><circle cx="3.5" cy="4" r="1.6" stroke="currentColor" stroke-width="1.2"/><circle cx="11.5" cy="4" r="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 8c-1.4 0-2.5 .9-2.5 2v1.2h5v-1.2c0-1.1-1.1-2-2.5-2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M11.5 8c-1.4 0-2.5 .9-2.5 2v1.2h5v-1.2c0-1.1-1.1-2-2.5-2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M5.5 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="1.4 1.4"/><path d="M8.6 2.6L9.8 4 8.6 5.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
               ${buildEscTooltip(r)}
             </div>
           </div>
@@ -2990,9 +3084,11 @@
             <div class="channel-chips" id="ap-add-channels">${channelChips}</div>
           </div>
           <label class="ap-save-group">
-            <input type="checkbox" id="ap-add-savegroup" onchange="apToggleSaveGroup('add')"/>
-            <span>Save as a reusable group</span>
-            <input class="action-pop-input" id="ap-add-savegroup-name" placeholder="Group name (e.g. Boiler responders)" style="display:none;width:100%;margin-top:4px"/>
+            <span class="ap-save-group-row">
+              <input type="checkbox" id="ap-add-savegroup" onchange="apToggleSaveGroup('add')"/>
+              <span>Save these names as a reusable group</span>
+            </span>
+            <input class="action-pop-input" id="ap-add-savegroup-name" placeholder="Group name (e.g. Boiler responders)" style="display:none;width:100%;margin-top:6px"/>
           </label>
           <div class="action-pop-actions">
             <button class="pop-cancel" onclick="closeAllActionPops()">Cancel</button>
@@ -3070,16 +3166,15 @@
             <button class="pop-confirm" onclick="apActionDigest()">Schedule digest</button>
           </div>`;
       } else if (kind === 'more') {
-        // Hick's law — secondary actions tucked here
         html = `<div class="action-pop-title">More actions</div>
           <div class="action-pop-row">
-            <button class="action-btn" style="justify-content:flex-start" onclick="closeAllActionPops();_showSubAction('timing')">
-              <span style="font-size:14px">⏱</span> Edit timing on a level
+            <button class="action-btn" style="justify-content:flex-start;width:100%" onclick="event.stopPropagation();closeAllActionPops();_showSubAction('timing')">
+              <span style="font-size:14px">⏱</span> Edit repeat timing
             </button>
           </div>
           <div class="action-pop-row" style="margin-bottom:0">
-            <button class="action-btn" style="justify-content:flex-start" onclick="closeAllActionPops();_showSubAction('channel')">
-              <span style="font-size:14px">✉</span> Edit channels of a user
+            <button class="action-btn" style="justify-content:flex-start;width:100%" onclick="event.stopPropagation();closeAllActionPops();_showSubAction('channel')">
+              <span style="font-size:14px">✉</span> Edit user channels
             </button>
           </div>`;
       } else if (kind === 'timing') {
@@ -4024,6 +4119,76 @@
       }
       return l3Insight;
     }
+    /* Per-insight sensor packs — for multi-sensor visualization. id → array of sensors. */
+    const insightSensors = {
+      1: [
+        { id: 'PT-101', name: 'PT-101', desc: 'Boiler steam pressure', current: 17.2, unit: 'bar', threshold: 12.5, dir: 'high', baseline: 14.2, samples: [11.8,12.1,12.4,12.6,13.5,14.2,15.0,15.9,16.4,16.8,17.0,17.2] },
+        { id: 'TT-101', name: 'TT-101', desc: 'Boiler skin temperature', current: 188, unit: '°C', threshold: 175, dir: 'high', baseline: 162, samples: [156,159,162,165,170,173,176,180,184,186,187,188] },
+      ],
+      2: [
+        { id: 'LT-204', name: 'LT-204', desc: 'Cooling tower water level', current: 14, unit: '%', threshold: 25, dir: 'low', baseline: 78, samples: [78,76,72,65,58,49,41,34,28,22,18,14] },
+      ],
+      3: [
+        { id: 'VIB-7A', name: 'VIB-7A', desc: 'Compressor radial vibration', current: 5.2, unit: 'mm/s', threshold: 4.5, dir: 'high', baseline: 3.1, samples: [3.0,3.1,3.2,3.4,3.7,4.0,4.3,4.6,4.9,5.0,5.1,5.2] },
+        { id: 'TT-7A', name: 'TT-7A', desc: 'Compressor bearing temp', current: 71, unit: '°C', threshold: 80, dir: 'high', baseline: 68, samples: [66,67,68,68,69,69,70,70,70,71,71,71] },
+      ],
+    };
+    function _sensorsFor(insight) {
+      if (insightSensors[insight.id]) return insightSensors[insight.id];
+      // Synthesize a single mock sensor based on insight equipment+type
+      const base = insight.equipment === 'pump' ? { name: 'PMP-' + insight.id, desc: 'Pump speed', unit: 'rpm', baseline: 1450, threshold: 1700, current: 1612, dir: 'high' }
+                : insight.equipment === 'valve' ? { name: 'PV-' + insight.id, desc: 'Valve actuator position', unit: '%', baseline: 60, threshold: 90, current: 78, dir: 'high' }
+                : insight.equipment === 'blower' ? { name: 'BLW-' + insight.id, desc: 'Blower flow', unit: 'm³/h', baseline: 2200, threshold: 2700, current: 2480, dir: 'high' }
+                : { name: 'TNK-' + insight.id, desc: 'Tank level', unit: '%', baseline: 78, threshold: 95, current: 84, dir: 'high' };
+      // Synthesize 12-sample series, drifting from baseline towards current
+      const samples = [];
+      for (let i = 0; i < 12; i++) {
+        const t = i / 11;
+        samples.push(base.baseline + (base.current - base.baseline) * t + (Math.random() - 0.5) * (Math.abs(base.current - base.baseline) * 0.06));
+      }
+      return [{ id: base.name, ...base, samples }];
+    }
+    function _renderSensorSparkline(sensor) {
+      const W = 320, H = 56, padX = 4, padY = 6;
+      const vals = sensor.samples;
+      const min = Math.min(...vals, sensor.threshold);
+      const max = Math.max(...vals, sensor.threshold);
+      const range = (max - min) || 1;
+      const xStep = (W - padX * 2) / (vals.length - 1);
+      const y = (v) => H - padY - ((v - min) / range) * (H - padY * 2);
+      const points = vals.map((v, i) => `${padX + i * xStep},${y(v)}`).join(' ');
+      const areaPoints = `${padX},${H} ${points} ${padX + (vals.length - 1) * xStep},${H}`;
+      const tY = y(sensor.threshold);
+      const lastX = padX + (vals.length - 1) * xStep;
+      const lastY = y(vals[vals.length - 1]);
+      return `<svg class="sensor-graph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <line class="grid-line" x1="${padX}" y1="${H/2}" x2="${W-padX}" y2="${H/2}"/>
+        <polygon class="data-area" points="${areaPoints}"/>
+        <polyline class="data-line" points="${points}"/>
+        <line class="threshold-line" x1="${padX}" y1="${tY}" x2="${W-padX}" y2="${tY}"/>
+        <circle class="now-dot" cx="${lastX}" cy="${lastY}"/>
+      </svg>`;
+    }
+    function _renderL3Sensors(insight) {
+      const wrap = document.getElementById('l3SensorBody'); if (!wrap) return;
+      const sensors = _sensorsFor(insight);
+      const summary = document.getElementById('l3SensorSummary');
+      if (summary) summary.textContent = sensors.length === 1 ? `${sensors[0].name} · ${sensors[0].current}${sensors[0].unit}` : `${sensors.length} sensors monitored`;
+      wrap.innerHTML = sensors.map(s => {
+        const breach = s.dir === 'high' ? s.current >= s.threshold : s.current <= s.threshold;
+        const cls = breach ? 'alert' : 'normal';
+        const cmp = s.dir === 'high' ? '≥' : '≤';
+        return `<div class="sensor-card ${cls}">
+          <div class="sensor-head">
+            <span class="sensor-name">${s.name}</span>
+            <span class="sensor-desc">${s.desc}</span>
+            <span class="sensor-reading"><span class="sensor-value">${s.current}</span><span class="sensor-unit">${s.unit}</span></span>
+          </div>
+          <div class="sensor-thresh">Threshold: <b>${cmp} ${s.threshold} ${s.unit}</b> · ${breach ? 'breached' : 'within range'}</div>
+          ${_renderSensorSparkline(s)}
+        </div>`;
+      }).join('');
+    }
     function setL3Insight(id) {
       _l3CurrentId = id;
       l3Insight = null; // force reload from source
@@ -4037,6 +4202,9 @@
           <span class="badge b-active"><span class="b-dot"></span>${src.lastTrigActive ? src.lastTrig : 'Resolved'}</span>
           <span class="badge b-plant">${plant?plant.name:''}</span>
           <span class="badge b-plant">Equipment: ${src.equipment}</span>`;
+        const eqEl = document.getElementById('l3DetailEquipment');
+        if (eqEl) eqEl.textContent = src.equipment.charAt(0).toUpperCase() + src.equipment.slice(1);
+        _renderL3Sensors(src);
       }
     }
 
