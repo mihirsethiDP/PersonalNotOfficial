@@ -847,6 +847,202 @@
     #view-l3 .rbtn-ack:hover { background: var(--brand-100); }
     #view-l3 .rbtn-time { border-color: var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); }
     #view-l3 .rbtn-time:hover { background: var(--color-background-secondary); }
+
+    /* ════════════════════════════════════════════════════════════════
+       InsightsV4 — design-system override layer
+       Inspired by the Digital Paani config prototype: ink-based
+       monochrome chrome with strict severity hues only on actual
+       severity surfaces. This block is appended last so it wins on
+       specificity ties without rewriting every prior selector.
+       ════════════════════════════════════════════════════════════════ */
+
+    :root {
+      /* Ink scale (monochrome chrome) */
+      --ink-900: #0F172A;
+      --ink-800: #1E293B;
+      --ink-700: #334155;
+      --ink-500: #64748B;
+      --ink-300: #CBD5E1;
+      --ink-200: #E2E8F0;
+      --ink-100: #F1F5F9;
+      --ink-50:  #F8FAFC;
+      /* Severity (used only on actual severity data) */
+      --sev-red:    #DC2626; --sev-red-bg:    #FEF2F2; --sev-red-border:    #FECACA;
+      --sev-orange: #EA580C; --sev-orange-bg: #FFF7ED; --sev-orange-border: #FED7AA;
+      --sev-amber:  #D97706; --sev-amber-bg:  #FFFBEB; --sev-amber-border:  #FDE68A;
+      --sev-green:  #16A34A; --sev-green-bg:  #F0FDF4; --sev-green-border:  #BBF7D0;
+      --sev-blue:   #2563EB; --sev-blue-bg:   #EFF6FF; --sev-blue-border:   #BFDBFE;
+      /* Radii + shadows */
+      --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px;
+      --sh-sm: 0 1px 2px rgba(15,23,42,.05);
+      --sh-md: 0 1px 3px rgba(15,23,42,.07), 0 4px 16px rgba(15,23,42,.07);
+      --sh-lg: 0 8px 32px rgba(15,23,42,.13);
+      /* Re-map legacy brand-* aliases so existing selectors pick up the new look */
+      --brand-900: var(--ink-900);
+      --brand-800: var(--ink-900);
+      --brand-700: var(--ink-700);
+      --brand-500: var(--ink-500);
+      --brand-300: var(--ink-300);
+      --brand-200: var(--ink-200);
+      --brand-100: var(--ink-100);
+      --brand-50:  var(--ink-50);
+      --brand-25:  #FAFBFC;
+      --color-text-primary:    var(--ink-900);
+      --color-text-secondary:  var(--ink-700);
+      --color-text-tertiary:   var(--ink-500);
+      --color-border-secondary: var(--ink-200);
+      --color-border-tertiary:  var(--ink-100);
+      --color-background-primary:   #ffffff;
+      --color-background-secondary: var(--ink-50);
+      --elev-1: var(--sh-sm); --elev-2: var(--sh-md); --elev-3: var(--sh-lg);
+    }
+
+    /* Body + chrome */
+    body { background: #E8EDF2; font-size: 14px; line-height: 1.5; color: var(--ink-900); }
+    .app-shell { border-radius: var(--r-lg); border: none; box-shadow: var(--sh-md); }
+    .nav-bar { color: var(--ink-500); }
+    .nav-btn { border: 1px solid var(--ink-200); color: var(--ink-700); }
+    .nav-btn:hover:not(:disabled) { background: var(--ink-100); border-color: var(--ink-300); }
+    .nav-current b { color: var(--ink-900); }
+
+    /* Typography refresh */
+    .page-title { font-size: 20px; font-weight: 700; letter-spacing: -.01em; color: var(--ink-900); }
+    .th { color: var(--ink-500); font-weight: 600; }
+
+    /* Buttons */
+    .btn-primary { background: var(--ink-900); border-color: var(--ink-900); color: #fff; border-radius: var(--r-md); padding: 7px 14px; font-weight: 600; font-size: 13px; }
+    .btn-primary:hover:not(:disabled) { background: var(--ink-800); border-color: var(--ink-800); }
+    .btn-primary:disabled { background: var(--ink-300); border-color: var(--ink-300); color: #fff; }
+    .btn-ghost { background: var(--ink-100); border-color: transparent; color: var(--ink-900); border-radius: var(--r-md); padding: 7px 14px; font-weight: 600; font-size: 13px; }
+    .btn-ghost:hover { background: var(--ink-200); color: var(--ink-900); }
+    .btn-danger { color: var(--sev-red); border-color: var(--sev-red-border); border-radius: var(--r-md); }
+    .btn-danger:hover { background: var(--sev-red-bg); }
+
+    /* Search input */
+    .search-input { border: 1px solid var(--ink-300); border-radius: var(--r-md); background: #fff; }
+    .search-input:focus { outline: none; border-color: var(--ink-900); }
+
+    /* Section tabs — bottom-border active */
+    .section-tabs { gap: 0; border-bottom: 1px solid var(--ink-200); margin-bottom: 16px; padding-bottom: 0; }
+    .section-tab { padding: 10px 18px; border: none; border-bottom: 2px solid transparent; border-radius: 0; color: var(--ink-500); font-weight: 500; background: none; transition: color .15s; margin-bottom: -1px; }
+    .section-tab:hover { color: var(--ink-900); background: none; }
+    .section-tab.active { color: var(--ink-900); font-weight: 600; border-bottom-color: var(--ink-900); background: none; }
+    .section-tab-count { background: var(--ink-100); color: var(--ink-500); font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 20px; }
+    .section-tab.active .section-tab-count { background: var(--ink-900); color: #fff; }
+
+    /* Filter chips */
+    .filter-pop-btn { background: #fff; border: 1px solid var(--ink-300); color: var(--ink-700); border-radius: var(--r-md); height: 34px; padding: 0 12px; font-size: 12.5px; font-weight: 500; transition: all .15s; }
+    .filter-pop-btn:hover { background: var(--ink-50); border-color: var(--ink-300); color: var(--ink-900); }
+    .filter-pop-btn.active { background: var(--ink-900); border-color: var(--ink-900); color: #fff; font-weight: 600; }
+    .filter-pop-btn.active .filter-pop-count { color: rgba(255,255,255,.85); }
+    .filter-pop-count { color: var(--ink-500); font-size: 11px; font-weight: 500; }
+    .filter-pop { border-radius: var(--r-md); border: 1px solid var(--ink-200); box-shadow: var(--sh-lg); }
+    .filter-active-pill { background: var(--ink-900); color: #fff; border-radius: 20px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; border: none; }
+    .filter-active-pill button { color: rgba(255,255,255,.65); }
+    .filter-active-pill button:hover { color: #fff; background: none; }
+
+    /* Insight row — severity left-border + sticky table head */
+    #view-l2 .table-wrap { border: none; border-radius: var(--r-lg); box-shadow: var(--sh-md); }
+    #view-l2 .table-head { background: var(--ink-100); border-bottom: 1px solid var(--ink-200); padding: 9px 14px 9px 17px; }
+    #view-l2 .th { font-size: 11px; }
+    #view-l2 .insight-row { border-bottom: 1px solid var(--ink-100); box-shadow: inset 3px 0 0 var(--ink-200); transition: background .14s; }
+    #view-l2 .insight-row:last-child { border-bottom: none; }
+    #view-l2 .insight-row[data-sev="incident"]    { box-shadow: inset 3px 0 0 var(--sev-red); }
+    #view-l2 .insight-row[data-sev="issue"]       { box-shadow: inset 3px 0 0 var(--sev-orange); }
+    #view-l2 .insight-row[data-sev="warning"]     { box-shadow: inset 3px 0 0 var(--sev-amber); }
+    #view-l2 .insight-row[data-sev="achievement"] { box-shadow: inset 3px 0 0 var(--sev-green); }
+    #view-l2 .insight-row[data-sev="improvement"] { box-shadow: inset 3px 0 0 var(--sev-blue); }
+    #view-l2 .insight-row[data-state="closed"]    { opacity: .65; }
+    #view-l2 .insight-row:hover { background: #FAFBFC; box-shadow: inset 3px 0 0 var(--ink-900); }
+    #view-l2 .insight-row[data-sev="incident"]:hover    { box-shadow: inset 3px 0 0 var(--sev-red); }
+    #view-l2 .insight-row[data-sev="issue"]:hover       { box-shadow: inset 3px 0 0 var(--sev-orange); }
+    #view-l2 .insight-row[data-sev="warning"]:hover     { box-shadow: inset 3px 0 0 var(--sev-amber); }
+    #view-l2 .insight-row[data-sev="achievement"]:hover { box-shadow: inset 3px 0 0 var(--sev-green); }
+    #view-l2 .insight-row[data-sev="improvement"]:hover { box-shadow: inset 3px 0 0 var(--sev-blue); }
+    #view-l2 .insight-row.selected { background: var(--ink-100); box-shadow: inset 3px 0 0 var(--ink-900); }
+
+    /* Severity status chips */
+    .lbadge, .status-badge, .badge { font-weight: 600; }
+    #view-l2 .s-incident    { background: var(--sev-red-bg);    color: var(--sev-red);    border: none; }
+    #view-l2 .s-issue       { background: var(--sev-orange-bg); color: var(--sev-orange); border: none; }
+    #view-l2 .s-warning     { background: var(--sev-amber-bg);  color: var(--sev-amber);  border: none; }
+    #view-l2 .s-achievement { background: var(--sev-green-bg);  color: var(--sev-green);  border: none; }
+    #view-l2 .s-improvement { background: var(--sev-blue-bg);   color: var(--sev-blue);   border: none; }
+    #view-l2 .s-resolved    { background: var(--ink-100); color: var(--ink-500); border: none; }
+    #view-l2 .s-off         { background: var(--ink-100); color: var(--ink-500); border: none; }
+    .lb1 { background: var(--sev-amber-bg);  color: var(--sev-amber); }
+    .lb2 { background: var(--sev-orange-bg); color: var(--sev-orange); }
+    .lb3 { background: var(--sev-red-bg);    color: var(--sev-red); }
+    .lbn { background: var(--ink-900); color: #fff; }
+    .lbc { background: var(--sev-blue-bg); color: var(--sev-blue); }
+    #view-l3 .b-inc    { background: var(--sev-red-bg);    color: var(--sev-red);    border: none; }
+    #view-l3 .b-active { background: var(--sev-amber-bg);  color: var(--sev-amber);  border: none; }
+    #view-l3 .b-plant  { background: var(--ink-100); color: var(--ink-700); border: 1px solid var(--ink-200); }
+
+    /* Action toolbar — dark when populated */
+    .action-bar[data-empty="false"] { background: var(--ink-900); border: 1px solid var(--ink-900); box-shadow: var(--sh-md); }
+    .action-bar[data-empty="false"] .action-bar-label { color: #fff; }
+    .action-bar[data-empty="false"] #actionBarCount { color: #fff; }
+    .action-bar[data-empty="false"] .action-bar-hint { display: none; }
+    .action-bar[data-empty="false"] .action-divider { background: rgba(255,255,255,.18); }
+    .action-bar[data-empty="false"] .action-btn { background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20); color: #fff; }
+    .action-bar[data-empty="false"] .action-btn:hover:not(:disabled) { background: rgba(255,255,255,.20); border-color: rgba(255,255,255,.35); color: #fff; }
+    .action-bar[data-empty="false"] .action-btn.primary { background: #fff; color: var(--ink-900); border-color: #fff; }
+    .action-bar[data-empty="false"] .action-btn.primary:hover { background: var(--ink-100); }
+    .action-bar[data-empty="false"] .action-btn.ghost { background: transparent; border-color: transparent; color: rgba(255,255,255,.7); }
+    .action-bar[data-empty="false"] .action-btn.ghost:hover { background: rgba(255,255,255,.10); color: #fff; }
+    .action-bar[data-empty="true"] { background: var(--ink-50); border: 1px dashed var(--ink-300); }
+    .action-bar[data-empty="true"] .action-bar-label { color: var(--ink-500); }
+    .action-bar[data-empty="true"] #actionBarCount { color: var(--ink-500); font-weight: 600; }
+    .action-pop { border-radius: var(--r-md); border: 1px solid var(--ink-200); box-shadow: var(--sh-lg); }
+
+    /* Plant cards */
+    .plant-card { background: #fff; border-radius: var(--r-lg); border: none; box-shadow: var(--sh-md); padding: 0; overflow: hidden; }
+    .plant-card:hover { box-shadow: var(--sh-lg); }
+    .plant-card-head { padding: 16px 16px 12px; }
+    .plant-card-name { font-size: 16px; font-weight: 700; color: var(--ink-900); }
+    .plant-card-meta { font-size: 12px; color: var(--ink-500); }
+    .plant-card-stats { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+    .plant-card-stat { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .plant-card-stat.incident { background: var(--sev-red-bg); color: var(--sev-red); }
+    .plant-card-stat.issue { background: var(--sev-orange-bg); color: var(--sev-orange); }
+    .plant-card-stat.warning { background: var(--sev-amber-bg); color: var(--sev-amber); }
+    .plant-card-stat.clear { background: var(--sev-green-bg); color: var(--sev-green); }
+    .plant-card-actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--ink-100); }
+    .plant-card-actions button { flex: 1; padding: 8px; border-radius: var(--r-md); font-size: 12px; font-weight: 600; border: 1px solid var(--ink-300); background: transparent; color: var(--ink-700); cursor: pointer; transition: all .15s; }
+    .plant-card-actions button:hover { background: var(--ink-100); }
+    .plant-card-actions button.primary { background: var(--ink-900); color: #fff; border-color: var(--ink-900); }
+    .plant-card-actions button.primary:hover { background: var(--ink-800); }
+
+    /* Modal — xl radius, sticky head/foot, blur overlay */
+    .modal-bg { background: rgba(15,23,42,.45); backdrop-filter: blur(3px); }
+    .modal { border-radius: var(--r-xl); box-shadow: var(--sh-lg); border: none; }
+    .modal-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--ink-100); position: sticky; top: 0; background: #fff; z-index: 1; border-radius: var(--r-xl) var(--r-xl) 0 0; }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--ink-900); }
+    .modal-sub { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+    .modal-close { width: 28px; height: 28px; border-radius: 50%; background: var(--ink-100); color: var(--ink-500); border: none; font-size: 16px; }
+    .modal-close:hover { background: var(--ink-200); color: var(--ink-900); }
+    .modal-body { padding: 20px 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--ink-100); position: sticky; bottom: 0; background: #fff; border-radius: 0 0 var(--r-xl) var(--r-xl); }
+
+    /* Toggle */
+    .toggle { width: 36px; height: 20px; }
+    .slider { background: var(--ink-300); }
+    .slider:before { width: 14px; height: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    input:checked + .slider { background: var(--ink-900); }
+
+    /* Avatars */
+    .avatar, .esc-avatar, .user-avatar { font-weight: 700; border: 2px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+
+    /* Channel chips refresh — ink-900 active */
+    .channel-chip.on { background: var(--ink-900); color: #fff; border-color: var(--ink-900); }
+    .channel-chip:hover { background: var(--ink-50); border-color: var(--ink-300); }
+    .channel-chip.on:hover { background: var(--ink-800); border-color: var(--ink-800); color: #fff; }
+
+    /* Cards (L3 collapsibles) */
+    #view-l3 .card, #view-l3 details.card { border-radius: var(--r-lg); border: none; box-shadow: var(--sh-md); }
+    #view-l3 details.card summary:hover { background: var(--ink-50); }
+    #view-l3 details.card[open] summary { background: var(--ink-50); }
   </style>
 </head>
 <body>
@@ -2610,7 +2806,7 @@
         const isSel = selected.has(r.id);
         const plant = plants.find(p => p.id === r.plant);
         const isAlert = r.lastTrigActive && (r.type === 'incident' || r.type === 'issue');
-        return `<div class="insight-row${isSel?' selected':''}${isAlert?' row-alert':''}" onclick="handleRowClick(${r.id})">
+        return `<div class="insight-row${isSel?' selected':''}${isAlert?' row-alert':''}" data-sev="${r.type}" data-state="${r.lastTrigActive ? 'open' : 'closed'}" onclick="handleRowClick(${r.id})">
           <div onclick="event.stopPropagation()"><input type="checkbox"${isSel?' checked':''} onchange="toggleSelect(${r.id},this)" style="cursor:pointer;accent-color:#193458"/></div>
           <div class="iname">
             <span class="iname-text">${r.name}<span class="iname-meta">· ${r.equipment}</span></span>
