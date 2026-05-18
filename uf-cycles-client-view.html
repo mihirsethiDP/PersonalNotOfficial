@@ -6,239 +6,271 @@
 <title>UF Cycles · Insights+</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<!--
+  UX-laws applied (this is the brief for any future edits — don't dilute):
+  • Hick's Law — collapse to one primary action per card; secondary stuff lives behind "See all".
+  • Law of Similarity — one card shape, one status-dot system, one progress-bar component used everywhere.
+  • Von Restorff — the hero (or the alert, if any) is the page's standout. Nothing else competes.
+  • Tesler — irreducible complexity is absorbed by the UI: technical names tucked into tooltips/expanders.
+  • Parkinson — surface is fan-folded; only top 3 history rows visible by default to bound the page.
+  • Cognitive load — three type sizes, four colors, generous whitespace.
+  • Goal gradient — every metric is framed as progress toward something with an explicit target marker.
+  • Peak–end — the page opens with a hero (peak) and ends with a forward-looking "what's next" (end).
+-->
 <style>
   :root {
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-    --ink: #1a1916;
-    --ink-2: #5c5a52;
-    --ink-3: #9a9890;
-    --line: #d8d6ce;
-    --line-2: #eceae2;
-    --bg: #f1eee7;
+    --ink: #14131f;
+    --ink-2: #5c5a6b;
+    --ink-3: #9a98a8;
+    --line: #e3e1e8;
+    --line-2: #efedf2;
+    --bg: #f3f1ec;
     --paper: #ffffff;
-    --soft: #f5f4f0;
-    --brand-900: #0E1F36;
-    --brand-800: #193458;
-    --brand-700: #2A4A75;
-    --brand-500: #4A6890;
-    --brand-300: #7B92B3;
-    --brand-200: #A8B6CC;
-    --brand-100: #DCE3EE;
-    --brand-50:  #EBF0F7;
-    --brand-25:  #F5F8FC;
-    --warn-bg:#FBF3E2; --warn-line:#E8D29A; --warn-ink:#6B4E0E; --warn-acc:#B98B1F;
-    --alert-bg:#FBEDE3; --alert-line:#E5B7A0; --alert-ink:#7C2F0E; --alert-acc:#B5491D;
-    --ok-bg:#E8F1E9; --ok-line:#B7D4BA; --ok-ink:#2D5530; --ok-acc:#4A8A52;
-    --r-md: 8px; --r-lg: 12px;
-    --el-1: 0 1px 2px rgba(14,31,54,.04);
-    --el-2: 0 4px 12px rgba(14,31,54,.06);
+    --soft: #f6f4ef;
+    /* One accent, one positive, one warn, one alert — and that's it. */
+    --accent-50:  #eef1f8;
+    --accent-100: #d8dff0;
+    --accent-300: #8295c7;
+    --accent-600: #3956a3;
+    --accent-700: #2a4385;
+    --accent-900: #142555;
+    --ok-bg:#e7f1e8;    --ok-line:#bcd6c0;    --ok-ink:#2a5331;    --ok-acc:#3f8a4a;
+    --warn-bg:#fbf1de;  --warn-line:#e7d29b;  --warn-ink:#6a4e0e;  --warn-acc:#b78b1f;
+    --alert-bg:#fbe7df; --alert-line:#e3b5a0; --alert-ink:#7a2c0e; --alert-acc:#b34a1d;
+    --r-md: 10px; --r-lg: 16px; --r-xl: 20px;
+    --el-1: 0 1px 2px rgba(20,19,31,.04);
+    --el-2: 0 6px 18px rgba(20,19,31,.06);
+    --el-3: 0 14px 36px rgba(20,19,31,.10);
     --ease: cubic-bezier(.16,.84,.32,1);
   }
-  @keyframes fadeUp { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: translateY(0);} }
-  @keyframes pulse  { 0%,100% { box-shadow: 0 0 0 0 rgba(74,138,82,.0);} 50% { box-shadow: 0 0 0 8px rgba(74,138,82,.10);} }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform: translateY(0);} }
+  @keyframes pulse  { 0%,100% { box-shadow: 0 0 0 0 rgba(63,138,74,.0);} 50% { box-shadow: 0 0 0 8px rgba(63,138,74,.10);} }
   @keyframes shimmer{ 0% { background-position: -240px 0;} 100% { background-position: 240px 0;} }
   @media (prefers-reduced-motion: reduce){ *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
   *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-  body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); padding: 24px 20px 40px; min-height: 100vh; font-size: 14px; line-height: 1.5; }
-  .shell { max-width: 1180px; margin: 0 auto; }
+  body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); padding: 20px 18px 56px; min-height: 100vh; font-size: 14px; line-height: 1.5; }
+  .shell { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-  /* Top bar — calmer */
-  .topbar { display: flex; align-items: center; gap: 14px; padding: 12px 18px; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-md); margin-bottom: 20px; }
-  .brand { font-weight: 600; color: var(--brand-900); font-size: 14px; letter-spacing: -.01em; }
-  .brand .plus { color: var(--brand-700); }
-  .sep { color: var(--ink-3); font-size: 12px; margin: 0 -4px; }
-  .asset-name { font-size: 13px; font-weight: 600; color: var(--ink); }
-  .asset-loc { font-size: 12px; color: var(--ink-2); }
+  /* Type — Cognitive Load: only three sizes worth remembering. */
+  h1.hero-title { font-size: 30px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; color: var(--accent-900); }
+  h2.card-title { font-size: 13px; font-weight: 600; color: var(--accent-900); letter-spacing: -.005em; text-transform: uppercase; letter-spacing: .04em; }
+  .body { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+  .micro { font-size: 11.5px; color: var(--ink-3); }
+
+  /* Topbar — minimal */
+  .topbar { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-md); }
+  .brand { font-weight: 600; color: var(--accent-900); font-size: 14px; letter-spacing: -.01em; }
+  .brand .plus { color: var(--accent-600); }
+  .sep { color: var(--ink-3); }
+  .asset { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .asset .loc { display: block; font-size: 11.5px; font-weight: 400; color: var(--ink-3); margin-top: 1px; }
   .spacer { flex: 1; }
-  .select-light { height: 32px; border: 0.5px solid var(--line); border-radius: var(--r-md); padding: 0 30px 0 12px; font-size: 12.5px; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c5a52' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 10px center; appearance: none; -webkit-appearance: none; color: var(--ink); font-family: var(--font-sans); cursor: pointer; }
-  .live { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: var(--ok-bg); border: 0.5px solid var(--ok-line); color: var(--ok-ink); border-radius: 999px; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
-  .live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--ok-acc); animation: pulse 2s var(--ease) infinite; }
+  .select-light { height: 32px; border: 0.5px solid var(--line); border-radius: var(--r-md); padding: 0 30px 0 12px; font-size: 12.5px; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c5a6b' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 10px center; appearance: none; -webkit-appearance: none; color: var(--ink); font-family: var(--font-sans); cursor: pointer; }
+  .live { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--ok-bg); border: 0.5px solid var(--ok-line); color: var(--ok-ink); border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .live .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok-acc); animation: pulse 2s var(--ease) infinite; }
 
-  /* Hero card — the answer-first headline */
-  .hero { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 22px 24px; display: flex; align-items: center; gap: 20px; margin-bottom: 16px; animation: fadeUp .25s var(--ease); }
-  .hero-icon { width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .hero-icon.ok    { background: var(--ok-bg);    color: var(--ok-ink);    border: 0.5px solid var(--ok-line); }
-  .hero-icon.warn  { background: var(--warn-bg);  color: var(--warn-ink);  border: 0.5px solid var(--warn-line); }
-  .hero-icon.alert { background: var(--alert-bg); color: var(--alert-ink); border: 0.5px solid var(--alert-line); }
-  .hero-text h1 { font-size: 18px; font-weight: 600; color: var(--brand-900); letter-spacing: -.01em; margin-bottom: 4px; }
-  .hero-text p { font-size: 13px; color: var(--ink-2); }
-  .hero-text p b { color: var(--ink); font-weight: 600; }
-  .hero-range { margin-left: auto; }
-  .range { display: inline-flex; background: var(--soft); border-radius: 999px; padding: 3px; gap: 2px; border: 0.5px solid var(--line-2); }
-  .range button { background: transparent; border: 0; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--ink-2); border-radius: 999px; cursor: pointer; font-family: var(--font-sans); }
-  .range button.active { background: #fff; color: var(--brand-900); box-shadow: var(--el-1); }
-
-  /* Two-column body */
-  .grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-  @media (max-width: 980px){ .grid { grid-template-columns: 1fr; } .hero { flex-wrap: wrap; } .hero-range { margin-left: 0; width: 100%; margin-top: 6px; } }
-  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  /* Card system — one shape repeated. (Similarity) */
   .card { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 20px 22px; animation: fadeUp .25s var(--ease); }
-  .card h2 { font-size: 14px; font-weight: 600; color: var(--brand-900); letter-spacing: -.005em; margin-bottom: 4px; }
-  .card .sub { font-size: 12px; color: var(--ink-3); margin-bottom: 14px; }
-  .card-foot { font-size: 12px; color: var(--ink-3); margin-top: 14px; padding-top: 12px; border-top: 0.5px dashed var(--line-2); }
-  .card-foot button { background: transparent; border: 0; color: var(--brand-700); cursor: pointer; font: inherit; padding: 0; font-weight: 500; }
-  .card-foot button:hover { color: var(--brand-900); text-decoration: underline; }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .card-head h2 { flex: 1; min-width: 0; }
+  .card-link { background: transparent; border: 0; color: var(--accent-700); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; padding: 0; }
+  .card-link:hover { color: var(--accent-900); text-decoration: underline; }
 
-  /* Right-now card */
-  .now { background: linear-gradient(180deg, var(--brand-25) 0%, var(--paper) 60%); border-color: var(--brand-100); }
-  .now-headline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
-  .now-headline h3 { font-size: 22px; font-weight: 600; color: var(--brand-900); letter-spacing: -.01em; }
-  .now-headline .name { font-size: 13px; color: var(--ink-2); font-weight: 500; }
-  .now-context { font-size: 13px; color: var(--ink-2); margin-bottom: 16px; }
-  .now-context b { color: var(--ink); font-weight: 600; }
-  .progress-track { height: 10px; background: var(--soft); border-radius: 999px; overflow: hidden; position: relative; }
-  .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand-700), var(--brand-500)); background-size: 240px 100%; animation: shimmer 2.4s linear infinite; transition: width .8s var(--ease); }
-  .progress-meta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
-  .now-step { font-size: 13px; color: var(--ink); margin-top: 12px; display: flex; align-items: center; gap: 8px; }
-  .now-step .stepdot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-700); flex-shrink: 0; }
-  .details-toggle { margin-top: 12px; background: transparent; border: 0; color: var(--brand-700); cursor: pointer; font: inherit; padding: 0; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
-  .details-toggle:hover { color: var(--brand-900); }
+  /* HERO — Von Restorff: this is the standout. */
+  .hero { background: linear-gradient(160deg, #ffffff 0%, var(--accent-50) 100%); border: 1px solid var(--accent-100); border-radius: var(--r-xl); padding: 28px 28px 26px; box-shadow: var(--el-2); position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(closest-side, rgba(57,86,163,.10), rgba(57,86,163,0)); pointer-events: none; }
+  .hero.alert { background: linear-gradient(160deg, #ffffff 0%, var(--alert-bg) 110%); border-color: var(--alert-line); }
+  .hero.warn  { background: linear-gradient(160deg, #ffffff 0%, var(--warn-bg) 120%); border-color: var(--warn-line); }
+  .hero-inner { display: flex; align-items: center; gap: 22px; position: relative; z-index: 1; }
+  .hero-orb { width: 64px; height: 64px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #fff; box-shadow: var(--el-1); border: 0.5px solid var(--line); color: var(--accent-700); }
+  .hero.alert .hero-orb { color: var(--alert-acc); border-color: var(--alert-line); }
+  .hero.warn  .hero-orb { color: var(--warn-acc);  border-color: var(--warn-line); }
+  .hero-text { flex: 1; min-width: 0; }
+  .hero-text .eyebrow { font-size: 11.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .hero-text p { font-size: 14.5px; color: var(--ink-2); margin-top: 8px; max-width: 60ch; }
+  .hero-text p b { color: var(--ink); font-weight: 600; }
+  .hero-range { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .range { display: inline-flex; background: #fff; border: 0.5px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+  .range button { background: transparent; border: 0; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--ink-2); border-radius: 999px; cursor: pointer; font-family: var(--font-sans); }
+  .range button.active { background: var(--accent-700); color: #fff; }
+  @media (max-width: 760px){ .hero-inner { flex-wrap: wrap; } .hero-range { width: 100%; align-items: stretch; } }
+
+  /* Status dot — single component used everywhere. (Similarity) */
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot.ok    { background: var(--ok-acc); }
+  .dot.warn  { background: var(--warn-acc); }
+  .dot.alert { background: var(--alert-acc); }
+  .dot.idle  { background: var(--ink-3); }
+
+  /* Goal-progress component — used in every metric. (Goal gradient) */
+  .goal { position: relative; }
+  .goal-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+  .goal-value { font-size: 22px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1.05; }
+  .goal-unit  { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+  .goal-label { font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .goal-bar { height: 8px; background: var(--line-2); border-radius: 999px; position: relative; overflow: hidden; }
+  .goal-bar > .fill { height: 100%; border-radius: 999px; background: var(--accent-600); transition: width .8s var(--ease); }
+  .goal-bar > .fill.ok    { background: var(--ok-acc); }
+  .goal-bar > .fill.warn  { background: var(--warn-acc); }
+  .goal-bar > .fill.alert { background: var(--alert-acc); }
+  .goal-bar > .fill.exceed { background: linear-gradient(90deg, var(--ok-acc) 0%, var(--ok-acc) var(--target-pct,60%), #6eb178 100%); }
+  .goal-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .55; border-radius: 1px; }
+  .goal-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
+  .goal-foot .achievement { color: var(--ok-ink); font-weight: 600; }
+
+  /* The 3-up progress card grid — Similarity (identical cards) */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 760px){ .stats-grid { grid-template-columns: 1fr; } }
+
+  /* RIGHT NOW — single progress bar, goal-gradient framing */
+  .now { background: linear-gradient(180deg, #fff 0%, var(--accent-50) 90%); border-color: var(--accent-100); }
+  .now-eyebrow { font-size: 11.5px; font-weight: 600; color: var(--accent-700); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .now-eyebrow .dot.ok { animation: pulse 2s var(--ease) infinite; }
+  .now-title { font-size: 22px; font-weight: 600; color: var(--accent-900); letter-spacing: -.015em; line-height: 1.2; margin-bottom: 4px; }
+  .now-sub { font-size: 13.5px; color: var(--ink-2); margin-bottom: 18px; }
+  .now-sub b { color: var(--ink); font-weight: 600; }
+  .now-bar { height: 12px; background: #fff; border: 0.5px solid var(--line-2); border-radius: 999px; overflow: hidden; position: relative; }
+  .now-bar .fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent-700), var(--accent-300)); background-size: 240px 100%; animation: shimmer 2.4s linear infinite; transition: width .8s var(--ease); }
+  .now-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 10px; font-variant-numeric: tabular-nums; }
+  .now-step { font-size: 13.5px; color: var(--ink); margin-top: 14px; display: flex; align-items: center; gap: 10px; }
+  .now-step .nstep-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--accent-50); color: var(--accent-700); font-size: 11.5px; font-weight: 600; border: 0.5px solid var(--accent-100); }
+  .details-toggle { margin-top: 14px; background: transparent; border: 0; color: var(--accent-700); cursor: pointer; font: inherit; padding: 0; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+  .details-toggle:hover { color: var(--accent-900); }
   .details-toggle svg { transition: transform .2s var(--ease); }
   .details-toggle.open svg { transform: rotate(180deg); }
-  .step-detail-list { display: none; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 0.5px dashed var(--line-2); }
-  .step-detail-list.show { display: flex; animation: fadeUp .22s var(--ease); }
-  .sd { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; }
-  .sd-idx { width: 20px; height: 20px; border-radius: 50%; background: var(--soft); color: var(--ink-2); font-size: 10.5px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid var(--line); }
+  .step-list { display: none; flex-direction: column; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 0.5px dashed var(--line-2); }
+  .step-list.show { display: flex; animation: fadeUp .22s var(--ease); }
+  .sd { display: grid; grid-template-columns: 20px 1fr auto; gap: 10px; align-items: center; }
+  .sd-idx { width: 18px; height: 18px; border-radius: 50%; background: var(--soft); color: var(--ink-2); font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid var(--line); }
   .sd.done .sd-idx { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok-line); }
-  .sd.active .sd-idx { background: var(--brand-800); color: #fff; border-color: var(--brand-800); }
+  .sd.active .sd-idx { background: var(--accent-700); color: #fff; border-color: var(--accent-700); }
   .sd-name { font-size: 12.5px; color: var(--ink); }
   .sd-time { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
-  .sd.done .sd-time, .sd.active .sd-time { color: var(--ink-2); }
 
-  /* Today at a glance — 3 stats */
-  .stat-row { display: flex; flex-direction: column; gap: 14px; }
-  .stat { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); }
-  .stat:last-child { border-bottom: 0; padding-bottom: 0; }
-  .stat:first-child { padding-top: 0; }
-  .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: var(--brand-25); color: var(--brand-700); border: 0.5px solid var(--brand-100); }
-  .stat-icon.ok { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok-line); }
-  .stat-label { font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
-  .stat-line { font-size: 14px; color: var(--ink); font-weight: 500; }
-  .stat-line b { color: var(--brand-900); font-weight: 600; font-size: 15px; }
-  .stat-context { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  /* Two-column body grid */
+  .body-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 900px){ .body-grid { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
-  /* History */
-  .history-list { display: flex; flex-direction: column; }
-  .hr-row { display: grid; grid-template-columns: 110px 1fr 100px 90px; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); }
-  .hr-row:last-child { border-bottom: 0; }
-  .hr-when { font-size: 12px; color: var(--ink); }
-  .hr-when .ago { color: var(--ink-3); font-size: 11px; display: block; margin-top: 2px; }
-  .hr-desc { font-size: 12.5px; color: var(--ink); }
-  .hr-desc.skip { color: var(--ink-3); font-style: italic; }
-  .hr-bar { height: 6px; background: var(--soft); border-radius: 999px; overflow: hidden; max-width: 90px; margin-top: 6px; }
+  /* Recent — top 3 only, then "See all" (Parkinson, Hick) */
+  .hr { display: grid; grid-template-columns: 1fr 110px 90px; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); }
+  .hr:last-child { border-bottom: 0; padding-bottom: 0; }
+  .hr:first-child { padding-top: 0; }
+  .hr-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .hr-main .name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .hr-main .when { display: block; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+  .hr-bar { width: 100%; max-width: 110px; height: 5px; background: var(--soft); border-radius: 999px; overflow: hidden; }
   .hr-bar > div { height: 100%; border-radius: 999px; }
   .hr-bar > div.ok    { background: var(--ok-acc); }
   .hr-bar > div.warn  { background: var(--warn-acc); }
   .hr-bar > div.alert { background: var(--alert-acc); }
-  .hr-dur { font-size: 12.5px; color: var(--ink); text-align: right; }
-  .hr-dur .vs { font-size: 11px; color: var(--ink-3); display: block; margin-top: 2px; }
+  .hr-dur { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
   .hr-tag { justify-self: end; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
   .hr-tag.ok    { background: var(--ok-bg);    color: var(--ok-ink);    border: 0.5px solid var(--ok-line); }
   .hr-tag.warn  { background: var(--warn-bg);  color: var(--warn-ink);  border: 0.5px solid var(--warn-line); }
   .hr-tag.alert { background: var(--alert-bg); color: var(--alert-ink); border: 0.5px solid var(--alert-line); }
   .hr-tag.skip  { background: var(--soft);     color: var(--ink-2);     border: 0.5px solid var(--line); }
-  @media (max-width: 620px){ .hr-row { grid-template-columns: 1fr auto; row-gap: 6px; } .hr-bar, .hr-dur { grid-column: 1 / -1; } }
 
-  /* Watching — friendly parameter rows */
-  .watch-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 14px 0; border-bottom: 0.5px dashed var(--line-2); align-items: center; }
-  .watch-row:last-child { border-bottom: 0; padding-bottom: 0; }
-  .watch-row:first-child { padding-top: 0; }
-  .watch-name { font-size: 13px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .watch-name .wn-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .watch-name .wn-dot.ok    { background: var(--ok-acc); }
-  .watch-name .wn-dot.warn  { background: var(--warn-acc); }
-  .watch-name .wn-dot.alert { background: var(--alert-acc); }
-  .watch-val { font-family: var(--font-mono); font-size: 13px; color: var(--brand-900); font-weight: 600; white-space: nowrap; }
-  .watch-val .u { font-size: 11px; color: var(--ink-3); margin-left: 3px; font-weight: 500; font-family: var(--font-sans); }
-  .watch-status { grid-column: 1 / -1; font-size: 12px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
-  .watch-status .trend { font-size: 11px; color: var(--ink-3); }
-  .spark { width: 100%; max-width: 140px; height: 22px; display: block; }
-  .watch-spark { grid-column: 1 / -1; }
+  /* Sensors — collapsed list (Tesler) */
+  .wr { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: center; cursor: pointer; }
+  .wr:last-child { border-bottom: 0; padding-bottom: 0; }
+  .wr:first-child { padding-top: 0; }
+  .wr-name { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); min-width: 0; }
+  .wr-val  { font-family: var(--font-mono); font-size: 13px; color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .wr-val .u { font-size: 11px; color: var(--ink-3); margin-left: 3px; font-weight: 500; font-family: var(--font-sans); }
+  .wr-detail { display: none; grid-column: 1 / -1; font-size: 12.5px; color: var(--ink-2); padding-top: 6px; line-height: 1.55; }
+  .wr.open .wr-detail { display: block; animation: fadeUp .2s var(--ease); }
+  .wr-spark { display: none; grid-column: 1 / -1; margin-top: 6px; }
+  .wr.open .wr-spark { display: block; }
+  .spark { width: 100%; max-width: 200px; height: 28px; display: block; }
+  .wr-chevron { color: var(--ink-3); transition: transform .2s var(--ease); margin-left: 6px; }
+  .wr.open .wr-chevron { transform: rotate(180deg); }
 
-  /* Alerts — friendlier */
-  .alert-item { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 14px 0; border-bottom: 0.5px dashed var(--line-2); }
-  .alert-item:last-child { border-bottom: 0; padding-bottom: 0; }
-  .alert-item:first-child { padding-top: 0; }
-  .alert-icon { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .alert-icon.info  { background: var(--brand-50);  color: var(--brand-700); border: 0.5px solid var(--brand-100); }
-  .alert-icon.warn  { background: var(--warn-bg);   color: var(--warn-ink);  border: 0.5px solid var(--warn-line); }
-  .alert-icon.alert { background: var(--alert-bg);  color: var(--alert-ink); border: 0.5px solid var(--alert-line); }
-  .alert-body .at { font-size: 13px; font-weight: 500; color: var(--ink); }
-  .alert-body .ad { font-size: 12px; color: var(--ink-2); margin-top: 3px; line-height: 1.5; }
-  .alert-body .aw { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
+  /* Heads-up — only shown if non-empty; severity-led visual */
+  .alerts.card.warn  { border-color: var(--warn-line); }
+  .alerts.card.alert { border-color: var(--alert-line); }
+  .alert-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: start; }
+  .alert-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .alert-row:first-child { padding-top: 0; }
+  .alert-ic { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .alert-ic.info  { background: var(--accent-50); color: var(--accent-700); }
+  .alert-ic.warn  { background: var(--warn-bg);   color: var(--warn-ink); }
+  .alert-ic.alert { background: var(--alert-bg);  color: var(--alert-ink); }
+  .alert-body { min-width: 0; }
+  .alert-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .alert-desc  { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; line-height: 1.55; }
+  .alert-when  { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; padding-top: 5px; }
 
-  .empty { font-size: 12.5px; color: var(--ink-3); text-align: center; padding: 24px 12px; }
+  /* Peak-end: Next up card — calm, forward-looking */
+  .next-up { background: linear-gradient(160deg, #fff 0%, var(--soft) 110%); border-color: var(--line-2); display: flex; align-items: center; gap: 18px; padding: 22px 24px; }
+  .next-icon { width: 48px; height: 48px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 0.5px solid var(--line); color: var(--accent-700); flex-shrink: 0; box-shadow: var(--el-1); }
+  .next-body { flex: 1; min-width: 0; }
+  .next-eyebrow { font-size: 11.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+  .next-title { font-size: 16px; font-weight: 600; color: var(--accent-900); letter-spacing: -.01em; }
+  .next-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+
+  .empty { font-size: 12.5px; color: var(--ink-3); text-align: center; padding: 22px 12px; }
 </style>
 </head>
 <body>
   <div class="shell">
-    <!-- Top bar -->
+    <!-- Topbar — minimal -->
     <div class="topbar">
       <span class="brand">Insights<span class="plus">+</span></span>
       <span class="sep">·</span>
-      <div>
-        <div class="asset-name" id="assetName">UF Skid 1</div>
-        <div class="asset-loc">Plant A · Pre-treatment</div>
-      </div>
+      <div class="asset">UF Skid 1<span class="loc">Plant A · Pre-treatment</span></div>
       <div class="spacer"></div>
-      <select class="select-light" id="assetSel">
-        <option value="uf1" selected>UF Skid 1</option>
-        <option value="uf2">UF Skid 2</option>
-        <option value="ro1">RO Train 1</option>
-        <option value="mbr1">MBR Train 1</option>
+      <select class="select-light">
+        <option selected>UF Skid 1</option>
+        <option>UF Skid 2</option>
+        <option>RO Train 1</option>
+        <option>MBR Train 1</option>
       </select>
       <span class="live"><span class="pulse"></span>Live</span>
     </div>
 
-    <!-- Hero — answer-first -->
-    <div class="hero" id="hero">
-      <!-- filled by JS -->
-    </div>
+    <!-- HERO: Peak. Von Restorff. Single answer. -->
+    <section class="hero" id="hero"><!-- filled by JS --></section>
 
-    <!-- Main body -->
-    <div class="grid">
-      <!-- LEFT -->
+    <!-- Three identical "goal-gradient" cards. Similarity + Goal gradient. -->
+    <section class="stats-grid" id="statsGrid"><!-- filled by JS --></section>
+
+    <!-- Right now: single progress, goal-gradient framing. -->
+    <section class="card now" id="nowCard"><!-- filled by JS --></section>
+
+    <!-- Alerts: only renders if there are any. Severity-led border. -->
+    <section id="alertsSection"><!-- filled by JS --></section>
+
+    <!-- Body grid: recent + sensors. Top 3 + see all (Parkinson). -->
+    <section class="body-grid">
       <div class="col">
-        <div class="card now">
-          <h2>Right now</h2>
-          <div class="sub">A live look at what's happening on this asset.</div>
-          <div id="liveBlock"><!-- filled by JS --></div>
-        </div>
-
         <div class="card">
-          <h2>Recent cleanings</h2>
-          <div class="sub">Last 10 cleaning cycles · how they compared to expectations.</div>
-          <div class="history-list" id="histList"></div>
+          <div class="card-head">
+            <h2 class="card-title">Recent cleanings</h2>
+            <button class="card-link" onclick="alert('Full history view would open here.')">See all 247</button>
+          </div>
+          <div id="histList"></div>
         </div>
       </div>
-
-      <!-- RIGHT -->
       <div class="col">
         <div class="card">
-          <h2>Today at a glance</h2>
-          <div class="sub">A simple snapshot since midnight.</div>
-          <div class="stat-row" id="statRow"></div>
-        </div>
-
-        <div class="card">
-          <h2>What we're watching</h2>
-          <div class="sub">Sensors and readings linked to this asset's cycles.</div>
+          <div class="card-head">
+            <h2 class="card-title">Sensors</h2>
+            <button class="card-link" id="expandAllWatch">Expand all</button>
+          </div>
           <div id="watchList"></div>
         </div>
-
-        <div class="card">
-          <h2>Heads-up</h2>
-          <div class="sub" id="alertSub">—</div>
-          <div id="alertList"></div>
-        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- PEAK-END: forward-looking close. -->
+    <section class="card next-up" id="nextUp"><!-- filled by JS --></section>
   </div>
 
 <script>
   // ---------- Demo data ----------
-  // Underlying cycle config (as configured) — names stay technical, surrounding copy is plain.
   const CYCLE_NAME = 'UF Backwash';
   const STEPS = [
     { name: 'Top drain',       set: 2 },
@@ -246,91 +278,67 @@
     { name: 'Bottom backwash', set: 5 },
     { name: 'Forward flush',   set: 2 }
   ];
-  const TOTAL_SET = STEPS.reduce((a,b)=>a+b.set, 0); // 12 min
+  const TOTAL_SET = STEPS.reduce((a,b) => a+b.set, 0); // 12 min
+  const TIME_BETWEEN_CYCLES_MIN = 32; // typical gap
 
-  // Live state: which step + elapsed seconds in that step
   let live = { stepIdx: 2, elapsedInStep: 192, startedAt: minutesAgo(7) };
 
-  // Today's snapshot (computed plain-English friendly values)
   const TODAY = {
-    cleaningsDone: 27,         // how many cycles completed since midnight
-    cleaningsTypical: 25,      // typical for this hour
-    productiveTimePct: 68,     // % of running time spent producing (formerly "uptime")
-    productiveTimeTarget: 60,  // operator-set target
-    paramsHealthy: 3,          // of 4 watched parameters
-    paramsTotal: 4
+    cleaningsDone: 27,
+    cleaningsExpectedEod: 32,
+    productivePct: 68,
+    productiveTarget: 60,
+    sensorsHealthy: 3,
+    sensorsTotal: 4
   };
 
-  // History — 10 recent cycles with realistic drift
   const HIST = (() => {
     const out = [];
     for (let i=0;i<10;i++){
-      const ageMin = (i+1)*32 + Math.round(Math.random()*5 - 2);
-      const segs = STEPS.map(s => Math.max(0.3, s.set + (Math.random()-.45)*0.6));
-      const total = segs.reduce((a,b)=>a+b,0);
+      const ageMin = (i+1) * TIME_BETWEEN_CYCLES_MIN + Math.round(Math.random()*5 - 2);
+      const total = TOTAL_SET + (Math.random()-.45) * 1.6;
       const deltaPct = (total - TOTAL_SET) / TOTAL_SET * 100;
       let status = 'ok';
       if (i === 4) status = 'skip';
       else if (Math.abs(deltaPct) > 8) status = 'alert';
       else if (Math.abs(deltaPct) > 4) status = 'warn';
-      out.push({ idx: 2814 - i, ageMin, segs, total, target: TOTAL_SET, deltaPct, status });
+      out.push({ idx: 2814 - i, ageMin, total, deltaPct, status });
     }
     return out;
   })();
 
-  // Watched parameters — plain-English status drives the story
   const WATCH = [
-    {
-      name: 'Inlet pressure',
-      value: 1.62, unit: 'bar',
-      series: jitter(20, 1.4, 0.18),
-      status: 'ok',
-      story: 'Stable — within the healthy range.',
-      trend: 'flat'
-    },
-    {
-      name: 'Permeate flow',
-      value: 6.2,  unit: 'm³/h',
-      series: jitter(20, 6.1, 0.4),
-      status: 'ok',
-      story: 'Looking good — close to the typical 6 m³/h.',
-      trend: 'flat'
-    },
-    {
-      name: 'Recovery',
-      value: 88.4, unit: '%',
-      series: jitter(20, 87, 1.6),
-      status: 'ok',
-      story: 'Above your 85% target — efficient run.',
-      trend: 'up'
-    },
-    {
-      name: 'Trans-membrane pressure',
-      value: 0.42, unit: 'bar',
-      series: jitter(20, 0.36, 0.06),
-      status: 'warn',
-      story: 'A little higher than usual. Worth keeping an eye on.',
-      trend: 'up'
-    }
+    { name: 'Inlet pressure',          value: 1.62, unit: 'bar',  series: jitter(20, 1.4, 0.18),  status: 'ok',
+      story: 'Holding steady around the usual range.', trend: 'flat' },
+    { name: 'Permeate flow',           value: 6.2,  unit: 'm³/h', series: jitter(20, 6.1, 0.4),   status: 'ok',
+      story: 'Right around the expected 6 m³/h.',       trend: 'flat' },
+    { name: 'Recovery',                value: 88.4, unit: '%',    series: jitter(20, 87, 1.6),    status: 'ok',
+      story: 'Above the 85% target — efficient run.',   trend: 'up' },
+    { name: 'Trans-membrane pressure', value: 0.42, unit: 'bar',  series: jitter(20, 0.36, 0.06), status: 'warn',
+      story: 'A bit higher than usual. Worth a glance during the next round.', trend: 'up' }
   ];
 
-  // Alerts — friendlier titles & descriptions
   const ALERTS = [
-    { sev:'warn',  title:'Membrane pressure crept up',
-      desc:'Slight upward trend over the last few cleanings — usually fine, but worth a quick look on the next maintenance round.', ageMin: 8 },
-    { sev:'info',  title:'Cleaning #2813 finished a touch early',
-      desc:'Ran for 11 min 24 sec versus the expected 12 min. Still well within tolerance — no action needed.', ageMin: 34 },
+    { sev:'warn',  title:'Membrane pressure trending up',
+      desc:'Slowly rising over the last few cleanings — still inside healthy range.', ageMin: 8 },
+    { sev:'info',  title:'Cleaning #2813 finished 36 sec early',
+      desc:'Within normal variation. Nothing to act on.', ageMin: 34 },
     { sev:'alert', title:"Cleaning #2810 didn't start",
-      desc:'A scheduled cleaning was missed. Common causes: supply tank low, an upstream valve still closed, or a power blip.', ageMin: 96 }
+      desc:'A scheduled cleaning was missed. Often supply-tank low or an upstream valve still closed.', ageMin: 96 }
   ];
 
   // ---------- Helpers ----------
   function minutesAgo(m){ return new Date(Date.now() - m*60000); }
   function ago(m){
-    if (m < 1) return 'just now';
-    if (m < 60) return m + ' min ago';
-    if (m < 60*24) return Math.round(m/60) + ' hr ago';
+    if (m < 1)         return 'just now';
+    if (m < 60)        return m + ' min ago';
+    if (m < 60*24)     return Math.round(m/60) + ' hr ago';
     return Math.round(m/60/24) + ' d ago';
+  }
+  function inMin(m){
+    if (m < 1)  return 'in less than a minute';
+    if (m < 60) return 'in about ' + m + ' min';
+    return 'in about ' + Math.round(m/60) + ' hr';
   }
   function fmtMS(sec){
     sec = Math.max(0, Math.round(sec));
@@ -348,39 +356,47 @@
     for (let i=0;i<n;i++){ v = base + (Math.random()-.5)*amp*2; out.push(+v.toFixed(2)); }
     return out;
   }
+  function pageStatus(){
+    if (ALERTS.some(a => a.sev === 'alert')) return 'alert';
+    if (ALERTS.some(a => a.sev === 'warn'))  return 'warn';
+    return 'ok';
+  }
+  // Adaptive status icons — same SVGs reused across the page (Similarity).
+  function svgCheck(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>'; }
+  function svgWatch(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'; }
+  function svgAlert(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'; }
 
-  // ---------- Render: Hero ----------
+  // ---------- HERO ----------
   function renderHero(){
-    const alerts   = ALERTS.filter(a => a.sev === 'alert').length;
-    const warns    = ALERTS.filter(a => a.sev === 'warn').length;
-    let mood = 'ok', icon = '✓';
-    let title = 'Running smoothly today';
-    let body  = `<b>${TODAY.cleaningsDone}</b> cleanings completed since midnight · about <b>${TODAY.productiveTimePct}%</b> productive time.`;
-    if (alerts > 0) {
-      mood = 'alert'; icon = '!';
-      title = alerts === 1 ? '1 thing to review' : `${alerts} things to review`;
-      body = `Most cycles look fine, but there's an alert that needs attention. Details below.`;
-    } else if (warns > 0) {
-      mood = 'warn'; icon = '◔';
-      title = 'Smooth — one thing to keep an eye on';
-      body = `${TODAY.cleaningsDone} cleanings done today. One parameter is trending up — worth a quick look.`;
+    const status = pageStatus();
+    let icon = svgCheck(), eyebrow = 'How it\'s going', title, body;
+    if (status === 'alert') {
+      icon = svgAlert();
+      title = '1 thing needs your attention';
+      body  = `Most cycles are running fine — but one cleaning didn't start. Details below.`;
+    } else if (status === 'warn') {
+      icon = svgWatch();
+      title = 'Smooth — one thing to watch';
+      body  = `<b>${TODAY.cleaningsDone}</b> cleanings done today, <b>${TODAY.productivePct}%</b> productive time. One sensor is creeping up.`;
+    } else {
+      title = 'Everything is running well';
+      body  = `<b>${TODAY.cleaningsDone}</b> cleanings done today · <b>${TODAY.productivePct}%</b> productive time. All sensors healthy.`;
     }
-    const heroIcon = mood === 'ok'
-      ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>'
-      : mood === 'warn'
-      ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
-      : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>';
+    document.getElementById('hero').className = 'hero ' + status;
     document.getElementById('hero').innerHTML = `
-      <div class="hero-icon ${mood}">${heroIcon}</div>
-      <div class="hero-text">
-        <h1>${title}</h1>
-        <p>${body}</p>
-      </div>
-      <div class="hero-range">
-        <div class="range" id="rangeSel">
-          <button data-r="24h" class="active">Today</button>
-          <button data-r="7d">Past week</button>
-          <button data-r="30d">Past month</button>
+      <div class="hero-inner">
+        <div class="hero-orb">${icon}</div>
+        <div class="hero-text">
+          <div class="eyebrow">${eyebrow}</div>
+          <h1 class="hero-title">${title}</h1>
+          <p>${body}</p>
+        </div>
+        <div class="hero-range">
+          <div class="range" id="rangeSel">
+            <button data-r="24h" class="active">Today</button>
+            <button data-r="7d">Past week</button>
+            <button data-r="30d">Past month</button>
+          </div>
         </div>
       </div>`;
     document.getElementById('rangeSel').addEventListener('click', e => {
@@ -390,122 +406,156 @@
     });
   }
 
-  // ---------- Render: Right now ----------
+  // ---------- Goal-gradient cards ----------
+  function goalCard({label, value, unit, of, ofLabel, status, mood, achievement}){
+    // Fill % is value/of, clipped to 100; target marker is always at "of".
+    const pct = Math.min(100, (value / of) * 100);
+    const fillCls = mood === 'exceed' ? 'exceed' : (mood || '');
+    return `
+      <div class="card goal">
+        <div class="goal-label">${label}</div>
+        <div class="goal-row">
+          <span class="goal-value">${value}<span class="goal-unit">${unit||''}</span></span>
+        </div>
+        <div class="goal-bar"><div class="fill ${fillCls}" style="width:${pct}%"></div></div>
+        <div class="goal-foot">
+          <span>${ofLabel}</span>
+          <span class="${achievement ? 'achievement' : ''}">${achievement ? '✓ ' + achievement : ''}</span>
+        </div>
+      </div>`;
+  }
+  function renderStats(){
+    const cleaningsPct = TODAY.cleaningsDone / TODAY.cleaningsExpectedEod * 100;
+    const cards = [
+      goalCard({
+        label: 'Cleanings completed today',
+        value: TODAY.cleaningsDone, unit: '',
+        of: TODAY.cleaningsExpectedEod,
+        ofLabel: `of ~${TODAY.cleaningsExpectedEod} expected by end of day`,
+        achievement: cleaningsPct >= 90 ? 'Almost there' : null
+      }),
+      goalCard({
+        label: 'Productive time',
+        value: TODAY.productivePct, unit: '%',
+        of: TODAY.productiveTarget,
+        ofLabel: `target ${TODAY.productiveTarget}%`,
+        mood: TODAY.productivePct >= TODAY.productiveTarget ? 'exceed' : null,
+        achievement: TODAY.productivePct >= TODAY.productiveTarget
+          ? `+${TODAY.productivePct - TODAY.productiveTarget}% over target`
+          : null
+      }),
+      goalCard({
+        label: 'Sensors healthy',
+        value: TODAY.sensorsHealthy, unit: ` / ${TODAY.sensorsTotal}`,
+        of: TODAY.sensorsTotal,
+        ofLabel: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'All readings in range' : `${TODAY.sensorsTotal - TODAY.sensorsHealthy} to watch`,
+        mood: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'ok' : 'warn',
+        achievement: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'All clear' : null
+      })
+    ];
+    document.getElementById('statsGrid').innerHTML = cards.join('');
+  }
+
+  // ---------- Right now ----------
+  let detailsOpen = false;
+  window.toggleDetails = () => { detailsOpen = !detailsOpen; renderLive(); };
   function renderLive(){
-    // overall elapsed across all steps
     let elapsedSec = 0;
     for (let i=0;i<live.stepIdx;i++) elapsedSec += STEPS[i].set * 60;
     elapsedSec += live.elapsedInStep;
     const totalSec = TOTAL_SET * 60;
     const pct = Math.min(100, elapsedSec / totalSec * 100);
     const remainingSec = Math.max(0, totalSec - elapsedSec);
-    const remainingMin = Math.ceil(remainingSec / 60);
+    const remainingMin = Math.max(1, Math.ceil(remainingSec / 60));
     const startedAgo = Math.max(0, Math.round((Date.now() - live.startedAt.getTime()) / 60000));
     const currentStep = STEPS[live.stepIdx];
 
     const stepsHtml = STEPS.map((s, i) => {
       let cls = '', time = `0:00 / ${s.set}:00`;
-      if (i < live.stepIdx)      { cls = 'done';   time = `${s.set}:00 / ${s.set}:00`; }
-      else if (i === live.stepIdx){ cls = 'active'; time = `${fmtMS(live.elapsedInStep)} / ${s.set}:00`; }
+      if (i < live.stepIdx)         { cls = 'done';   time = `${s.set}:00 / ${s.set}:00`; }
+      else if (i === live.stepIdx)  { cls = 'active'; time = `${fmtMS(live.elapsedInStep)} / ${s.set}:00`; }
       return `<div class="sd ${cls}"><span class="sd-idx">${i+1}</span><span class="sd-name">${s.name}</span><span class="sd-time">${time}</span></div>`;
     }).join('');
 
-    document.getElementById('liveBlock').innerHTML = `
-      <div class="now-headline">
-        <h3>Cleaning in progress</h3>
-        <span class="name">· cycle: ${CYCLE_NAME}</span>
+    document.getElementById('nowCard').innerHTML = `
+      <div class="now-eyebrow"><span class="dot ok"></span>Right now</div>
+      <div class="now-title">Cleaning in progress</div>
+      <div class="now-sub">Started <b>${ago(startedAgo)}</b> · about <b>${remainingMin} min</b> left.</div>
+      <div class="now-bar"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="now-meta"><span>${Math.round(pct)}% done</span><span>${fmtMS(elapsedSec)} of ${TOTAL_SET}:00</span></div>
+      <div class="now-step">
+        <span class="nstep-pill">Step ${live.stepIdx+1} of ${STEPS.length}</span>
+        <span>${currentStep.name}</span>
       </div>
-      <div class="now-context">Started <b>${ago(startedAgo)}</b> · about <b>${remainingMin} min</b> left.</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
-      <div class="progress-meta"><span>${Math.round(pct)}% done</span><span>${fmtMS(elapsedSec)} of ${TOTAL_SET}:00</span></div>
-      <div class="now-step"><span class="stepdot"></span>Step ${live.stepIdx+1} of ${STEPS.length}: <b style="margin-left:2px;">${currentStep.name}</b></div>
       <button class="details-toggle ${detailsOpen ? 'open' : ''}" onclick="toggleDetails()">
         ${detailsOpen ? 'Hide step details' : 'Show step details'}
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="step-detail-list ${detailsOpen ? 'show' : ''}">${stepsHtml}</div>
-    `;
+      <div class="step-list ${detailsOpen ? 'show' : ''}">${stepsHtml}</div>`;
   }
-  let detailsOpen = false;
-  window.toggleDetails = () => { detailsOpen = !detailsOpen; renderLive(); };
 
-  // ---------- Render: Today at a glance ----------
-  function renderStats(){
-    const watching = WATCH.filter(w => w.status !== 'ok').length;
-    const allGood  = watching === 0;
-    const productive = TODAY.productiveTimePct;
-    const aboveTarget = productive >= TODAY.productiveTimeTarget;
-    const stats = [
-      {
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0114-7.5"/><path d="M21 12a9 9 0 01-14 7.5"/><path d="M16 4h5v5M8 20H3v-5"/></svg>',
-        label: 'Cleanings today',
-        line: `<b>${TODAY.cleaningsDone}</b> completed`,
-        context: `Typical at this hour: about ${TODAY.cleaningsTypical}.`,
-        mood: 'brand'
-      },
-      {
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c2-4 6-6 10-6s8 2 10 6c-2 4-6 6-10 6S4 16 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg>',
-        label: 'Productive time',
-        line: `<b>${productive}%</b> of running hours`,
-        context: aboveTarget ? `Above your ${TODAY.productiveTimeTarget}% target — good run.` : `Target is ${TODAY.productiveTimeTarget}%.`,
-        mood: aboveTarget ? 'ok' : 'brand'
-      },
-      {
-        icon: allGood
-          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>'
-          : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
-        label: 'Sensor health',
-        line: allGood ? `<b>All ${TODAY.paramsTotal}</b> readings healthy` : `<b>${watching}</b> reading${watching===1?'':'s'} to watch`,
-        context: allGood ? 'No parameters flagged.' : 'See "What we\'re watching" below.',
-        mood: allGood ? 'ok' : 'brand'
-      }
-    ];
-    document.getElementById('statRow').innerHTML = stats.map(s => `
-      <div class="stat">
-        <span class="stat-icon ${s.mood}">${s.icon}</span>
-        <div>
-          <div class="stat-label">${s.label}</div>
-          <div class="stat-line">${s.line}</div>
-          <div class="stat-context">${s.context}</div>
+  // ---------- Alerts ----------
+  function renderAlerts(){
+    const wrap = document.getElementById('alertsSection');
+    if (!ALERTS.length) { wrap.innerHTML = ''; return; }
+    const sev = ALERTS.some(a => a.sev === 'alert') ? 'alert' : ALERTS.some(a => a.sev === 'warn') ? 'warn' : '';
+    const icon = (s) => s === 'alert' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
+                    : s === 'warn'  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
+                                    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>';
+    wrap.innerHTML = `
+      <div class="card alerts ${sev}">
+        <div class="card-head">
+          <h2 class="card-title">Heads-up</h2>
+          <span class="micro">${ALERTS.length} item${ALERTS.length===1?'':'s'} today</span>
         </div>
-      </div>`).join('');
+        ${ALERTS.map(a => `
+          <div class="alert-row">
+            <span class="alert-ic ${a.sev}">${icon(a.sev)}</span>
+            <div class="alert-body">
+              <div class="alert-title">${a.title}</div>
+              <div class="alert-desc">${a.desc}</div>
+            </div>
+            <div class="alert-when">${ago(a.ageMin)}</div>
+          </div>`).join('')}
+      </div>`;
   }
 
-  // ---------- Render: History ----------
+  // ---------- Recent cleanings (top 3) ----------
   function renderHistory(){
     const el = document.getElementById('histList');
-    el.innerHTML = HIST.map(h => {
-      if (h.status === 'skip') {
-        return `
-          <div class="hr-row">
-            <div class="hr-when"><b>Cleaning #${h.idx}</b><span class="ago">${ago(h.ageMin)}</span></div>
-            <div class="hr-desc skip">Was scheduled but didn't run.</div>
-            <div></div>
-            <span class="hr-tag skip">Missed</span>
-          </div>`;
-      }
-      const sign = h.deltaPct >= 0 ? '+' : '';
-      const pctW = Math.min(100, h.total / h.target * 100);
-      const lbl = h.status === 'alert' ? 'Off target' : h.status === 'warn' ? 'A bit off' : 'On target';
-      const sentence = h.status === 'ok'
-        ? 'Finished as expected.'
-        : (h.deltaPct > 0 ? `Took ${fmtMin(h.total - h.target)} longer than usual.` : `Finished ${fmtMin(Math.abs(h.total - h.target))} early.`);
-      return `
-        <div class="hr-row">
-          <div class="hr-when"><b>Cleaning #${h.idx}</b><span class="ago">${ago(h.ageMin)}</span></div>
-          <div class="hr-desc">
-            ${sentence}
-            <div class="hr-bar"><div class="${h.status}" style="width:${pctW}%;"></div></div>
+    el.innerHTML = HIST.slice(0,3).map(h => {
+      if (h.status === 'skip') return `
+        <div class="hr">
+          <div class="hr-main">
+            <span class="dot idle"></span>
+            <div><div class="name">Cleaning #${h.idx} · missed</div><span class="when">${ago(h.ageMin)}</span></div>
           </div>
-          <div class="hr-dur">${fmtMin(h.total)}<span class="vs">${sign}${h.deltaPct.toFixed(1)}% vs usual</span></div>
+          <div></div>
+          <span class="hr-tag skip">Missed</span>
+        </div>`;
+      const lbl  = h.status === 'alert' ? 'Off target' : h.status === 'warn' ? 'A bit off' : 'On target';
+      const pctW = Math.min(100, h.total / TOTAL_SET * 100);
+      return `
+        <div class="hr">
+          <div class="hr-main">
+            <span class="dot ${h.status}"></span>
+            <div>
+              <div class="name">Cleaning #${h.idx}</div>
+              <span class="when">${ago(h.ageMin)}</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:12.5px; color:var(--ink);">${fmtMin(h.total)}</div>
+            <div class="hr-bar" style="margin-top:6px;"><div class="${h.status}" style="width:${pctW}%"></div></div>
+          </div>
           <span class="hr-tag ${h.status}">${lbl}</span>
         </div>`;
     }).join('');
   }
 
-  // ---------- Render: Watching ----------
+  // ---------- Sensors (collapsed) ----------
   function sparkline(series, status){
-    const w = 140, h = 22, pad = 2;
+    const w = 200, h = 28, pad = 2;
     const min = Math.min(...series), max = Math.max(...series);
     const span = (max - min) || 1;
     const step = (w - pad*2) / (series.length - 1);
@@ -514,58 +564,53 @@
       const y = h - pad - ((v - min) / span) * (h - pad*2);
       return x.toFixed(1) + ',' + y.toFixed(1);
     }).join(' ');
-    const stroke = status === 'warn' ? 'var(--warn-acc)' : status === 'alert' ? 'var(--alert-acc)' : 'var(--brand-500)';
+    const stroke = status === 'warn' ? 'var(--warn-acc)' : status === 'alert' ? 'var(--alert-acc)' : 'var(--accent-600)';
     return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-      <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>
+      <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
     </svg>`;
-  }
-  function trendArrow(trend){
-    if (trend === 'up')   return '↗';
-    if (trend === 'down') return '↘';
-    return '→';
   }
   function renderWatch(){
     const el = document.getElementById('watchList');
-    el.innerHTML = WATCH.map(w => `
-      <div class="watch-row">
-        <div class="watch-name">
-          <span class="wn-dot ${w.status}"></span>
-          ${w.name}
+    el.innerHTML = WATCH.map((w, i) => `
+      <div class="wr" data-i="${i}" onclick="toggleWatch(${i})">
+        <div class="wr-name">
+          <span class="dot ${w.status}"></span>${w.name}
         </div>
-        <div class="watch-val">${w.value}<span class="u">${w.unit}</span></div>
-        <div class="watch-status">
-          <span>${w.story}</span>
-          <span class="trend">${trendArrow(w.trend)}</span>
+        <div class="wr-val">${w.value}<span class="u">${w.unit}</span>
+          <svg class="wr-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
-        <div class="watch-spark">${sparkline(w.series, w.status)}</div>
+        <div class="wr-detail">${w.story}</div>
+        <div class="wr-spark">${sparkline(w.series, w.status)}</div>
       </div>`).join('');
   }
+  window.toggleWatch = (i) => {
+    const row = document.querySelector('.wr[data-i="'+i+'"]');
+    if (row) row.classList.toggle('open');
+  };
+  document.getElementById('expandAllWatch').addEventListener('click', (e) => {
+    const rows = document.querySelectorAll('.wr');
+    const allOpen = Array.from(rows).every(r => r.classList.contains('open'));
+    rows.forEach(r => r.classList.toggle('open', !allOpen));
+    e.target.textContent = allOpen ? 'Expand all' : 'Collapse all';
+  });
 
-  // ---------- Render: Alerts ----------
-  function renderAlerts(){
-    const el = document.getElementById('alertList');
-    const sub = document.getElementById('alertSub');
-    sub.textContent = ALERTS.length === 0
-      ? 'Nothing to flag — all good.'
-      : `${ALERTS.length} item${ALERTS.length===1?'':'s'} since midnight · most recent first.`;
-    if (ALERTS.length === 0) {
-      el.innerHTML = `<div class="empty">No issues reported.</div>`;
-      return;
-    }
-    const icon = sev => sev === 'alert'
-      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
-      : sev === 'warn'
-      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
-      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>';
-    el.innerHTML = ALERTS.map(a => `
-      <div class="alert-item">
-        <span class="alert-icon ${a.sev}">${icon(a.sev)}</span>
-        <div class="alert-body">
-          <div class="at">${a.title}</div>
-          <div class="ad">${a.desc}</div>
-          <div class="aw">${ago(a.ageMin)}</div>
-        </div>
-      </div>`).join('');
+  // ---------- Peak-end: Next up ----------
+  function renderNextUp(){
+    // Compute time until the current cycle finishes, then add the typical gap to next.
+    let elapsedSec = 0;
+    for (let i=0;i<live.stepIdx;i++) elapsedSec += STEPS[i].set * 60;
+    elapsedSec += live.elapsedInStep;
+    const remainingSec = Math.max(0, TOTAL_SET*60 - elapsedSec);
+    const nextInMin = Math.round(remainingSec/60) + TIME_BETWEEN_CYCLES_MIN;
+    document.getElementById('nextUp').innerHTML = `
+      <div class="next-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <div class="next-body">
+        <div class="next-eyebrow">Coming up</div>
+        <div class="next-title">Next cleaning ${inMin(nextInMin)}</div>
+        <div class="next-sub">After this one wraps up, expect about ${TIME_BETWEEN_CYCLES_MIN} min of productive time before the next cleaning kicks off.</div>
+      </div>`;
   }
 
   // ---------- Live tick ----------
@@ -573,21 +618,20 @@
     live.elapsedInStep += 1;
     const setSec = STEPS[live.stepIdx].set * 60;
     if (live.elapsedInStep >= setSec) {
-      if (live.stepIdx < STEPS.length - 1) {
-        live.stepIdx += 1; live.elapsedInStep = 0;
-      } else {
-        live = { stepIdx: 0, elapsedInStep: 0, startedAt: new Date() };
-      }
+      if (live.stepIdx < STEPS.length - 1) { live.stepIdx += 1; live.elapsedInStep = 0; }
+      else { live = { stepIdx: 0, elapsedInStep: 0, startedAt: new Date() }; }
     }
     renderLive();
+    renderNextUp();
   }
 
   renderHero();
-  renderLive();
   renderStats();
+  renderLive();
+  renderAlerts();
   renderHistory();
   renderWatch();
-  renderAlerts();
+  renderNextUp();
   setInterval(tick, 1000);
 </script>
 </body>
