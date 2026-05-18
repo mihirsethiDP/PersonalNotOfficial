@@ -255,6 +255,41 @@
   .modal-close:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
   .modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
   .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px 16px; border-top: 0.5px solid var(--color-border-tertiary); background: var(--brand-25); border-radius: 0 0 12px 12px; }
+
+  /* Sensor: two-button (opening / closing) row */
+  .cond-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 720px) { .cond-pair { grid-template-columns: 1fr; } }
+  .cond-summary .cs-side { font-size: 9.5px; font-weight: 600; color: var(--brand-700); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+
+  /* Add-step CTA under a cycle */
+  .add-step-cta { margin-top: 12px; padding: 10px 14px; border: 1px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; background: transparent; font-family: var(--font-sans); width: 100%; transition: all .15s var(--ease-out); }
+  .add-step-cta:hover { background: var(--brand-25); color: var(--brand-800); border-color: var(--brand-200); }
+  .add-step-cta.empty { padding: 18px; font-size: 12.5px; }
+
+  /* Tracker rows — wider with scope */
+  .tracker-row { grid-template-columns: minmax(0, 1.1fr) 130px minmax(0, 1.1fr) minmax(0, 1fr) 50px 28px !important; }
+  @media (max-width: 980px) { .tracker-row { grid-template-columns: 1fr 1fr !important; } .tracker-row > *:nth-last-child(1) { grid-column: 2; justify-self: end; } }
+
+  /* Targets — opt-in rows */
+  .target-row { display: flex; align-items: center; gap: 14px; padding: 12px 2px; border-bottom: 0.5px dashed var(--color-border-tertiary); }
+  .target-row:last-child { border-bottom: 0; }
+  .target-row .target-name { flex: 1; min-width: 0; }
+  .target-row .target-name .tn-title { font-size: 12.5px; font-weight: 500; color: var(--color-text-primary); }
+  .target-row .target-name .tn-desc { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; line-height: 1.45; }
+  .target-row.disabled .target-name { opacity: .5; }
+  .target-row .target-value { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .target-row .target-value input { width: 78px; text-align: right; }
+  .target-row .target-value .u { font-size: 11px; color: var(--color-text-tertiary); }
+  .target-row.disabled .target-value input { background: var(--color-background-secondary); color: var(--color-text-tertiary); border-color: var(--color-border-tertiary); }
+  .targets-summary { font-size: 11px; color: var(--color-text-secondary); padding: 2px 6px; border-radius: 999px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); }
+
+  /* Template menu — two-section variant */
+  .menu-section + .menu-section { margin-top: 4px; padding-top: 4px; border-top: 0.5px solid var(--color-border-tertiary); }
+  .menu-item .mi-actions { display: none; }
+  .menu-item:hover .mi-actions { display: inline-flex; }
+  .menu-item .mi-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .menu-item .mi-del { width: 22px; height: 22px; border-radius: 4px; border: 0; background: transparent; color: var(--color-text-tertiary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .menu-item .mi-del:hover { background: var(--sev-alert-bg); color: var(--sev-alert-ink); }
 </style>
 </head>
 <body>
@@ -339,26 +374,13 @@
           </div>
 
           <div class="section">
-            <h2>Targets</h2>
-            <div class="hint">Targets used to evaluate cycles and trigger alerts when actual values fall below thresholds.</div>
-            <div class="grid-4">
-              <div class="field">
-                <label>% Uptime target</label>
-                <div class="input-suffix"><input class="input" type="number" value="60" id="kpiUptime" /><span class="suffix">%</span></div>
-              </div>
-              <div class="field">
-                <label>% Cleaning time</label>
-                <div class="input-suffix"><input class="input" type="number" value="20" id="kpiClean" /><span class="suffix">%</span></div>
-              </div>
-              <div class="field">
-                <label>% Standby</label>
-                <div class="input-suffix"><input class="input" type="number" value="20" id="kpiStandby" /><span class="suffix">%</span></div>
-              </div>
-              <div class="field">
-                <label>Production efficiency</label>
-                <div class="input-suffix"><input class="input" type="number" value="85" id="kpiProd" /><span class="suffix">%</span></div>
+            <div class="row" style="margin-bottom:6px;">
+              <div>
+                <h2>Targets <span class="targets-summary" id="targetsSummary">0 of 4 set</span></h2>
+                <div class="hint" style="margin-bottom:0;">All targets are optional. Turn on the ones that matter for this asset — alerts only fire for enabled targets.</div>
               </div>
             </div>
+            <div id="targetList" style="margin-top:6px;"></div>
           </div>
 
           <div class="section">
@@ -471,18 +493,19 @@
       expanded: false
     };
   }
-  function isCondConfigured(p){ return !!p.condConfigured; }
   function condText(c){ return c && c.tag ? `${c.tag} ${c.op} ${c.val}` : null; }
-  function condSummaryText(p){
-    const parts = [];
-    const s1 = condText(p.startCond), s2 = condText(p.startCond2);
-    const e1 = condText(p.endCond),   e2 = condText(p.endCond2);
-    const start = [s1, s2].filter(Boolean).join(' & ');
-    const end   = [e1, e2].filter(Boolean).join(' & ');
-    if (start) parts.push('start: ' + start);
-    if (end)   parts.push('end: ' + end);
-    return parts.join('  ·  ') || 'No conditions yet';
+  function isSideConfigured(p, side){
+    if (side === 'open')  return !!(p.startCond && p.startCond.tag) || !!(p.startCond2 && p.startCond2.tag);
+    if (side === 'close') return !!(p.endCond   && p.endCond.tag)   || !!(p.endCond2   && p.endCond2.tag);
+    return false;
   }
+  function condSideText(p, side){
+    const a = side === 'open' ? p.startCond  : p.endCond;
+    const b = side === 'open' ? p.startCond2 : p.endCond2;
+    const t = [condText(a), condText(b)].filter(Boolean).join(' & ');
+    return t || (side === 'open' ? 'Set when this step should begin.' : 'Set when this step should end.');
+  }
+  function isCondConfigured(p){ return isSideConfigured(p,'open') || isSideConfigured(p,'close'); }
   function newMain(name='New cycle', phases=null){
     return {
       id: 'm_'+Math.random().toString(36).slice(2,7),
@@ -492,7 +515,19 @@
     };
   }
   function newTracker(){
-    return { id:'t_'+Math.random().toString(36).slice(2,7), name:'', mode:'delta', tag:'', min:'', max:'', alert:true };
+    return { id:'t_'+Math.random().toString(36).slice(2,7), name:'', mode:'delta', scope:'process', scopeRef:'', min:'', max:'', target:'', alert:true };
+  }
+  // Build flat scope option list for trackers: process + each cycle + each step.
+  function scopeOptions(){
+    const s = state[activeAsset];
+    const opts = [{ value:'process', label:'Full process' }];
+    s.mains.forEach(m => {
+      opts.push({ value:'cycle:'+m.id, label:'Cycle · ' + m.name });
+      m.phases.forEach(p => {
+        opts.push({ value:'step:'+m.id+':'+p.id, label:'Step · ' + p.name + ' (in ' + m.name + ')' });
+      });
+    });
+    return opts;
   }
 
   // Templates — quick-starts for common cycles. Keys are user-facing labels.
@@ -531,9 +566,23 @@
     gmf: [{ label: 'GMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('GMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}]
   };
 
+  const DEFAULT_TARGETS = [
+    { id:'uptime',  label:'% Uptime',     desc:'How much of the running hours the asset should be productive.', unit:'%', value:60, enabled:false },
+    { id:'clean',   label:'% Cleaning',   desc:'Share of time the asset should spend in cleaning cycles.',       unit:'%', value:20, enabled:false },
+    { id:'standby', label:'% Standby',    desc:'Acceptable share of idle time before flagging under-utilization.', unit:'%', value:20, enabled:false },
+    { id:'prod',    label:'Production efficiency', desc:'Production output vs design capacity.',                  unit:'%', value:85, enabled:false }
+  ];
+
   let activeAsset = 'uf';
   const state = {};
-  ASSETS.forEach(a => { state[a.id] = { mains: [], trackers: [] }; });
+  ASSETS.forEach(a => {
+    state[a.id] = {
+      mains: [],
+      trackers: [],
+      userTemplates: [],
+      targets: DEFAULT_TARGETS.map(t => ({ ...t }))
+    };
+  });
 
   // ---------- Render ----------
   function renderAssetList(){
@@ -612,13 +661,16 @@
           <span class="dot"></span>
           <input class="input" style="background:#fff;" value="${m.name}" onchange="renameMain('${m.id}', this.value)" />
           <span class="main-cycle-tag" title="${tag}">${tag}</span>
-          <button class="btn btn-sm" onclick="addPhase('${m.id}')">+ Step</button>
+          <button class="btn btn-sm" onclick="saveAsTemplate('${m.id}')" title="Save this cycle as a reusable template">Save as template</button>
           <button class="btn btn-sm btn-danger" onclick="removeMain('${m.id}')">Remove</button>
         </div>
         <div class="main-cycle-summary">${stepsLabel}${m.collapsed && m.phases.length ? ' · click to expand' : ''}</div>
         <div class="main-cycle-body">
           <div class="phases-container" id="phases-${m.id}"></div>
-          ${m.phases.length === 0 ? `<div class="tracker-empty">No steps in this cycle yet. Click <b>+ Step</b> to add the first one.</div>` : ''}
+          <button class="add-step-cta ${m.phases.length === 0 ? 'empty' : ''}" onclick="addPhase('${m.id}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            ${m.phases.length === 0 ? 'Add the first step' : 'Add another step'}
+          </button>
         </div>`;
       root.appendChild(block);
       const pc = block.querySelector('#phases-'+m.id);
@@ -663,18 +715,37 @@
 
         ${p.trigger==='time' ? `
           <div class="note">This step runs for the target duration. Actual time is compared to it and written to <span style="font-family:var(--font-mono);">${tag}</span>.</div>
-        ` : `
-          <div class="cond-summary ${isCondConfigured(p) ? 'configured' : ''}">
-            <span class="cs-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-            </span>
-            <div class="cs-body">
-              <div class="cs-title">${isCondConfigured(p) ? 'Sensor condition set' : 'No sensor condition yet'}</div>
-              <div class="cs-desc ${isCondConfigured(p) ? '' : 'empty'}">${isCondConfigured(p) ? condSummaryText(p) : 'Tell us when this step should start and end.'}</div>
+        ` : (() => {
+          const openSet  = isSideConfigured(p, 'open');
+          const closeSet = isSideConfigured(p, 'close');
+          const openTxt  = openSet  ? condSideText(p, 'open')  : 'Set when this step should begin.';
+          const closeTxt = closeSet ? condSideText(p, 'close') : 'Set when this step should end.';
+          return `
+          <div class="cond-pair">
+            <div class="cond-summary ${openSet ? 'configured' : ''}">
+              <span class="cs-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
+              <div class="cs-body">
+                <div class="cs-side">Opening</div>
+                <div class="cs-title">${openSet ? 'Configured' : 'Not set'}</div>
+                <div class="cs-desc ${openSet ? '' : 'empty'}">${openTxt}</div>
+              </div>
+              <button class="btn btn-sm" onclick="openSensorModal('${mainId}','${p.id}','open')">${openSet ? 'Edit' : 'Configure'}</button>
             </div>
-            <button class="btn btn-sm" onclick="openSensorModal('${mainId}','${p.id}')">${isCondConfigured(p) ? 'Edit' : 'Configure'}</button>
+            <div class="cond-summary ${closeSet ? 'configured' : ''}">
+              <span class="cs-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              </span>
+              <div class="cs-body">
+                <div class="cs-side">Closing</div>
+                <div class="cs-title">${closeSet ? 'Configured' : 'Not set'}</div>
+                <div class="cs-desc ${closeSet ? '' : 'empty'}">${closeTxt}</div>
+              </div>
+              <button class="btn btn-sm" onclick="openSensorModal('${mainId}','${p.id}','close')">${closeSet ? 'Edit' : 'Configure'}</button>
+            </div>
           </div>
-        `}
+        `;})()}
 
         <div class="row">
           <div class="spacer"></div>
@@ -710,11 +781,28 @@
       return;
     }
     list.innerHTML = '';
+    const opts = scopeOptions();
     s.trackers.forEach(t => {
-      const showThresh = t.mode === 'threshold' || t.mode === 'efficiency';
-      const showDelta  = t.mode === 'delta';
       const row = document.createElement('div');
       row.className = 'tracker-row';
+      let valuesHTML = '';
+      let valuesLabel = '';
+      if (t.mode === 'delta') {
+        valuesLabel = 'Tolerance (Δ)';
+        valuesHTML = `<input class="input" placeholder="e.g. ±10" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>`;
+      } else if (t.mode === 'efficiency') {
+        valuesLabel = 'Target';
+        valuesHTML = `<div class="duration-group">
+            <input class="input" type="number" placeholder="85" value="${t.target}" onchange="updateTracker('${t.id}','target',this.value)"/>
+            <span class="select" style="width:auto; padding: 0 10px; display:inline-flex; align-items:center; color:var(--color-text-tertiary); background:var(--color-background-secondary); cursor:default;">%</span>
+          </div>`;
+      } else {
+        valuesLabel = 'Min — Max';
+        valuesHTML = `<div class="duration-group">
+            <input class="input" placeholder="Min" value="${t.min}" onchange="updateTracker('${t.id}','min',this.value)"/>
+            <input class="input" placeholder="Max" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>
+          </div>`;
+      }
       row.innerHTML = `
         <div class="field"><label>Parameter / tag</label>
           <input class="input mono" placeholder="e.g. UF_Inlet_Pressure" value="${t.name}" onchange="updateTracker('${t.id}','name',this.value)"/></div>
@@ -724,18 +812,17 @@
             <option value="threshold" ${t.mode==='threshold'?'selected':''}>Threshold band</option>
             <option value="efficiency" ${t.mode==='efficiency'?'selected':''}>Efficiency target</option>
           </select></div>
-        <div class="field"><label>${showDelta ? 'Tolerance (Δ)' : 'Min — Max'}</label>
-          ${showDelta
-            ? `<input class="input" placeholder="±10" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>`
-            : `<div class="duration-group">
-                 <input class="input" placeholder="Min" value="${t.min}" onchange="updateTracker('${t.id}','min',this.value)"/>
-                 <input class="input" placeholder="Max" value="${t.max}" onchange="updateTracker('${t.id}','max',this.value)"/>
-               </div>`}
+        <div class="field"><label>Where to track</label>
+          <select class="select" onchange="updateTracker('${t.id}','scope',this.value)">
+            ${opts.map(o => `<option value="${o.value}" ${t.scope===o.value?'selected':''}>${o.label}</option>`).join('')}
+          </select></div>
+        <div class="field"><label>${valuesLabel}</label>
+          ${valuesHTML}
         </div>
         <div class="field"><label>Alert</label>
           <div class="switch ${t.alert?'on':''}" onclick="updateTracker('${t.id}','alert',${!t.alert})" style="margin-top:6px;"></div>
         </div>
-        <button class="icon-btn" onclick="removeTracker('${t.id}')" aria-label="Remove" title="Remove">
+        <button class="icon-btn" onclick="removeTracker('${t.id}')" aria-label="Remove" title="Remove" style="align-self:flex-end;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m1 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6"/></svg>
         </button>`;
       list.appendChild(row);
@@ -745,12 +832,93 @@
   function renderTemplateMenu(){
     const menu = document.getElementById('tplMenu');
     const tpls = TEMPLATES[activeAsset] || [];
-    if (!tpls.length) { menu.innerHTML = `<div class="menu-title">No templates</div><div style="padding:8px 10px; font-size:11.5px; color:var(--color-text-secondary);">Build your own with <b>+ New cycle</b>.</div>`; return; }
-    menu.innerHTML = `<div class="menu-title">Templates for ${ASSETS.find(a=>a.id===activeAsset).name.split(' · ')[0]}</div>` +
-      tpls.map((t,i) => `<div class="menu-item" onclick="useTemplate(${i})"><div class="mi-title">${t.label}</div><div class="mi-desc">${t.desc}</div></div>`).join('');
+    const user = state[activeAsset].userTemplates || [];
+    const assetShort = ASSETS.find(a=>a.id===activeAsset).name.split(' · ')[0];
+    let html = '';
+    if (user.length) {
+      html += `<div class="menu-section"><div class="menu-title">Your templates</div>` +
+        user.map(t => `
+          <div class="menu-item" onclick="applyUserTemplate('${t.id}')">
+            <div class="mi-row">
+              <div style="min-width:0;">
+                <div class="mi-title">${t.name}</div>
+                <div class="mi-desc">${t.phases.length} step${t.phases.length===1?'':'s'} · sensor conditions are not stored</div>
+              </div>
+              <button class="mi-del" onclick="deleteUserTemplate(event, '${t.id}')" title="Delete template">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m1 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6"/></svg>
+              </button>
+            </div>
+          </div>`).join('') + `</div>`;
+    }
+    if (tpls.length) {
+      html += `<div class="menu-section"><div class="menu-title">Built-in for ${assetShort}</div>` +
+        tpls.map((t,i) => `<div class="menu-item" onclick="useTemplate(${i})"><div class="mi-title">${t.label}</div><div class="mi-desc">${t.desc}</div></div>`).join('') + `</div>`;
+    }
+    if (!html) html = `<div class="menu-title">No templates</div><div style="padding:8px 10px; font-size:11.5px; color:var(--color-text-secondary);">Build your own with <b>+ New cycle</b>, then click <b>Save as template</b>.</div>`;
+    menu.innerHTML = html;
   }
 
-  function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); renderTrackers(); renderTemplateMenu(); }
+  function renderTargets(){
+    const list = document.getElementById('targetList');
+    const sum  = document.getElementById('targetsSummary');
+    const s = state[activeAsset];
+    const enabled = s.targets.filter(t => t.enabled).length;
+    if (sum) sum.textContent = enabled + ' of ' + s.targets.length + ' set';
+    list.innerHTML = s.targets.map(t => `
+      <div class="target-row ${t.enabled ? '' : 'disabled'}">
+        <div class="switch ${t.enabled ? 'on' : ''}" onclick="toggleTarget('${t.id}')"></div>
+        <div class="target-name">
+          <div class="tn-title">${t.label}</div>
+          <div class="tn-desc">${t.desc}</div>
+        </div>
+        <div class="target-value">
+          <input class="input" type="number" value="${t.value}" ${t.enabled ? '' : 'disabled'} onchange="updateTarget('${t.id}', this.value)"/>
+          <span class="u">${t.unit}</span>
+        </div>
+      </div>`).join('');
+  }
+  window.toggleTarget = (id) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t) return; t.enabled = !t.enabled; renderTargets(); };
+  window.updateTarget = (id, v) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t) return; t.value = +v; };
+
+  // Save the current cycle as a reusable template (without sensor conditions, per requirement).
+  window.saveAsTemplate = (mid) => {
+    const s = state[activeAsset];
+    const m = s.mains.find(x => x.id === mid);
+    if (!m) return;
+    const proposed = m.name + ' (template)';
+    const name = (window.prompt('Save this cycle as a template. Name:', proposed) || '').trim();
+    if (!name) return;
+    s.userTemplates.push({
+      id: 'ut_' + Math.random().toString(36).slice(2,7),
+      name,
+      // Strip sensor conditions — only structure carries over.
+      phases: m.phases.map(p => ({
+        name: p.name, trigger: p.trigger, setTime: p.setTime, setUnit: p.setUnit
+      }))
+    });
+    renderTemplateMenu();
+    toast('Template "' + name + '" saved · find it under "Start from template ▾"');
+  };
+  window.applyUserTemplate = (tid) => {
+    const s = state[activeAsset];
+    const tpl = s.userTemplates.find(x => x.id === tid);
+    if (!tpl) return;
+    const phases = tpl.phases.map(p => Object.assign(newPhase(p.name, p.trigger, p.setTime), { setUnit: p.setUnit }));
+    const m = newMain(tpl.name, phases);
+    m.collapsed = false;
+    s.mains.push(m);
+    document.getElementById('tplMenu').classList.remove('open');
+    renderTree();
+    renderTrackers(); // scope options changed
+    toast('Added "' + tpl.name + '" from your templates.');
+  };
+  window.deleteUserTemplate = (e, tid) => {
+    e.stopPropagation();
+    state[activeAsset].userTemplates = state[activeAsset].userTemplates.filter(x => x.id !== tid);
+    renderTemplateMenu();
+  };
+
+  function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); renderTrackers(); renderTargets(); renderTemplateMenu(); }
 
   // ---------- Tabs ----------
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -769,27 +937,34 @@
     return (c && c.tag) ? { tag: c.tag, op: c.op||'=', val: c.val||'' } : { ...fallback };
   }
 
-  function openSensorModal(mainId, phaseId){
+  function openSensorModal(mainId, phaseId, side /* 'open' | 'close' */){
     const [, p] = findPhase(mainId, phaseId);
     if (!p) return;
-    // Seed sensible defaults for first-time configuration to reduce blank-page friction.
+    const isOpen = side === 'open';
+    const k1 = isOpen ? 'startCond'  : 'endCond';
+    const k2 = isOpen ? 'startCond2' : 'endCond2';
+    const fb1 = isOpen ? { tag:'Valve1_ONOFF', op:'=', val:'1' } : { tag:'Valve1_ONOFF', op:'=', val:'0' };
+    const fb2 = isOpen ? { tag:'Valve2_ONOFF', op:'=', val:'0' } : { tag:'Valve2_ONOFF', op:'=', val:'1' };
     modalCtx = {
-      mainId, phaseId,
+      mainId, phaseId, side,
+      keys: [k1, k2],
       draft: {
-        startCond:  defaultIfEmpty(p.startCond,  { tag:'Valve1_ONOFF', op:'=', val:'1' }),
-        startCond2: defaultIfEmpty(p.startCond2, { tag:'Valve2_ONOFF', op:'=', val:'0' }),
-        endCond:    defaultIfEmpty(p.endCond,    { tag:'Valve1_ONOFF', op:'=', val:'0' }),
-        endCond2:   defaultIfEmpty(p.endCond2,   { tag:'Valve2_ONOFF', op:'=', val:'1' })
+        [k1]: defaultIfEmpty(p[k1], fb1),
+        [k2]: defaultIfEmpty(p[k2], fb2)
       }
     };
-    document.getElementById('modalSubtitle').innerHTML = `For step <b>${p.name}</b> · the next step begins automatically when the end condition is met.`;
+    document.querySelector('#sensorModal .modal-head h3').textContent = isOpen ? 'Opening condition' : 'Closing condition';
+    document.getElementById('modalSubtitle').innerHTML = isOpen
+      ? `For step <b>${p.name}</b> · this is when the step begins.`
+      : `For step <b>${p.name}</b> · this is when the step ends. The next step begins automatically.`;
     renderModalBody();
     document.getElementById('sensorModal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function renderModalBody(){
-    const d = modalCtx.draft;
+    const d = modalCtx.draft, [k1, k2] = modalCtx.keys;
+    const isOpen = modalCtx.side === 'open';
     const row = (key, c) => `
       <div class="cond-row">
         <div class="field"><label>Tag</label>
@@ -803,18 +978,12 @@
       </div>`;
     document.getElementById('modalBody').innerHTML = `
       <div class="cond-group">
-        <div class="cond-group-title">Starts when <span class="pill">all true</span></div>
-        ${row('startCond',  d.startCond)}
+        <div class="cond-group-title">${isOpen ? 'Step opens when' : 'Step closes when'} <span class="pill">all true</span></div>
+        ${row(k1, d[k1])}
         <div style="height:8px;"></div>
-        ${row('startCond2', d.startCond2)}
+        ${row(k2, d[k2])}
       </div>
-      <div class="cond-group">
-        <div class="cond-group-title">Ends when <span class="pill">all true</span></div>
-        ${row('endCond',    d.endCond)}
-        <div style="height:8px;"></div>
-        ${row('endCond2',   d.endCond2)}
-      </div>
-      <div class="note">Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF = 1 &amp; Valve2_ONOFF = 0</span> opens this step; the inverse closes it and the next step begins.</div>`;
+      <div class="note">Tip: leave a row blank if you only need a single condition. ${isOpen ? 'Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF = 1 &amp; Valve2_ONOFF = 0</span>.' : 'Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF = 0 &amp; Valve2_ONOFF = 1</span>.'}</div>`;
   }
   window.onModalEdit = (e) => {
     const k = e.target.dataset.key, prop = e.target.dataset.prop;
@@ -830,12 +999,12 @@
     if (!modalCtx) return;
     const [, p] = findPhase(modalCtx.mainId, modalCtx.phaseId);
     if (!p) { closeSensorModal(); return; }
-    Object.assign(p, modalCtx.draft);
-    // Configured only if at least one condition has a tag.
-    p.condConfigured = !!(p.startCond.tag || p.startCond2.tag || p.endCond.tag || p.endCond2.tag);
+    // Only write back the keys for the side currently open.
+    modalCtx.keys.forEach(k => { p[k] = modalCtx.draft[k]; });
+    const which = modalCtx.side === 'open' ? 'Opening' : 'Closing';
     closeSensorModal();
     renderTree();
-    toast('Sensor condition saved');
+    toast(which + ' condition saved');
   }
   window.openSensorModal = openSensorModal;
   window.closeSensorModal = closeSensorModal;
@@ -850,13 +1019,25 @@
   window.togglePhase = (mid, pid) => { const [,p]=findPhase(mid,pid); p.expanded=!p.expanded; renderTree(); };
   window.setTrigger = (mid, pid, t) => { const [,p]=findPhase(mid,pid); p.trigger=t; renderTree(); };
   window.updatePhase = (mid, pid, k, v) => { const [,p]=findPhase(mid,pid); p[k]=v; renderTree(); };
-  window.renamePhase = (mid, pid, n) => { const [,p]=findPhase(mid,pid); p.name=n||'Untitled phase'; renderTree(); };
+  window.renamePhase = (mid, pid, n) => { const [,p]=findPhase(mid,pid); p.name=n||'Untitled step'; renderTree(); renderTrackers(); };
   window.updateCond = (mid, pid, key, k, v) => { const [,p]=findPhase(mid,pid); p[key][k]=v; };
-  window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); };
-  window.addPhase = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); const np = newPhase('Phase '+(m.phases.length+1)); np.expanded=true; m.phases.push(np); renderTree(); };
-  window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled main cycle'; renderTree(); };
-  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); renderTree(); };
-  window.addMain = () => { const np = newPhase('Step 1','time',10); np.expanded=true; const m = newMain('Cycle '+(state[activeAsset].mains.length+1), [np]); m.collapsed=false; state[activeAsset].mains.push(m); renderTree(); };
+  window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); renderTrackers(); };
+  window.addPhase = (mid) => {
+    const m = state[activeAsset].mains.find(x=>x.id===mid);
+    // Collapse other steps in this cycle so focus lands on the new one.
+    m.phases.forEach(p => p.expanded = false);
+    const np = newPhase('Step '+(m.phases.length+1)); np.expanded = true;
+    m.phases.push(np);
+    renderTree();
+    // Scroll the new step into view for a smoother flow.
+    setTimeout(() => {
+      const el = document.querySelector('#phases-'+mid+' .phase-card:last-child');
+      if (el && el.scrollIntoView) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }, 0);
+  };
+  window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled cycle'; renderTree(); renderTrackers(); };
+  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); renderTree(); renderTrackers(); };
+  window.addMain = () => { const np = newPhase('Step 1','time',10); np.expanded=true; const m = newMain('Cycle '+(state[activeAsset].mains.length+1), [np]); m.collapsed=false; state[activeAsset].mains.push(m); renderTree(); renderTrackers(); };
   window.toggleMain = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.collapsed=!m.collapsed; renderTree(); };
 
   // Template menu
@@ -875,12 +1056,13 @@
     state[activeAsset].mains.push(tpl.build());
     document.getElementById('tplMenu').classList.remove('open');
     renderTree();
+    renderTrackers();
     toast('Added "'+tpl.label+'" — edit anything you like.');
   };
 
   // Trackers
   window.addTracker = () => { state[activeAsset].trackers.push(newTracker()); renderTrackers(); };
-  window.updateTracker = (id, k, v) => { const t = state[activeAsset].trackers.find(x=>x.id===id); if(!t) return; t[k]=v; if(k==='mode'||k==='alert') renderTrackers(); };
+  window.updateTracker = (id, k, v) => { const t = state[activeAsset].trackers.find(x=>x.id===id); if(!t) return; t[k]=v; if(k==='mode'||k==='alert'||k==='scope') renderTrackers(); };
   window.removeTracker = (id) => { state[activeAsset].trackers = state[activeAsset].trackers.filter(x=>x.id!==id); renderTrackers(); };
 
   function loadDemo(){
