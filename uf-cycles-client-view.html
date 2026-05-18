@@ -453,12 +453,19 @@
     if (range === '7d')      return [NOW - 7*day, NOW];
     if (range === '30d')     return [NOW - 30*day, NOW];
     if (range === '3mo')     return [NOW - 90*day, NOW];
-    if (range === 'custom' && customFrom && customTo) return [customFrom, customTo];
+    if (range === 'custom' && customFrom && customTo) return [customFrom, Math.max(customFrom, customTo)];
     return [NOW - 1*day, NOW];
   }
+  function customReady(){ return range === 'custom' && customFrom && customTo; }
   function inRange(d){ const [from, to] = rangeMs(); const t = d instanceof Date ? d.getTime() : d; return t >= from && t <= to; }
   function rangeLabel(){
-    return ({today:'today', '24h':'last 24 hours', '3d':'last 3 days', '7d':'last 7 days', '30d':'last 30 days', '3mo':'last 3 months', custom:'a custom window'})[range];
+    if (range === 'custom') {
+      if (!customReady()) return 'last 24 hours';
+      const f = new Date(customFrom), t = new Date(customTo);
+      const fmt = (d) => `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}`;
+      return `${fmt(f)} – ${fmt(t)}`;
+    }
+    return ({today:'today', '24h':'last 24 hours', '3d':'last 3 days', '7d':'last 7 days', '30d':'last 30 days', '3mo':'last 3 months'})[range];
   }
   function ago(ms){
     const m = Math.round((Date.now() - ms) / 60000);
@@ -478,6 +485,12 @@
     if (whole === 0) return s + ' sec';
     if (s === 0) return whole + ' min';
     return whole + ' min ' + s + ' sec';
+  }
+  // Compact one-line duration, e.g. "12.4 min". Use this anywhere width is tight.
+  function fmtMinShort(m){
+    if (m == null || isNaN(m)) return '—';
+    if (m < 1) return Math.round(m*60) + ' sec';
+    return m.toFixed(1).replace(/\.0$/, '') + ' min';
   }
   function fmtDateShort(d){
     const dd = new Date(d); const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dd.getMonth()];
@@ -511,6 +524,7 @@
           <input type="date" id="customFrom" value="${customFrom ? new Date(customFrom).toISOString().slice(0,10) : ''}" onchange="onCustomFrom(this.value)"/>
           <span class="micro">to</span>
           <input type="date" id="customTo"   value="${customTo   ? new Date(customTo).toISOString().slice(0,10)   : ''}" onchange="onCustomTo(this.value)"/>
+          ${range==='custom' && !customReady() ? '<span class="micro" style="color:var(--warn-ink);">Pick both dates · showing last 24 hr until you do.</span>' : ''}
         </div>
         <div class="spacer"></div>
         <span class="micro" id="rangeSummary"></span>
@@ -616,7 +630,7 @@
           <div class="cc-status">${statusLine}</div>
           <div class="cc-mini">
             <div><div class="mc-l">Runs</div><div class="mc-v">${total}</div></div>
-            <div><div class="mc-l">Avg time</div><div class="mc-v">${total ? fmtMin(avg).replace(' ',' ').slice(0,7) : '—'}</div></div>
+            <div><div class="mc-l">Avg time</div><div class="mc-v">${total ? fmtMinShort(avg) : '—'}</div></div>
             <div><div class="mc-l">On target</div><div class="mc-v ${onTargetCls}">${total ? onTargetPct + '%' : '—'}</div></div>
           </div>
           ${cycleAlertCount ? `<div class="micro" style="margin-top:6px;"><span class="dot ${alertCls==='alert'?'alert':'warn'}" style="margin-right:5px;"></span>${cycleAlertCount} alert${cycleAlertCount===1?'':'s'} in this range</div>` : ''}
@@ -662,9 +676,16 @@
       <section class="card next-up">
         <div class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
         <div class="nb">
-          <div class="e">Coming up</div>
-          <div class="t">Next cleaning ${inLabel((cycleTotalMin(cycleById('bw')) - liveElapsedMin())*60000 + 32*60000)}</div>
-          <div class="s">After the current UF Backwash finishes, the next is expected after about 32 minutes of productive time.</div>
+          ${(() => {
+            const liveCycle = cycleById(LIVE.cycleId);
+            const remainingMin = Math.max(0, cycleTotalMin(liveCycle) - liveElapsedMin());
+            const gapMin = 32;
+            const totalMin = remainingMin + gapMin;
+            const ms = Math.max(60000, totalMin * 60000);
+            return `<div class="e">Coming up</div>
+                    <div class="t">Next cleaning ${inLabel(ms)}</div>
+                    <div class="s">After the current ${liveCycle.name} wraps (${Math.max(1, Math.ceil(remainingMin))} min left), expect about ${gapMin} min of productive time before the next one starts.</div>`;
+          })()}
         </div>
       </section>`;
   }
@@ -721,7 +742,8 @@
     if (selectedStepIdx !== null && selectedStepIdx >= 0 && selectedStepIdx < c.steps.length) {
       const s = c.steps[selectedStepIdx];
       const onTargetForStep = runs.length ? Math.round(runs.filter(r => Math.abs(r.steps[selectedStepIdx] - s.set) <= s.set * 0.1).length / runs.length * 100) : 0;
-      const recentVals = runs.slice(0, 12).map(r => +r.steps[selectedStepIdx].toFixed(2));
+      // RUNS is newest-first; reverse so the sparkline reads oldest→newest left-to-right.
+      const recentVals = runs.slice(0, 12).map(r => +r.steps[selectedStepIdx].toFixed(2)).reverse();
       const stepAlerts = ALERTS.filter(a => inRange(a.t) && a.cycleId === c.id && a.stepName === s.name).length;
       inspect = `
         <div class="step-inspect show">
@@ -886,14 +908,21 @@
   // ============================================================
   // ROUTING / INTERACTION
   // ============================================================
-  function render(){
+  // `fresh: true` means a real navigation — scroll to top.
+  // `fresh: false` (tick) keeps the user's scroll position.
+  function render({ fresh = true } = {}){
+    // Don't wipe a form input the user is actively editing.
+    if (!fresh) {
+      const a = document.activeElement;
+      if (a && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA')) return;
+    }
     const el = document.getElementById('view');
-    if (view === 'plant') el.innerHTML = renderPlant();
-    else if (view === 'cycle') el.innerHTML = renderCycle();
+    if (view === 'plant')        el.innerHTML = renderPlant();
+    else if (view === 'cycle')   el.innerHTML = renderCycle();
     else if (view === 'compare') el.innerHTML = renderCompare();
     updateRangeSummary();
     updateCompareBar();
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (fresh) window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function updateCompareBar(){
     const bar = document.getElementById('compareBar');
@@ -911,17 +940,19 @@
   window.clearCompare = () => { compared.clear(); render(); };
   window.inspectStep = (i) => { selectedStepIdx = (selectedStepIdx === i) ? null : i; render(); };
 
-  // Live tick — advances current run
+  // Live tick — ALWAYS advances state. Re-renders only the cycle view (and only
+  // when no input is focused, handled by render() above). Plant/Compare views
+  // refresh on next navigation.
   function tick(){
-    if (view !== 'cycle' || currentCycleId !== LIVE.cycleId) return;
     const c = cycleById(LIVE.cycleId);
+    if (!c) return;
     LIVE.elapsedInStep += 1;
     const setSec = c.steps[LIVE.stepIdx].set * 60;
     if (LIVE.elapsedInStep >= setSec) {
       if (LIVE.stepIdx < c.steps.length - 1) { LIVE.stepIdx += 1; LIVE.elapsedInStep = 0; }
       else { LIVE.stepIdx = 0; LIVE.elapsedInStep = 0; LIVE.startedAt = new Date(); }
     }
-    render();
+    if (view === 'cycle' && currentCycleId === LIVE.cycleId) render({ fresh: false });
   }
   setInterval(tick, 1000);
 
