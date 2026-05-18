@@ -93,6 +93,7 @@
   .auto-pill.auto { background: var(--sev-ok-bg); color: var(--sev-ok-ink); border: 0.5px solid var(--sev-ok-line); }
   .auto-pill.cond { background: var(--brand-50); color: var(--brand-800); border: 0.5px solid var(--brand-200); }
   .auto-pill.off  { background: #f1efe9; color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-tertiary); }
+  .auto-pill.manual { background: var(--sev-warn-bg); color: var(--sev-warn-ink); border: 0.5px solid var(--sev-warn-line); }
 
   /* Main config */
   .main-col { display: flex; flex-direction: column; gap: 16px; }
@@ -138,9 +139,21 @@
   .phase-card.expanded .phase-body { display: flex; flex-direction: column; gap: 12px; animation: fadeIn .2s var(--ease-out); }
 
   /* Trigger toggle */
-  .seg { display: inline-flex; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 2px; gap: 2px; }
-  .seg button { background: transparent; border: 0; padding: 5px 12px; font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); border-radius: 4px; cursor: pointer; font-family: var(--font-sans); }
+  .seg { display: inline-flex; flex-wrap: wrap; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 2px; gap: 2px; }
+  .seg button { background: transparent; border: 0; padding: 5px 12px; font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); border-radius: 4px; cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
   .seg button.active { background: #fff; color: var(--brand-900); box-shadow: var(--elev-1); }
+
+  /* Manual trigger preview */
+  .manual-block { display: flex; flex-direction: column; gap: 10px; }
+  .manual-preview { background: var(--color-background-secondary); border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .manual-preview .mp-label { font-size: 10px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+  .manual-buttons { display: flex; gap: 8px; }
+  .manual-btn { padding: 7px 14px; border-radius: var(--border-radius-md); font-size: 12px; font-weight: 500; cursor: not-allowed; font-family: var(--font-sans); display: inline-flex; align-items: center; gap: 6px; }
+  .manual-btn.start { background: var(--sev-ok-bg); color: var(--sev-ok-ink); border: 0.5px solid var(--sev-ok-line); }
+  .manual-btn.stop  { background: var(--sev-alert-bg); color: var(--sev-alert-ink); border: 0.5px solid var(--sev-alert-line); }
+  .manual-btn .ic { width: 8px; height: 8px; display: inline-block; border-radius: 1px; }
+  .manual-btn.start .ic { background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  .manual-btn.stop  .ic { background: currentColor; }
 
   /* Condition rows */
   .cond-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px 130px; gap: 8px; align-items: end; }
@@ -683,12 +696,15 @@
     const wrap = document.createElement('div');
     wrap.className = 'phase-card' + (p.expanded ? ' expanded' : '');
     const tag = `${activeAsset}_${tagSafe(p.name)}_phase_duration`;
+    const pillClass = p.trigger === 'time' ? 'cond' : p.trigger === 'manual' ? 'manual' : 'auto';
+    const pillLabel = p.trigger === 'time' ? 'Timed' : p.trigger === 'manual' ? 'Manual' : 'Sensor';
+    const durationLabel = p.trigger === 'manual' ? 'Expected duration (optional)' : 'Target duration <span class="req">*</span>';
     wrap.innerHTML = `
       <div class="phase-head" onclick="togglePhase('${mainId}','${p.id}')">
         <span class="phase-idx">${idx+1}</span>
         <div class="phase-name">${p.name}</div>
         <div class="phase-meta">
-          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Timed':'Sensor'}</span>
+          <span class="auto-pill ${pillClass}">${pillLabel}</span>
           <span class="phase-tag" title="${tag}">${p.setTime}${p.setUnit}</span>
           <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
@@ -699,10 +715,11 @@
             <input class="input" value="${p.name}" onchange="renamePhase('${mainId}','${p.id}',this.value)"/></div>
           <div class="field"><label>Starts by</label>
             <div class="seg">
-              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time based</button>
+              <button class="${p.trigger==='time'?'active':''}"   onclick="setTrigger('${mainId}','${p.id}','time')">Time based</button>
               <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor based</button>
+              <button class="${p.trigger==='manual'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','manual')">Manual</button>
             </div></div>
-          <div class="field"><label>Target duration <span class="req">*</span></label>
+          <div class="field"><label>${durationLabel}</label>
             <div class="duration-group">
               <input class="input" type="number" min="0" value="${p.setTime}" onchange="updatePhase('${mainId}','${p.id}','setTime',+this.value)"/>
               <select class="select" onchange="updatePhase('${mainId}','${p.id}','setUnit',this.value)">
@@ -715,6 +732,17 @@
 
         ${p.trigger==='time' ? `
           <div class="note">This step runs for the target duration. Actual time is compared to it and written to <span style="font-family:var(--font-mono);">${tag}</span>.</div>
+        ` : p.trigger==='manual' ? `
+          <div class="manual-block">
+            <div class="note">An operator starts and stops this step manually from the visualization screen. Actual duration is still recorded against <span style="font-family:var(--font-mono);">${tag}</span>. Expected duration is optional and used only as a soft reference.</div>
+            <div class="manual-preview">
+              <span class="mp-label">Operator will see</span>
+              <div class="manual-buttons">
+                <button class="manual-btn start" disabled title="Preview — operators will see this on the visualization screen"><span class="ic"></span>Start step</button>
+                <button class="manual-btn stop"  disabled title="Preview — operators will see this on the visualization screen"><span class="ic"></span>Stop step</button>
+              </div>
+            </div>
+          </div>
         ` : (() => {
           const openSet  = isSideConfigured(p, 'open');
           const closeSet = isSideConfigured(p, 'close');
