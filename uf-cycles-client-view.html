@@ -7,15 +7,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
 <!--
-  UX-laws kept from the previous round (don't dilute):
-  • Hick's Law       — one primary action per region; overflow into "See all".
-  • Similarity       — one card shape, one status-dot system, one progress component.
-  • Von Restorff     — hero stands out; alerts amplify visually when severe.
-  • Tesler           — technical details (tags, raw conditions) tucked behind hover/expand.
-  • Parkinson        — bounded surface; the page never devolves into endless scroll.
-  • Cognitive load   — three type sizes, four colors, generous whitespace.
-  • Goal gradient    — every metric framed as progress toward something with a marker.
-  • Peak–end         — page opens with a hero (peak), closes with a forward-looking note (end).
+  UX-laws — re-applied across all three views (don't dilute):
+  • Hick's Law       — one primary action per region; alert logs bounded with "See all" overflow;
+                       compare limited to 3 cycles at a time.
+  • Similarity       — one card shape, one .pill, one .dot, one goal-bar (.kpi-bar / .hp-bar /
+                       .ipb), one .next-up close-card pattern used on every view.
+  • Von Restorff     — hero (plant) and .cycle-peak (cycle detail) are visually distinct from
+                       every other card. In compare view, the leading cycle gets a green
+                       "Leader" badge and an outline so it pops out of the row.
+  • Tesler           — step internals live behind a click-to-inspect panel; run IDs sit in
+                       title-attrs; sensor tags don't surface unless asked for.
+  • Parkinson        — plant alert log caps at 12, cycle alert log at 10, both with "Show all";
+                       cycle cards are checkbox-bounded to 3 for compare.
+  • Cognitive load   — three primary type sizes (30/22/13.5), four status colours (ok/warn/
+                       alert/brand), generous whitespace.
+  • Goal gradient    — plant hero shows productive-time vs target as a fill bar with marker;
+                       cycle-detail KPI cards each carry a fill+marker bar; cycle detail's
+                       interactive step progress bar shows step-by-step movement toward end.
+  • Peak–end         — every view opens with a peak (.hero on plant, .cycle-peak on detail,
+                       .compare-peak on compare) and closes with a forward-looking .next-up
+                       card so the user leaves with a positive, actionable thought.
 -->
 <style>
   :root {
@@ -261,6 +272,41 @@
   .next-up .nb .e { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
   .next-up .nb .t { font-size: 15px; font-weight: 600; color: var(--accent-900); margin-top: 2px; }
   .next-up .nb .s { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+
+  /* Cycle-detail peak headline (Peak–end · Von Restorff inside the cycle view) */
+  .cycle-peak { background: linear-gradient(160deg, #fff 0%, var(--accent-50) 100%); border: 1px solid var(--accent-100); border-radius: var(--r-xl); padding: 20px 24px; display: flex; align-items: center; gap: 18px; box-shadow: var(--el-2); position: relative; overflow: hidden; }
+  .cycle-peak::after { content:''; position: absolute; right: -50px; top: -50px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(closest-side, rgba(57,86,163,.08), rgba(57,86,163,0)); pointer-events: none; }
+  .cycle-peak .cp-orb { width: 52px; height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: #fff; box-shadow: var(--el-1); border: 0.5px solid var(--line); color: var(--accent-700); flex-shrink: 0; }
+  .cycle-peak .cp-text { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .cycle-peak .cp-eyebrow { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .cycle-peak .cp-name { font-size: 22px; font-weight: 600; color: var(--accent-900); letter-spacing: -.01em; line-height: 1.15; }
+  .cycle-peak .cp-line { font-size: 13.5px; color: var(--ink-2); margin-top: 6px; max-width: 60ch; }
+  .cycle-peak .cp-line b { color: var(--ink); font-weight: 600; }
+  .cycle-peak .cp-tag  { flex-shrink: 0; }
+  @media (max-width: 720px){ .cycle-peak { flex-wrap: wrap; } .cycle-peak .cp-tag { width: 100%; } }
+
+  /* Hero — inline goal-gradient productive-time bar */
+  .hero-progress { margin-top: 14px; max-width: 480px; }
+  .hero-progress .hp-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
+  .hero-progress .hp-row b { color: var(--ink); font-weight: 600; }
+  .hero-progress .hp-bar { position: relative; height: 8px; background: rgba(255,255,255,.65); border-radius: 999px; overflow: hidden; border: 0.5px solid var(--line-2); }
+  .hero-progress .hp-bar .hp-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--ok-acc), #6eb178); transition: width .8s var(--ease); }
+  .hero-progress .hp-bar .hp-fill.warn  { background: var(--warn-acc); }
+  .hero-progress .hp-bar .hp-fill.alert { background: var(--alert-acc); }
+  .hero-progress .hp-bar .hp-mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .6; border-radius: 1px; }
+
+  /* KPI cards — goal-gradient mini bars below the value (Goal gradient · Similarity) */
+  .kpi-card .kpi-bar { height: 5px; background: var(--line-2); border-radius: 999px; margin-top: 10px; position: relative; overflow: hidden; }
+  .kpi-card .kpi-bar > .fill { height: 100%; border-radius: 999px; background: var(--accent-600); }
+  .kpi-card.ok    .kpi-bar > .fill { background: var(--ok-acc); }
+  .kpi-card.warn  .kpi-bar > .fill { background: var(--warn-acc); }
+  .kpi-card.alert .kpi-bar > .fill { background: var(--alert-acc); }
+  .kpi-card .kpi-bar .kpi-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: .5; border-radius: 1px; }
+
+  /* Compare-view peak summary + winner highlight (Von Restorff) */
+  .compare-peak { background: linear-gradient(160deg, #fff 0%, var(--accent-50) 100%); border: 1px solid var(--accent-100); }
+  .cmp-col.winner { border: 1px solid var(--ok-line); box-shadow: 0 0 0 3px rgba(63,138,74,.10); position: relative; }
+  .cmp-col .winner-badge { position: absolute; top: -10px; left: 14px; background: var(--ok-acc); color: #fff; font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: .04em; text-transform: uppercase; box-shadow: var(--el-1); }
 </style>
 </head>
 <body>
@@ -621,7 +667,7 @@
           <div class="cc-top">
             <div>
               <div class="cc-name">${c.name}</div>
-              <div class="cc-asset">UF Skid 1 · target ${cycleTotalMin(c)} min</div>
+              <div class="cc-asset">${cycleTotalMin(c)} min target · ${c.steps.length} steps</div>
             </div>
             <button class="cc-check ${isCompared?'on':''}" onclick="event.stopPropagation(); toggleCompare('${c.id}')" title="Select for comparison">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7"/></svg>
@@ -649,6 +695,17 @@
             <div class="eyebrow">${rangeLabel()}</div>
             <h1 class="hero-title">${heroTitle}</h1>
             <p>${heroBody}</p>
+            ${(() => {
+              const target = 60, actual = productivePct;
+              const cls = actual >= target ? 'ok' : actual >= target * 0.8 ? 'warn' : 'alert';
+              return `<div class="hero-progress">
+                <div class="hp-row"><span>Productive time</span><span><b>${actual}%</b> · target ${target}%</span></div>
+                <div class="hp-bar">
+                  <div class="hp-fill ${cls === 'ok' ? '' : cls}" style="width:${Math.min(100, actual)}%"></div>
+                  <div class="hp-mark" style="left:${target}%"></div>
+                </div>
+              </div>`;
+            })()}
           </div>
         </div>
       </section>
@@ -805,6 +862,59 @@
             </div>`;
         }).join('');
 
+    // Peak headline — one sentence answer to "how is this cycle doing?"
+    const peakStatus = cycleAlerts.some(a => a.sev === 'alert') ? 'alert'
+                     : cycleAlerts.some(a => a.sev === 'warn')  ? 'warn'
+                     : 'ok';
+    const peakIcon = peakStatus === 'alert'
+      ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
+      : peakStatus === 'warn'
+      ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
+      : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>';
+    const peakSentence = total === 0
+      ? `No cleanings in ${rangeLabel()}.`
+      : (peakStatus === 'alert'
+          ? `<b>${total}</b> cleanings in ${rangeLabel()} · <b>${onTargetPct}%</b> on target · <b>${cycleAlerts.length}</b> alert${cycleAlerts.length===1?'':'s'} to review.`
+          : peakStatus === 'warn'
+          ? `<b>${total}</b> cleanings · <b>${onTargetPct}%</b> on target · a few things to watch.`
+          : `<b>${total}</b> cleanings · <b>${onTargetPct}%</b> on target · running smoothly.`);
+    const liveBadge = isRunning ? '<span class="pill ok cp-tag"><span class="dot live"></span>Running now</span>' : '<span class="pill cp-tag">Idle</span>';
+
+    // KPI goal-gradient bars
+    const onTargetCls = onTargetPct >= 80 ? 'ok' : onTargetPct >= 60 ? 'warn' : 'alert';
+    const alertCls    = cycleAlerts.length === 0 ? 'ok' : cycleAlerts.length > 3 ? 'alert' : 'warn';
+    const avgVsTarget = total ? Math.min(100, (cycleTotalMin(c) / Math.max(avg, 0.1)) * 100) : 0; // how close avg is to target (higher=closer)
+    const avgCls = !total ? '' : Math.abs(avg - cycleTotalMin(c)) <= cycleTotalMin(c)*0.05 ? 'ok' : Math.abs(avg - cycleTotalMin(c)) <= cycleTotalMin(c)*0.10 ? 'warn' : 'alert';
+
+    // Next-up close card (Peak–end)
+    const nextUpHTML = isRunning
+      ? (() => {
+          const remainingMin = Math.max(1, Math.ceil((totalSec - elapsedSec)/60));
+          return `<section class="card next-up">
+            <div class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="nb">
+              <div class="e">Coming up</div>
+              <div class="t">Current run wraps in about ${remainingMin} min</div>
+              <div class="s">Next ${c.name} expected around 32 min after that.</div>
+            </div>
+          </section>`;
+        })()
+      : (() => {
+          // For idle cycles: estimate next run based on average interval
+          const intervalMin = Math.round(c.intervalMin / 60000);
+          const lastRun = runsForCycle(c.id)[0];
+          const sinceLastMin = lastRun ? Math.round((NOW - lastRun.startedAt.getTime())/60000) : null;
+          const inMin = lastRun ? Math.max(1, intervalMin - sinceLastMin) : intervalMin;
+          return `<section class="card next-up">
+            <div class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="nb">
+              <div class="e">Coming up</div>
+              <div class="t">Next ${c.name} ${inLabel(inMin*60000)}</div>
+              <div class="s">This cycle typically runs every ${intervalMin >= 60 ? Math.round(intervalMin/60) + ' hr' : intervalMin + ' min'}.</div>
+            </div>
+          </section>`;
+        })();
+
     return `
       <div class="crumb">
         <button class="link" onclick="goPlant()">← All cycles</button>
@@ -812,28 +922,66 @@
         <span class="here">${c.name}</span>
       </div>
 
+      <!-- PEAK (Von Restorff + Peak–end): single-sentence summary of this cycle's health -->
+      <section class="cycle-peak">
+        <div class="cp-orb">${peakIcon}</div>
+        <div class="cp-text">
+          <div class="cp-eyebrow">${rangeLabel()}</div>
+          <div class="cp-name">${c.name}</div>
+          <div class="cp-line">${peakSentence}</div>
+        </div>
+        ${liveBadge}
+      </section>
+
       ${isRunning ? `
         <div class="now-strip">
           <span class="dot live"></span>
-          <div class="ns-text"><b>Running now</b> — started ${ago(LIVE.startedAt.getTime())} · ${Math.max(1, Math.ceil((totalSec - elapsedSec)/60))} min left.</div>
+          <div class="ns-text"><b>Started ${ago(LIVE.startedAt.getTime())}</b> · ${Math.max(1, Math.ceil((totalSec - elapsedSec)/60))} min left.</div>
         </div>` : ''}
 
       ${rangeBarHTML()}
 
       <section class="card progress-card">
         <div class="card-head">
-          <h2 class="card-title">Step progression</h2>
+          <h2 class="card-title">Steps in this cleaning</h2>
           <span class="micro">Click a step to inspect.</span>
         </div>
         <div class="ipb">${ipb}</div>
         ${inspect}
       </section>
 
+      <!-- KPIs with goal-gradient mini-bars -->
       <section class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-l">Cleanings in range</div><div class="kpi-v">${total}</div><div class="kpi-ctx">${skipped ? skipped + ' missed' : 'None missed'}</div></div>
-        <div class="kpi-card"><div class="kpi-l">Avg duration</div><div class="kpi-v">${total ? avg.toFixed(1) : '—'}<span class="u">min</span></div><div class="kpi-ctx">Target ${cycleTotalMin(c)} min</div></div>
-        <div class="kpi-card ${onTargetPct >= 80 ? 'ok' : onTargetPct >= 60 ? 'warn' : 'alert'}"><div class="kpi-l">On target</div><div class="kpi-v">${total ? onTargetPct : '—'}<span class="u">%</span></div><div class="kpi-ctx">${onTarget} of ${total} runs</div></div>
-        <div class="kpi-card ${cycleAlerts.length === 0 ? 'ok' : cycleAlerts.length > 3 ? 'alert' : 'warn'}"><div class="kpi-l">Alerts</div><div class="kpi-v">${cycleAlerts.length}</div><div class="kpi-ctx">in ${rangeLabel()}</div></div>
+        <div class="kpi-card">
+          <div class="kpi-l">Cleanings</div>
+          <div class="kpi-v">${total}</div>
+          <div class="kpi-ctx">${skipped ? skipped + ' missed' : 'None missed'}</div>
+          <div class="kpi-bar"><div class="fill" style="width:${total ? Math.min(100, (total/(total+(skipped||1)))*100) : 0}%"></div></div>
+        </div>
+        <div class="kpi-card ${avgCls}">
+          <div class="kpi-l">Avg duration</div>
+          <div class="kpi-v">${total ? avg.toFixed(1) : '—'}<span class="u">min</span></div>
+          <div class="kpi-ctx">Target ${cycleTotalMin(c)} min</div>
+          <div class="kpi-bar">
+            <div class="fill" style="width:${total ? Math.min(100, (avg / Math.max(cycleTotalMin(c)*1.5, 0.1)) * 100) : 0}%"></div>
+            <div class="kpi-mark" style="left:${100 * cycleTotalMin(c) / Math.max(cycleTotalMin(c)*1.5, 0.1)}%"></div>
+          </div>
+        </div>
+        <div class="kpi-card ${onTargetCls}">
+          <div class="kpi-l">On target</div>
+          <div class="kpi-v">${total ? onTargetPct : '—'}<span class="u">%</span></div>
+          <div class="kpi-ctx">${onTarget} of ${total} runs · target 80%</div>
+          <div class="kpi-bar">
+            <div class="fill" style="width:${total ? onTargetPct : 0}%"></div>
+            <div class="kpi-mark" style="left:80%"></div>
+          </div>
+        </div>
+        <div class="kpi-card ${alertCls}">
+          <div class="kpi-l">Alerts</div>
+          <div class="kpi-v">${cycleAlerts.length}</div>
+          <div class="kpi-ctx">in ${rangeLabel()}</div>
+          <div class="kpi-bar"><div class="fill" style="width:${Math.min(100, cycleAlerts.length * 12)}%"></div></div>
+        </div>
       </section>
 
       <section class="card">
@@ -849,8 +997,11 @@
           <h2 class="card-title">Alert log for this cycle</h2>
           <span class="micro">${cycleAlerts.length} item${cycleAlerts.length===1?'':'s'} in ${rangeLabel()}</span>
         </div>
-        ${alertLogHTML(cycleAlerts.slice(0, 20))}
-      </section>`;
+        ${alertLogHTML(cycleAlerts.slice(0, 10))}
+        ${cycleAlerts.length > 10 ? `<div style="text-align:center; margin-top:10px;"><button class="card-link">Show all ${cycleAlerts.length} alerts</button></div>` : ''}
+      </section>
+
+      ${nextUpHTML}`;
   }
 
   // ============================================================
@@ -862,7 +1013,8 @@
       return `<div class="crumb"><button class="link" onclick="goPlant()">← All cycles</button><span class="sep">·</span><span class="here">Compare</span></div>
               <section class="card"><div class="empty">Select two or more cycles on the All cycles page to compare them.</div></section>`;
     }
-    const cols = ids.map(id => {
+    // Compute per-cycle stats once so we can both render columns AND pick a winner.
+    const data = ids.map(id => {
       const c = cycleById(id);
       const runs = runsForCycle(id).filter(r => inRange(r.startedAt));
       const total = runs.length;
@@ -873,35 +1025,69 @@
       const alerts = ALERTS.filter(a => inRange(a.t) && a.cycleId === id).length;
       const series = runs.slice(0, 30).reverse().map(r => +r.totalMin.toFixed(2));
       const status = onTargetPct >= 80 ? 'ok' : onTargetPct >= 60 ? 'warn' : 'alert';
-      return `
-        <div class="cmp-col">
-          <h3>${c.name}</h3>
-          <div class="micro">Target ${cycleTotalMin(c)} min · ${c.steps.length} steps</div>
+      return { id, c, runs, total, onTarget, skipped, avg, onTargetPct, alerts, series, status };
+    });
+    // Winner = best on-target, ties broken by fewest alerts. Only awarded if there's a real spread (>5pp).
+    const sorted = [...data].sort((a,b) => b.onTargetPct - a.onTargetPct || a.alerts - b.alerts);
+    const winner = (sorted.length >= 2 && (sorted[0].onTargetPct - sorted[1].onTargetPct) >= 5) ? sorted[0].id : null;
+
+    const totalRuns = data.reduce((a,d) => a+d.total, 0);
+    const avgOfAvgs = data.filter(d => d.total).length
+      ? (data.filter(d => d.total).reduce((a,d) => a+d.onTargetPct, 0) / data.filter(d => d.total).length)
+      : 0;
+    const winnerC = winner ? cycleById(winner) : null;
+    const peakLine = winnerC
+      ? `Across ${rangeLabel()}: <b>${totalRuns}</b> cleanings combined, <b>${Math.round(avgOfAvgs)}%</b> on-target average. <b>${winnerC.name}</b> leads on reliability.`
+      : `Across ${rangeLabel()}: <b>${totalRuns}</b> cleanings combined, <b>${Math.round(avgOfAvgs)}%</b> on-target average. Cycles are running comparably.`;
+
+    const cols = data.map(d => `
+        <div class="cmp-col ${winner === d.id ? 'winner' : ''}">
+          ${winner === d.id ? '<span class="winner-badge">Leader</span>' : ''}
+          <h3>${d.c.name}</h3>
+          <div class="micro">Target ${cycleTotalMin(d.c)} min · ${d.c.steps.length} steps</div>
           <div class="cmp-stats">
-            <div class="cmp-stat"><span class="cmp-stat-l">Runs</span><span class="cmp-stat-v">${total}</span></div>
-            <div class="cmp-stat"><span class="cmp-stat-l">Missed</span><span class="cmp-stat-v">${skipped}</span></div>
-            <div class="cmp-stat"><span class="cmp-stat-l">Avg duration</span><span class="cmp-stat-v">${total ? avg.toFixed(1) + ' min' : '—'}</span></div>
-            <div class="cmp-stat"><span class="cmp-stat-l">On target</span><span class="cmp-stat-v" style="color:${status==='ok'?'var(--ok-ink)':status==='warn'?'var(--warn-ink)':'var(--alert-ink)'}">${total ? onTargetPct + '%' : '—'}</span></div>
-            <div class="cmp-stat"><span class="cmp-stat-l">Alerts</span><span class="cmp-stat-v">${alerts}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Runs</span><span class="cmp-stat-v">${d.total}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Missed</span><span class="cmp-stat-v">${d.skipped}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Avg duration</span><span class="cmp-stat-v">${d.total ? d.avg.toFixed(1) + ' min' : '—'}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">On target</span><span class="cmp-stat-v" style="color:${d.status==='ok'?'var(--ok-ink)':d.status==='warn'?'var(--warn-ink)':'var(--alert-ink)'}">${d.total ? d.onTargetPct + '%' : '—'}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Alerts</span><span class="cmp-stat-v">${d.alerts}</span></div>
           </div>
           <div>
             <div class="micro" style="margin-bottom:6px;">Duration trend</div>
-            <div class="cmp-chart">${sparkline(series, status, { w: 260, h: 48 })}</div>
+            <div class="cmp-chart">${sparkline(d.series, d.status, { w: 260, h: 48 })}</div>
           </div>
-          <button class="card-link" onclick="goCycle('${id}')">Open ${c.name} →</button>
-        </div>`;
-    }).join('');
+          <button class="card-link" onclick="goCycle('${d.id}')">Open ${d.c.name} →</button>
+        </div>`).join('');
+
     return `
       <div class="crumb">
         <button class="link" onclick="goPlant()">← All cycles</button>
         <span class="sep">·</span>
         <span class="here">Comparing ${ids.length} cycles</span>
       </div>
+
+      <!-- PEAK: one-sentence headline for the comparison -->
+      <section class="cycle-peak compare-peak">
+        <div class="cp-orb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg></div>
+        <div class="cp-text">
+          <div class="cp-eyebrow">Side-by-side</div>
+          <div class="cp-name">${ids.length} cycles · ${rangeLabel()}</div>
+          <div class="cp-line">${peakLine}</div>
+        </div>
+      </section>
+
       ${rangeBarHTML()}
+
       <section><div class="compare-grid">${cols}</div></section>
-      <section class="card">
-        <div class="card-head"><h2 class="card-title">Notes</h2></div>
-        <div class="body">Comparison covers the same ${rangeLabel()} window for every cycle, so totals are apples-to-apples. Use the time range bar to widen or narrow the comparison.</div>
+
+      <!-- END: forward-looking close -->
+      <section class="card next-up">
+        <div class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+        <div class="nb">
+          <div class="e">What next</div>
+          <div class="t">Widen the window for more confidence</div>
+          <div class="s">Comparing over a longer range smooths out one-off blips. Try <b>last 30 days</b> or <b>last 3 months</b> using the range bar above.</div>
+        </div>
       </section>`;
   }
 
