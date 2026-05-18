@@ -7,15 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
 <!--
-  UX-laws applied (this is the brief for any future edits — don't dilute):
-  • Hick's Law — collapse to one primary action per card; secondary stuff lives behind "See all".
-  • Law of Similarity — one card shape, one status-dot system, one progress-bar component used everywhere.
-  • Von Restorff — the hero (or the alert, if any) is the page's standout. Nothing else competes.
-  • Tesler — irreducible complexity is absorbed by the UI: technical names tucked into tooltips/expanders.
-  • Parkinson — surface is fan-folded; only top 3 history rows visible by default to bound the page.
-  • Cognitive load — three type sizes, four colors, generous whitespace.
-  • Goal gradient — every metric is framed as progress toward something with an explicit target marker.
-  • Peak–end — the page opens with a hero (peak) and ends with a forward-looking "what's next" (end).
+  UX-laws kept from the previous round (don't dilute):
+  • Hick's Law       — one primary action per region; overflow into "See all".
+  • Similarity       — one card shape, one status-dot system, one progress component.
+  • Von Restorff     — hero stands out; alerts amplify visually when severe.
+  • Tesler           — technical details (tags, raw conditions) tucked behind hover/expand.
+  • Parkinson        — bounded surface; the page never devolves into endless scroll.
+  • Cognitive load   — three type sizes, four colors, generous whitespace.
+  • Goal gradient    — every metric framed as progress toward something with a marker.
+  • Peak–end         — page opens with a hero (peak), closes with a forward-looking note (end).
 -->
 <style>
   :root {
@@ -29,13 +29,8 @@
     --bg: #f3f1ec;
     --paper: #ffffff;
     --soft: #f6f4ef;
-    /* One accent, one positive, one warn, one alert — and that's it. */
-    --accent-50:  #eef1f8;
-    --accent-100: #d8dff0;
-    --accent-300: #8295c7;
-    --accent-600: #3956a3;
-    --accent-700: #2a4385;
-    --accent-900: #142555;
+    --accent-50: #eef1f8;  --accent-100:#d8dff0; --accent-300:#8295c7;
+    --accent-600:#3956a3;  --accent-700:#2a4385; --accent-900:#142555;
     --ok-bg:#e7f1e8;    --ok-line:#bcd6c0;    --ok-ink:#2a5331;    --ok-acc:#3f8a4a;
     --warn-bg:#fbf1de;  --warn-line:#e7d29b;  --warn-ink:#6a4e0e;  --warn-acc:#b78b1f;
     --alert-bg:#fbe7df; --alert-line:#e3b5a0; --alert-ink:#7a2c0e; --alert-acc:#b34a1d;
@@ -51,15 +46,14 @@
   @media (prefers-reduced-motion: reduce){ *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
   *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
   body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); padding: 20px 18px 56px; min-height: 100vh; font-size: 14px; line-height: 1.5; }
-  .shell { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .shell { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-  /* Type — Cognitive Load: only three sizes worth remembering. */
-  h1.hero-title { font-size: 30px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; color: var(--accent-900); }
-  h2.card-title { font-size: 13px; font-weight: 600; color: var(--accent-900); letter-spacing: -.005em; text-transform: uppercase; letter-spacing: .04em; }
+  h1.hero-title { font-size: 28px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; color: var(--accent-900); }
+  h2.card-title { font-size: 12px; font-weight: 600; color: var(--accent-900); text-transform: uppercase; letter-spacing: .06em; }
   .body { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
   .micro { font-size: 11.5px; color: var(--ink-3); }
 
-  /* Topbar — minimal */
+  /* Topbar */
   .topbar { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-md); }
   .brand { font-weight: 600; color: var(--accent-900); font-size: 14px; letter-spacing: -.01em; }
   .brand .plus { color: var(--accent-600); }
@@ -71,568 +65,867 @@
   .live { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--ok-bg); border: 0.5px solid var(--ok-line); color: var(--ok-ink); border-radius: 999px; font-size: 11.5px; font-weight: 600; }
   .live .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok-acc); animation: pulse 2s var(--ease) infinite; }
 
-  /* Card system — one shape repeated. (Similarity) */
+  /* Cards */
   .card { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 20px 22px; animation: fadeUp .25s var(--ease); }
   .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .card-head h2 { flex: 1; min-width: 0; }
   .card-link { background: transparent; border: 0; color: var(--accent-700); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; padding: 0; }
   .card-link:hover { color: var(--accent-900); text-decoration: underline; }
 
-  /* HERO — Von Restorff: this is the standout. */
-  .hero { background: linear-gradient(160deg, #ffffff 0%, var(--accent-50) 100%); border: 1px solid var(--accent-100); border-radius: var(--r-xl); padding: 28px 28px 26px; box-shadow: var(--el-2); position: relative; overflow: hidden; }
+  /* Status dot — one component everywhere */
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot.ok { background: var(--ok-acc); }
+  .dot.warn { background: var(--warn-acc); }
+  .dot.alert { background: var(--alert-acc); }
+  .dot.idle { background: var(--ink-3); }
+  .dot.live { background: var(--ok-acc); animation: pulse 2s var(--ease) infinite; }
+
+  /* Pill — one component everywhere */
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; border: 0.5px solid var(--line); background: var(--soft); color: var(--ink-2); white-space: nowrap; }
+  .pill.ok    { background: var(--ok-bg);    color: var(--ok-ink);    border-color: var(--ok-line); }
+  .pill.warn  { background: var(--warn-bg);  color: var(--warn-ink);  border-color: var(--warn-line); }
+  .pill.alert { background: var(--alert-bg); color: var(--alert-ink); border-color: var(--alert-line); }
+  .pill.brand { background: var(--accent-50); color: var(--accent-700); border-color: var(--accent-100); }
+
+  /* Crumb / nav */
+  .crumb { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-2); padding: 4px 0; }
+  .crumb a, .crumb button.link { background: transparent; border: 0; padding: 0; cursor: pointer; color: var(--accent-700); font: inherit; font-weight: 500; }
+  .crumb a:hover, .crumb button.link:hover { color: var(--accent-900); text-decoration: underline; }
+  .crumb .here { color: var(--ink); font-weight: 600; }
+
+  /* Range bar */
+  .rangebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-md); }
+  .rangebar .rb-label { font-size: 11.5px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .rangebar .seg { display: inline-flex; background: var(--soft); border-radius: 999px; padding: 3px; gap: 2px; border: 0.5px solid var(--line-2); }
+  .rangebar .seg button { background: transparent; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--ink-2); border-radius: 999px; cursor: pointer; font-family: var(--font-sans); }
+  .rangebar .seg button.active { background: var(--accent-700); color: #fff; }
+  .rangebar .custom { display: none; gap: 8px; align-items: center; }
+  .rangebar .custom.show { display: inline-flex; }
+  .rangebar .custom input { height: 30px; border: 0.5px solid var(--line); border-radius: var(--r-md); padding: 0 10px; font: inherit; font-size: 12px; }
+
+  /* ----- PLANT VIEW ----- */
+  /* Hero */
+  .hero { background: linear-gradient(160deg, #ffffff 0%, var(--accent-50) 100%); border: 1px solid var(--accent-100); border-radius: var(--r-xl); padding: 26px 28px; box-shadow: var(--el-2); position: relative; overflow: hidden; }
   .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(closest-side, rgba(57,86,163,.10), rgba(57,86,163,0)); pointer-events: none; }
   .hero.alert { background: linear-gradient(160deg, #ffffff 0%, var(--alert-bg) 110%); border-color: var(--alert-line); }
   .hero.warn  { background: linear-gradient(160deg, #ffffff 0%, var(--warn-bg) 120%); border-color: var(--warn-line); }
   .hero-inner { display: flex; align-items: center; gap: 22px; position: relative; z-index: 1; }
-  .hero-orb { width: 64px; height: 64px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #fff; box-shadow: var(--el-1); border: 0.5px solid var(--line); color: var(--accent-700); }
+  .hero-orb { width: 60px; height: 60px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; background: #fff; box-shadow: var(--el-1); border: 0.5px solid var(--line); color: var(--accent-700); flex-shrink: 0; }
   .hero.alert .hero-orb { color: var(--alert-acc); border-color: var(--alert-line); }
   .hero.warn  .hero-orb { color: var(--warn-acc);  border-color: var(--warn-line); }
   .hero-text { flex: 1; min-width: 0; }
-  .hero-text .eyebrow { font-size: 11.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
-  .hero-text p { font-size: 14.5px; color: var(--ink-2); margin-top: 8px; max-width: 60ch; }
+  .hero-text .eyebrow { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .hero-text p { font-size: 14px; color: var(--ink-2); margin-top: 6px; max-width: 60ch; }
   .hero-text p b { color: var(--ink); font-weight: 600; }
-  .hero-range { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-  .range { display: inline-flex; background: #fff; border: 0.5px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
-  .range button { background: transparent; border: 0; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--ink-2); border-radius: 999px; cursor: pointer; font-family: var(--font-sans); }
-  .range button.active { background: var(--accent-700); color: #fff; }
-  @media (max-width: 760px){ .hero-inner { flex-wrap: wrap; } .hero-range { width: 100%; align-items: stretch; } }
 
-  /* Status dot — single component used everywhere. (Similarity) */
-  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-  .dot.ok    { background: var(--ok-acc); }
-  .dot.warn  { background: var(--warn-acc); }
-  .dot.alert { background: var(--alert-acc); }
-  .dot.idle  { background: var(--ink-3); }
+  /* Cycle cards grid */
+  .cycles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .cycle-card { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 18px 18px 16px; cursor: pointer; transition: transform .15s var(--ease), box-shadow .15s var(--ease), border-color .15s var(--ease); position: relative; animation: fadeUp .25s var(--ease); display: flex; flex-direction: column; gap: 10px; }
+  .cycle-card:hover { transform: translateY(-2px); box-shadow: var(--el-2); border-color: var(--accent-100); }
+  .cycle-card.selected { border-color: var(--accent-600); box-shadow: 0 0 0 3px rgba(57,86,163,.10); }
+  .cycle-card .cc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .cycle-card .cc-name { font-size: 15px; font-weight: 600; color: var(--accent-900); letter-spacing: -.005em; }
+  .cycle-card .cc-asset { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+  .cycle-card .cc-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .cycle-card .cc-status b { color: var(--ink); font-weight: 600; }
+  .cycle-card .cc-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; padding-top: 12px; border-top: 0.5px dashed var(--line-2); }
+  .cycle-card .cc-mini .mc-l { font-size: 10.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+  .cycle-card .cc-mini .mc-v { font-size: 16px; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 3px; }
+  .cycle-card .cc-mini .mc-v.warn  { color: var(--warn-ink); }
+  .cycle-card .cc-mini .mc-v.alert { color: var(--alert-ink); }
+  .cycle-card .cc-check { width: 22px; height: 22px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s var(--ease); color: transparent; }
+  .cycle-card .cc-check:hover { border-color: var(--accent-300); }
+  .cycle-card .cc-check.on { background: var(--accent-700); border-color: var(--accent-700); color: #fff; }
 
-  /* Goal-progress component — used in every metric. (Goal gradient) */
-  .goal { position: relative; }
-  .goal-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
-  .goal-value { font-size: 22px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1.05; }
-  .goal-unit  { font-size: 13px; color: var(--ink-3); font-weight: 500; }
-  .goal-label { font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
-  .goal-bar { height: 8px; background: var(--line-2); border-radius: 999px; position: relative; overflow: hidden; }
-  .goal-bar > .fill { height: 100%; border-radius: 999px; background: var(--accent-600); transition: width .8s var(--ease); }
-  .goal-bar > .fill.ok    { background: var(--ok-acc); }
-  .goal-bar > .fill.warn  { background: var(--warn-acc); }
-  .goal-bar > .fill.alert { background: var(--alert-acc); }
-  .goal-bar > .fill.exceed { background: linear-gradient(90deg, var(--ok-acc) 0%, var(--ok-acc) var(--target-pct,60%), #6eb178 100%); }
-  .goal-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .55; border-radius: 1px; }
-  .goal-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
-  .goal-foot .achievement { color: var(--ok-ink); font-weight: 600; }
+  /* Compare floating bar */
+  .compare-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent-900); color: #fff; padding: 10px 14px 10px 18px; border-radius: 999px; box-shadow: var(--el-3); display: none; align-items: center; gap: 14px; z-index: 50; animation: fadeUp .22s var(--ease); }
+  .compare-bar.show { display: inline-flex; }
+  .compare-bar .cb-count { font-size: 13px; font-weight: 600; }
+  .compare-bar .cb-go { background: #fff; color: var(--accent-900); border: 0; padding: 7px 14px; border-radius: 999px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .compare-bar .cb-clear { background: transparent; border: 0; color: rgba(255,255,255,.7); cursor: pointer; font: inherit; font-size: 12px; }
+  .compare-bar .cb-clear:hover { color: #fff; }
 
-  /* The 3-up progress card grid — Similarity (identical cards) */
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  @media (max-width: 760px){ .stats-grid { grid-template-columns: 1fr; } }
+  /* ----- CYCLE DETAIL VIEW ----- */
+  .cycle-head { display: flex; align-items: center; gap: 16px; padding: 4px 0 0; flex-wrap: wrap; }
+  .cycle-head h1 { font-size: 22px; font-weight: 600; color: var(--accent-900); letter-spacing: -.01em; }
+  .cycle-head .sub { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
 
-  /* RIGHT NOW — single progress bar, goal-gradient framing */
-  .now { background: linear-gradient(180deg, #fff 0%, var(--accent-50) 90%); border-color: var(--accent-100); }
-  .now-eyebrow { font-size: 11.5px; font-weight: 600; color: var(--accent-700); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-  .now-eyebrow .dot.ok { animation: pulse 2s var(--ease) infinite; }
-  .now-title { font-size: 22px; font-weight: 600; color: var(--accent-900); letter-spacing: -.015em; line-height: 1.2; margin-bottom: 4px; }
-  .now-sub { font-size: 13.5px; color: var(--ink-2); margin-bottom: 18px; }
-  .now-sub b { color: var(--ink); font-weight: 600; }
-  .now-bar { height: 12px; background: #fff; border: 0.5px solid var(--line-2); border-radius: 999px; overflow: hidden; position: relative; }
-  .now-bar .fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent-700), var(--accent-300)); background-size: 240px 100%; animation: shimmer 2.4s linear infinite; transition: width .8s var(--ease); }
-  .now-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 10px; font-variant-numeric: tabular-nums; }
-  .now-step { font-size: 13.5px; color: var(--ink); margin-top: 14px; display: flex; align-items: center; gap: 10px; }
-  .now-step .nstep-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--accent-50); color: var(--accent-700); font-size: 11.5px; font-weight: 600; border: 0.5px solid var(--accent-100); }
-  .details-toggle { margin-top: 14px; background: transparent; border: 0; color: var(--accent-700); cursor: pointer; font: inherit; padding: 0; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
-  .details-toggle:hover { color: var(--accent-900); }
-  .details-toggle svg { transition: transform .2s var(--ease); }
-  .details-toggle.open svg { transform: rotate(180deg); }
-  .step-list { display: none; flex-direction: column; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 0.5px dashed var(--line-2); }
-  .step-list.show { display: flex; animation: fadeUp .22s var(--ease); }
-  .sd { display: grid; grid-template-columns: 20px 1fr auto; gap: 10px; align-items: center; }
-  .sd-idx { width: 18px; height: 18px; border-radius: 50%; background: var(--soft); color: var(--ink-2); font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid var(--line); }
-  .sd.done .sd-idx { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok-line); }
-  .sd.active .sd-idx { background: var(--accent-700); color: #fff; border-color: var(--accent-700); }
-  .sd-name { font-size: 12.5px; color: var(--ink); }
-  .sd-time { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+  /* Interactive progress bar */
+  .progress-card { background: linear-gradient(180deg, #fff 0%, var(--accent-50) 100%); border-color: var(--accent-100); }
+  .ipb { display: flex; gap: 4px; padding: 4px; background: var(--soft); border-radius: var(--r-md); border: 0.5px solid var(--line-2); }
+  .ipb-step { padding: 12px 14px; border-radius: 8px; cursor: pointer; transition: all .18s var(--ease); display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: var(--w, 1); border: 1px solid transparent; position: relative; overflow: hidden; }
+  .ipb-step:hover { background: rgba(255,255,255,.6); }
+  .ipb-step.done { background: var(--ok-bg); border-color: var(--ok-line); }
+  .ipb-step.done .ipb-name { color: var(--ok-ink); }
+  .ipb-step.active { background: #fff; border-color: var(--accent-600); box-shadow: 0 4px 14px rgba(42,67,133,.12); }
+  .ipb-step.active::before { content:''; position: absolute; inset: auto 0 0 0; height: 3px; background: linear-gradient(90deg, var(--accent-700), var(--accent-300)); background-size: 240px 100%; animation: shimmer 2.4s linear infinite; }
+  .ipb-step.upcoming { opacity: .65; }
+  .ipb-step.selected { outline: 2px solid var(--accent-600); outline-offset: 2px; }
+  .ipb-step .ipb-i { display: flex; align-items: center; gap: 6px; }
+  .ipb-step .ipb-idx { width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,.06); color: var(--ink-2); font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ipb-step.done .ipb-idx { background: var(--ok-acc); color: #fff; }
+  .ipb-step.active .ipb-idx { background: var(--accent-700); color: #fff; }
+  .ipb-step .ipb-name { font-size: 12.5px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ipb-step .ipb-time { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .ipb-step.done .ipb-time, .ipb-step.active .ipb-time { color: var(--ink-2); }
+  @media (max-width: 720px){ .ipb { flex-direction: column; } .ipb-step { flex: 0 0 auto; } }
 
-  /* Two-column body grid */
-  .body-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: start; }
-  @media (max-width: 900px){ .body-grid { grid-template-columns: 1fr; } }
-  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .step-inspect { margin-top: 14px; padding: 14px; border-radius: var(--r-md); background: #fff; border: 0.5px dashed var(--line); display: none; }
+  .step-inspect.show { display: block; animation: fadeUp .2s var(--ease); }
+  .step-inspect h3 { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .step-inspect .si-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+  .step-inspect .si-rows b { color: var(--ink); }
 
-  /* Recent — top 3 only, then "See all" (Parkinson, Hick) */
-  .hr { display: grid; grid-template-columns: 1fr 110px 90px; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); }
-  .hr:last-child { border-bottom: 0; padding-bottom: 0; }
-  .hr:first-child { padding-top: 0; }
-  .hr-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .hr-main .name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
-  .hr-main .when { display: block; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
-  .hr-bar { width: 100%; max-width: 110px; height: 5px; background: var(--soft); border-radius: 999px; overflow: hidden; }
-  .hr-bar > div { height: 100%; border-radius: 999px; }
-  .hr-bar > div.ok    { background: var(--ok-acc); }
-  .hr-bar > div.warn  { background: var(--warn-acc); }
-  .hr-bar > div.alert { background: var(--alert-acc); }
-  .hr-dur { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
-  .hr-tag { justify-self: end; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
-  .hr-tag.ok    { background: var(--ok-bg);    color: var(--ok-ink);    border: 0.5px solid var(--ok-line); }
-  .hr-tag.warn  { background: var(--warn-bg);  color: var(--warn-ink);  border: 0.5px solid var(--warn-line); }
-  .hr-tag.alert { background: var(--alert-bg); color: var(--alert-ink); border: 0.5px solid var(--alert-line); }
-  .hr-tag.skip  { background: var(--soft);     color: var(--ink-2);     border: 0.5px solid var(--line); }
+  /* KPIs */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 820px){ .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi-card { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 16px 18px; }
+  .kpi-card .kpi-l { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+  .kpi-card .kpi-v { font-size: 22px; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .kpi-card .kpi-v .u { font-size: 13px; color: var(--ink-3); font-weight: 500; margin-left: 4px; }
+  .kpi-card .kpi-ctx { font-size: 11.5px; color: var(--ink-3); margin-top: 6px; }
+  .kpi-card.warn .kpi-v  { color: var(--warn-ink); }
+  .kpi-card.alert .kpi-v { color: var(--alert-ink); }
+  .kpi-card.ok .kpi-v    { color: var(--ok-ink); }
 
-  /* Sensors — collapsed list (Tesler) */
-  .wr { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: center; cursor: pointer; }
-  .wr:last-child { border-bottom: 0; padding-bottom: 0; }
-  .wr:first-child { padding-top: 0; }
-  .wr-name { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); min-width: 0; }
-  .wr-val  { font-family: var(--font-mono); font-size: 13px; color: var(--ink); font-weight: 600; white-space: nowrap; }
-  .wr-val .u { font-size: 11px; color: var(--ink-3); margin-left: 3px; font-weight: 500; font-family: var(--font-sans); }
-  .wr-detail { display: none; grid-column: 1 / -1; font-size: 12.5px; color: var(--ink-2); padding-top: 6px; line-height: 1.55; }
-  .wr.open .wr-detail { display: block; animation: fadeUp .2s var(--ease); }
-  .wr-spark { display: none; grid-column: 1 / -1; margin-top: 6px; }
-  .wr.open .wr-spark { display: block; }
-  .spark { width: 100%; max-width: 200px; height: 28px; display: block; }
-  .wr-chevron { color: var(--ink-3); transition: transform .2s var(--ease); margin-left: 6px; }
-  .wr.open .wr-chevron { transform: rotate(180deg); }
+  /* Parameter rows with before/after */
+  .param-row { padding: 16px 0; border-bottom: 0.5px dashed var(--line-2); }
+  .param-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .param-row:first-child { padding-top: 0; }
+  .param-head { display: flex; align-items: center; gap: 10px; }
+  .param-head .pn { flex: 1; font-size: 14px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .param-head .pn-scope { font-size: 11px; color: var(--ink-3); font-weight: 500; margin-left: 4px; }
+  .ba { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 12px; }
+  @media (max-width: 720px){ .ba { grid-template-columns: 1fr 1fr; row-gap: 12px; } .ba > .ba-arrow, .ba > .ba-eq { display: none; } }
+  .ba-block { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; background: var(--soft); border: 0.5px solid var(--line-2); }
+  .ba-block.before { background: #f0eee9; }
+  .ba-block.after  { background: var(--accent-50); border-color: var(--accent-100); }
+  .ba-block.delta  { background: var(--ok-bg); border-color: var(--ok-line); }
+  .ba-block.delta.warn  { background: var(--warn-bg); border-color: var(--warn-line); }
+  .ba-block.delta.alert { background: var(--alert-bg); border-color: var(--alert-line); }
+  .ba-block .ba-l { font-size: 10.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .ba-block.delta .ba-l { color: var(--ok-ink); }
+  .ba-block.delta.warn  .ba-l { color: var(--warn-ink); }
+  .ba-block.delta.alert .ba-l { color: var(--alert-ink); }
+  .ba-block .ba-v { font-family: var(--font-mono); font-size: 16px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ba-block.delta .ba-v { color: var(--ok-ink); }
+  .ba-block.delta.warn  .ba-v { color: var(--warn-ink); }
+  .ba-block.delta.alert .ba-v { color: var(--alert-ink); }
+  .ba-block .ba-u { font-size: 11px; color: var(--ink-3); font-weight: 500; font-family: var(--font-sans); margin-left: 3px; }
+  .ba-arrow, .ba-eq { color: var(--ink-3); font-size: 18px; font-weight: 300; text-align: center; }
+  .param-spark { margin-top: 12px; }
+  .param-story { font-size: 12.5px; color: var(--ink-2); margin-top: 10px; line-height: 1.55; }
 
-  /* Heads-up — only shown if non-empty; severity-led visual */
-  .alerts.card.warn  { border-color: var(--warn-line); }
-  .alerts.card.alert { border-color: var(--alert-line); }
-  .alert-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: start; }
-  .alert-row:last-child { border-bottom: 0; padding-bottom: 0; }
-  .alert-row:first-child { padding-top: 0; }
-  .alert-ic { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .alert-ic.info  { background: var(--accent-50); color: var(--accent-700); }
-  .alert-ic.warn  { background: var(--warn-bg);   color: var(--warn-ink); }
-  .alert-ic.alert { background: var(--alert-bg);  color: var(--alert-ink); }
-  .alert-body { min-width: 0; }
-  .alert-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
-  .alert-desc  { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; line-height: 1.55; }
-  .alert-when  { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; padding-top: 5px; }
-
-  /* Peak-end: Next up card — calm, forward-looking */
-  .next-up { background: linear-gradient(160deg, #fff 0%, var(--soft) 110%); border-color: var(--line-2); display: flex; align-items: center; gap: 18px; padding: 22px 24px; }
-  .next-icon { width: 48px; height: 48px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 0.5px solid var(--line); color: var(--accent-700); flex-shrink: 0; box-shadow: var(--el-1); }
-  .next-body { flex: 1; min-width: 0; }
-  .next-eyebrow { font-size: 11.5px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
-  .next-title { font-size: 16px; font-weight: 600; color: var(--accent-900); letter-spacing: -.01em; }
-  .next-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
-
+  /* Alert log — uniform styling, with explicit attribution */
+  .log { display: flex; flex-direction: column; }
+  .log-row { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 0.5px dashed var(--line-2); align-items: start; }
+  .log-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .log-row:first-child { padding-top: 0; }
+  .log-row.alert .lr-ic { background: var(--alert-bg); color: var(--alert-ink); border-color: var(--alert-line); }
+  .log-row.warn  .lr-ic { background: var(--warn-bg); color: var(--warn-ink); border-color: var(--warn-line); }
+  .log-row.info  .lr-ic { background: var(--accent-50); color: var(--accent-700); border-color: var(--accent-100); }
+  .lr-ic { width: 30px; height: 30px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; border: 0.5px solid; }
+  .lr-body { min-width: 0; }
+  .lr-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .lr-desc { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; line-height: 1.55; }
+  .lr-attr { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .lr-attr .pill { font-size: 10.5px; padding: 3px 8px; }
+  .lr-when { font-size: 11px; color: var(--ink-3); white-space: nowrap; padding-top: 6px; }
   .empty { font-size: 12.5px; color: var(--ink-3); text-align: center; padding: 22px 12px; }
+
+  /* Compare view */
+  .compare-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .cmp-col { background: var(--paper); border: 0.5px solid var(--line); border-radius: var(--r-lg); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .cmp-col h3 { font-size: 14px; font-weight: 600; color: var(--accent-900); }
+  .cmp-stats { display: flex; flex-direction: column; gap: 10px; }
+  .cmp-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px dashed var(--line-2); }
+  .cmp-stat:last-child { border-bottom: 0; }
+  .cmp-stat-l { font-size: 12px; color: var(--ink-2); }
+  .cmp-stat-v { font-family: var(--font-mono); font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .cmp-chart { height: 60px; background: var(--soft); border-radius: 8px; padding: 6px; }
+
+  /* Spark */
+  .spark { width: 100%; height: 36px; display: block; }
+  .spark-sm { height: 28px; max-width: 180px; }
+
+  /* "Right now" mini in cycle detail */
+  .now-strip { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--accent-50); border: 0.5px solid var(--accent-100); border-radius: var(--r-md); margin-bottom: 10px; }
+  .now-strip .dot { width: 10px; height: 10px; }
+  .now-strip .ns-text { font-size: 13px; color: var(--ink); }
+  .now-strip .ns-text b { color: var(--accent-900); }
+
+  /* Forward-looking peak-end strip */
+  .next-up { background: linear-gradient(160deg, #fff 0%, var(--soft) 110%); border-color: var(--line-2); display: flex; align-items: center; gap: 16px; padding: 18px 22px; }
+  .next-up .ni { width: 42px; height: 42px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 0.5px solid var(--line); color: var(--accent-700); flex-shrink: 0; }
+  .next-up .nb { flex: 1; }
+  .next-up .nb .e { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
+  .next-up .nb .t { font-size: 15px; font-weight: 600; color: var(--accent-900); margin-top: 2px; }
+  .next-up .nb .s { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 </style>
 </head>
 <body>
   <div class="shell">
-    <!-- Topbar — minimal -->
-    <div class="topbar">
+    <header class="topbar">
       <span class="brand">Insights<span class="plus">+</span></span>
       <span class="sep">·</span>
       <div class="asset">UF Skid 1<span class="loc">Plant A · Pre-treatment</span></div>
       <div class="spacer"></div>
-      <select class="select-light">
+      <select class="select-light" id="assetSel">
         <option selected>UF Skid 1</option>
         <option>UF Skid 2</option>
         <option>RO Train 1</option>
-        <option>MBR Train 1</option>
       </select>
       <span class="live"><span class="pulse"></span>Live</span>
-    </div>
+    </header>
 
-    <!-- HERO: Peak. Von Restorff. Single answer. -->
-    <section class="hero" id="hero"><!-- filled by JS --></section>
+    <div id="view"><!-- view-swapped by JS --></div>
+  </div>
 
-    <!-- Three identical "goal-gradient" cards. Similarity + Goal gradient. -->
-    <section class="stats-grid" id="statsGrid"><!-- filled by JS --></section>
-
-    <!-- Right now: single progress, goal-gradient framing. -->
-    <section class="card now" id="nowCard"><!-- filled by JS --></section>
-
-    <!-- Alerts: only renders if there are any. Severity-led border. -->
-    <section id="alertsSection"><!-- filled by JS --></section>
-
-    <!-- Body grid: recent + sensors. Top 3 + see all (Parkinson). -->
-    <section class="body-grid">
-      <div class="col">
-        <div class="card">
-          <div class="card-head">
-            <h2 class="card-title">Recent cleanings</h2>
-            <button class="card-link" onclick="alert('Full history view would open here.')">See all 247</button>
-          </div>
-          <div id="histList"></div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card">
-          <div class="card-head">
-            <h2 class="card-title">Sensors</h2>
-            <button class="card-link" id="expandAllWatch">Expand all</button>
-          </div>
-          <div id="watchList"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PEAK-END: forward-looking close. -->
-    <section class="card next-up" id="nextUp"><!-- filled by JS --></section>
+  <div class="compare-bar" id="compareBar">
+    <span class="cb-count" id="cbCount">0 selected</span>
+    <button class="cb-go"    onclick="goCompare()">Compare →</button>
+    <button class="cb-clear" onclick="clearCompare()">Clear</button>
   </div>
 
 <script>
-  // ---------- Demo data ----------
-  const CYCLE_NAME = 'UF Backwash';
-  const STEPS = [
-    { name: 'Top drain',       set: 2 },
-    { name: 'Air scour',       set: 3 },
-    { name: 'Bottom backwash', set: 5 },
-    { name: 'Forward flush',   set: 2 }
+  // ============================================================
+  // DEMO DATA
+  // ============================================================
+  // Three cycles with realistic intervals. One is currently running.
+  const STEPS_BW   = [{name:'Top drain',set:2},{name:'Air scour',set:3},{name:'Bottom backwash',set:5},{name:'Forward flush',set:2}]; // 12 min
+  const STEPS_CEBA = [{name:'Dose acid',set:1},{name:'Soak',set:15},{name:'Rinse',set:5}];                                            // 21 min
+  const STEPS_CEBC = [{name:'Dose caustic',set:1},{name:'Soak',set:15},{name:'Rinse',set:5}];                                         // 21 min
+
+  const CYCLES = [
+    { id:'bw',   name:'UF Backwash',       steps: STEPS_BW,   intervalMin: 32 * 60 * 1000 },
+    { id:'cebA', name:'UF CEB · Acid',     steps: STEPS_CEBA, intervalMin: 4 * 60 * 60 * 1000 },
+    { id:'cebC', name:'UF CEB · Caustic',  steps: STEPS_CEBC, intervalMin: 8 * 60 * 60 * 1000 }
   ];
-  const TOTAL_SET = STEPS.reduce((a,b) => a+b.set, 0); // 12 min
-  const TIME_BETWEEN_CYCLES_MIN = 32; // typical gap
+  const cycleById = id => CYCLES.find(c => c.id === id);
+  const cycleTotalMin = c => c.steps.reduce((a,s) => a+s.set, 0);
 
-  let live = { stepIdx: 2, elapsedInStep: 192, startedAt: minutesAgo(7) };
+  // Active state: bw is running now, mid-cycle.
+  const LIVE = { cycleId: 'bw', stepIdx: 2, elapsedInStep: 192, startedAt: new Date(Date.now() - 7*60000) };
 
-  const TODAY = {
-    cleaningsDone: 27,
-    cleaningsExpectedEod: 32,
-    productivePct: 68,
-    productiveTarget: 60,
-    sensorsHealthy: 3,
-    sensorsTotal: 4
-  };
-
-  const HIST = (() => {
+  // ---------- Generate 90 days of history for each cycle ----------
+  const NOW = Date.now();
+  const DAY = 24*60*60*1000;
+  const HORIZON_MS = 92 * DAY; // a little over 3 months
+  function rngStatus(){
+    const r = Math.random();
+    if (r < 0.78) return 'ok';
+    if (r < 0.92) return 'warn';
+    if (r < 0.985) return 'alert';
+    return 'skip';
+  }
+  function generateRuns(cycle){
     const out = [];
-    for (let i=0;i<10;i++){
-      const ageMin = (i+1) * TIME_BETWEEN_CYCLES_MIN + Math.round(Math.random()*5 - 2);
-      const total = TOTAL_SET + (Math.random()-.45) * 1.6;
-      const deltaPct = (total - TOTAL_SET) / TOTAL_SET * 100;
-      let status = 'ok';
-      if (i === 4) status = 'skip';
-      else if (Math.abs(deltaPct) > 8) status = 'alert';
-      else if (Math.abs(deltaPct) > 4) status = 'warn';
-      out.push({ idx: 2814 - i, ageMin, total, deltaPct, status });
+    let id = 100000;
+    let t = NOW - HORIZON_MS;
+    while (t < NOW) {
+      const jitter = (Math.random() - .5) * cycle.intervalMin * 0.18;
+      t += cycle.intervalMin + jitter;
+      if (t >= NOW) break;
+      const target = cycleTotalMin(cycle);
+      const drift = (Math.random() - .45) * 1.8;
+      const total = Math.max(0.5, target + drift);
+      const status = rngStatus();
+      const segs = cycle.steps.map(s => Math.max(0.2, s.set + (Math.random()-.5)*0.5));
+      // Scale segs to total so they sum correctly.
+      const sScale = total / segs.reduce((a,b)=>a+b, 0);
+      const scaled = segs.map(v => v * sScale);
+      out.push({
+        id: ++id,
+        cycleId: cycle.id,
+        startedAt: new Date(t),
+        endedAt: new Date(t + total*60000),
+        totalMin: total,
+        targetMin: target,
+        deltaPct: (total - target) / target * 100,
+        status,
+        steps: scaled
+      });
     }
     return out;
-  })();
+  }
+  const RUNS = CYCLES.flatMap(generateRuns).sort((a,b) => b.startedAt - a.startedAt);
+  const runsForCycle = id => RUNS.filter(r => r.cycleId === id);
 
-  const WATCH = [
-    { name: 'Inlet pressure',          value: 1.62, unit: 'bar',  series: jitter(20, 1.4, 0.18),  status: 'ok',
-      story: 'Holding steady around the usual range.', trend: 'flat' },
-    { name: 'Permeate flow',           value: 6.2,  unit: 'm³/h', series: jitter(20, 6.1, 0.4),   status: 'ok',
-      story: 'Right around the expected 6 m³/h.',       trend: 'flat' },
-    { name: 'Recovery',                value: 88.4, unit: '%',    series: jitter(20, 87, 1.6),    status: 'ok',
-      story: 'Above the 85% target — efficient run.',   trend: 'up' },
-    { name: 'Trans-membrane pressure', value: 0.42, unit: 'bar',  series: jitter(20, 0.36, 0.06), status: 'warn',
-      story: 'A bit higher than usual. Worth a glance during the next round.', trend: 'up' }
+  // ---------- Per-run sensor readings (before/after) for UF Backwash ----------
+  // For other cycles we'll synthesize on-demand from latest few runs.
+  const PARAM_DEFS = [
+    { id:'inletP', name:'Inlet pressure',          unit:'bar',  cycleId:'bw', baseBefore: 1.42, baseAfter: 1.60, scope:'Cycle · UF Backwash', healthyMax: 1.8 },
+    { id:'flow',   name:'Permeate flow',           unit:'m³/h', cycleId:'bw', baseBefore: 6.20, baseAfter: 6.10, scope:'Cycle · UF Backwash', healthyMin: 5.6 },
+    { id:'recov',  name:'Recovery',                unit:'%',    cycleId:'bw', baseBefore: 86.0, baseAfter: 88.4, scope:'Whole process',       healthyMin: 85 },
+    { id:'tmp',    name:'Trans-membrane pressure', unit:'bar',  cycleId:'bw', baseBefore: 0.36, baseAfter: 0.42, scope:'Cycle · UF Backwash', healthyMax: 0.4 }
   ];
+  function readingForRun(def, run){
+    // Add some drift over time so the trend tells a story.
+    const ageDays = (NOW - run.startedAt.getTime()) / DAY;
+    const drift = (1 - ageDays/90) * (def.id === 'tmp' ? 0.06 : 0.04);
+    const noise = (Math.random() - .5) * (Math.abs(def.baseAfter - def.baseBefore) * 0.6);
+    const before = +(def.baseBefore + drift*0.3 + noise).toFixed(2);
+    const after  = +(def.baseAfter  + drift     + noise).toFixed(2);
+    const delta  = +(after - before).toFixed(2);
+    const value  = after;
+    let pStatus = 'ok';
+    if (def.healthyMax !== undefined && value > def.healthyMax * 1.05) pStatus = 'alert';
+    else if (def.healthyMax !== undefined && value > def.healthyMax)   pStatus = 'warn';
+    if (def.healthyMin !== undefined && value < def.healthyMin * 0.95) pStatus = 'alert';
+    else if (def.healthyMin !== undefined && value < def.healthyMin)   pStatus = 'warn';
+    return { runId: run.id, t: run.endedAt, before, after, delta, status: pStatus };
+  }
+  // Build full reading history per param.
+  const PARAM_READINGS = {};
+  PARAM_DEFS.forEach(def => {
+    PARAM_READINGS[def.id] = runsForCycle(def.cycleId).map(r => readingForRun(def, r));
+  });
 
-  const ALERTS = [
-    { sev:'warn',  title:'Membrane pressure trending up',
-      desc:'Slowly rising over the last few cleanings — still inside healthy range.', ageMin: 8 },
-    { sev:'info',  title:'Cleaning #2813 finished 36 sec early',
-      desc:'Within normal variation. Nothing to act on.', ageMin: 34 },
-    { sev:'alert', title:"Cleaning #2810 didn't start",
-      desc:'A scheduled cleaning was missed. Often supply-tank low or an upstream valve still closed.', ageMin: 96 }
+  // ---------- Generate an attributed alert log ----------
+  const ALERT_TEMPLATES = [
+    // (sev, title, desc, scope-builder)
+    { sev:'warn',  title:'Membrane pressure crept up',
+      desc:'TMP after this cleaning exceeded its healthy band.',
+      build:(run, cycle, step) => ({ scope:'parameter', paramId:'tmp', cycleId:cycle.id, runId:run.id, stepName:null }) },
+    { sev:'info',  title:'Cleaning finished earlier than usual',
+      desc:'Total duration was under target — within tolerance.',
+      build:(run, cycle) => ({ scope:'cycle', cycleId:cycle.id, runId:run.id }) },
+    { sev:'alert', title:"Cleaning didn't start",
+      desc:'A scheduled cleaning was skipped. Common causes: supply tank low, an upstream valve still closed, or a power blip.',
+      build:(run, cycle) => ({ scope:'cycle', cycleId:cycle.id, runId:run.id, skip:true }) },
+    { sev:'warn',  title:'Step ran longer than expected',
+      desc:'A single step exceeded its target duration.',
+      build:(run, cycle, step) => ({ scope:'step', cycleId:cycle.id, runId:run.id, stepName:step.name }) },
+    { sev:'info',  title:'Productive-time target reached',
+      desc:'Asset crossed its productive-time target for the day.',
+      build:() => ({ scope:'process' }) },
+    { sev:'alert', title:'Permeate flow below healthy minimum',
+      desc:'Reading dipped under the configured minimum.',
+      build:(run, cycle) => ({ scope:'parameter', paramId:'flow', cycleId:cycle.id, runId:run.id }) }
   ];
+  function generateAlerts(){
+    const out = [];
+    // One alert per skip, plus ~3 per day random.
+    RUNS.filter(r => r.status === 'skip').forEach(run => {
+      const cycle = cycleById(run.cycleId);
+      const tmpl  = ALERT_TEMPLATES[2];
+      out.push({ id:'a'+(out.length+1), t: run.startedAt, sev: tmpl.sev, title: tmpl.title, desc: tmpl.desc, ...tmpl.build(run, cycle) });
+    });
+    // Add probabilistic alerts for warn/alert runs.
+    RUNS.forEach(run => {
+      if (run.status === 'ok' || run.status === 'skip') return;
+      if (Math.random() < (run.status === 'alert' ? 0.7 : 0.35)) {
+        const cycle = cycleById(run.cycleId);
+        const pool = run.status === 'alert' ? [0,3,5] : [0,1,3];
+        const tmpl = ALERT_TEMPLATES[pool[Math.floor(Math.random()*pool.length)]];
+        const step = cycle.steps[Math.floor(Math.random()*cycle.steps.length)];
+        out.push({ id:'a'+(out.length+1), t: run.endedAt, sev: tmpl.sev, title: tmpl.title, desc: tmpl.desc, ...tmpl.build(run, cycle, step) });
+      }
+    });
+    // Sprinkle a few process-level events.
+    for (let i=0;i<14;i++){
+      const ago = Math.random() * HORIZON_MS;
+      const tmpl = ALERT_TEMPLATES[4];
+      out.push({ id:'a'+(out.length+1), t: new Date(NOW - ago), sev: tmpl.sev, title: tmpl.title, desc: tmpl.desc, ...tmpl.build() });
+    }
+    return out.sort((a,b) => b.t - a.t);
+  }
+  const ALERTS = generateAlerts();
 
-  // ---------- Helpers ----------
-  function minutesAgo(m){ return new Date(Date.now() - m*60000); }
-  function ago(m){
-    if (m < 1)         return 'just now';
-    if (m < 60)        return m + ' min ago';
-    if (m < 60*24)     return Math.round(m/60) + ' hr ago';
+  // ============================================================
+  // STATE
+  // ============================================================
+  let view = 'plant';           // 'plant' | 'cycle' | 'compare'
+  let currentCycleId = null;
+  let compared = new Set();
+  let range = '24h';            // 'today' | '24h' | '3d' | '7d' | '30d' | '3mo' | 'custom'
+  let customFrom = null, customTo = null;
+  let selectedStepIdx = null;   // for cycle-detail inspect
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function rangeMs(){
+    const day = DAY;
+    if (range === 'today')   { const d = new Date(); d.setHours(0,0,0,0); return [d.getTime(), NOW]; }
+    if (range === '24h')     return [NOW - 1*day, NOW];
+    if (range === '3d')      return [NOW - 3*day, NOW];
+    if (range === '7d')      return [NOW - 7*day, NOW];
+    if (range === '30d')     return [NOW - 30*day, NOW];
+    if (range === '3mo')     return [NOW - 90*day, NOW];
+    if (range === 'custom' && customFrom && customTo) return [customFrom, customTo];
+    return [NOW - 1*day, NOW];
+  }
+  function inRange(d){ const [from, to] = rangeMs(); const t = d instanceof Date ? d.getTime() : d; return t >= from && t <= to; }
+  function rangeLabel(){
+    return ({today:'today', '24h':'last 24 hours', '3d':'last 3 days', '7d':'last 7 days', '30d':'last 30 days', '3mo':'last 3 months', custom:'a custom window'})[range];
+  }
+  function ago(ms){
+    const m = Math.round((Date.now() - ms) / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return m + ' min ago';
+    if (m < 60*24) return Math.round(m/60) + ' hr ago';
     return Math.round(m/60/24) + ' d ago';
   }
-  function inMin(m){
-    if (m < 1)  return 'in less than a minute';
-    if (m < 60) return 'in about ' + m + ' min';
-    return 'in about ' + Math.round(m/60) + ' hr';
+  function inLabel(ms){
+    if (ms < 60000) return 'in less than a minute';
+    if (ms < 3600000) return 'in about ' + Math.round(ms/60000) + ' min';
+    return 'in about ' + Math.round(ms/3600000) + ' hr';
   }
-  function fmtMS(sec){
-    sec = Math.max(0, Math.round(sec));
-    const m = Math.floor(sec/60), s = sec%60;
-    return m + ':' + (s<10?'0':'') + s;
-  }
+  function fmtMS(sec){ sec = Math.max(0, Math.round(sec)); return Math.floor(sec/60) + ':' + (sec%60<10?'0':'') + (sec%60); }
   function fmtMin(m){
-    const whole = Math.floor(m), s = Math.round((m - whole) * 60);
+    const whole = Math.floor(m), s = Math.round((m-whole)*60);
     if (whole === 0) return s + ' sec';
-    if (s === 0)     return whole + ' min';
+    if (s === 0) return whole + ' min';
     return whole + ' min ' + s + ' sec';
   }
-  function jitter(n, base, amp){
-    const out = []; let v = base;
-    for (let i=0;i<n;i++){ v = base + (Math.random()-.5)*amp*2; out.push(+v.toFixed(2)); }
-    return out;
+  function fmtDateShort(d){
+    const dd = new Date(d); const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dd.getMonth()];
+    return dd.getDate() + ' ' + mo + ' · ' + String(dd.getHours()).padStart(2,'0') + ':' + String(dd.getMinutes()).padStart(2,'0');
   }
-  function pageStatus(){
-    if (ALERTS.some(a => a.sev === 'alert')) return 'alert';
-    if (ALERTS.some(a => a.sev === 'warn'))  return 'warn';
-    return 'ok';
-  }
-  // Adaptive status icons — same SVGs reused across the page (Similarity).
-  function svgCheck(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>'; }
-  function svgWatch(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'; }
-  function svgAlert(){ return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'; }
-
-  // ---------- HERO ----------
-  function renderHero(){
-    const status = pageStatus();
-    let icon = svgCheck(), eyebrow = 'How it\'s going', title, body;
-    if (status === 'alert') {
-      icon = svgAlert();
-      title = '1 thing needs your attention';
-      body  = `Most cycles are running fine — but one cleaning didn't start. Details below.`;
-    } else if (status === 'warn') {
-      icon = svgWatch();
-      title = 'Smooth — one thing to watch';
-      body  = `<b>${TODAY.cleaningsDone}</b> cleanings done today, <b>${TODAY.productivePct}%</b> productive time. One sensor is creeping up.`;
-    } else {
-      title = 'Everything is running well';
-      body  = `<b>${TODAY.cleaningsDone}</b> cleanings done today · <b>${TODAY.productivePct}%</b> productive time. All sensors healthy.`;
-    }
-    document.getElementById('hero').className = 'hero ' + status;
-    document.getElementById('hero').innerHTML = `
-      <div class="hero-inner">
-        <div class="hero-orb">${icon}</div>
-        <div class="hero-text">
-          <div class="eyebrow">${eyebrow}</div>
-          <h1 class="hero-title">${title}</h1>
-          <p>${body}</p>
-        </div>
-        <div class="hero-range">
-          <div class="range" id="rangeSel">
-            <button data-r="24h" class="active">Today</button>
-            <button data-r="7d">Past week</button>
-            <button data-r="30d">Past month</button>
-          </div>
-        </div>
-      </div>`;
-    document.getElementById('rangeSel').addEventListener('click', e => {
-      if (e.target.tagName !== 'BUTTON') return;
-      document.querySelectorAll('#rangeSel button').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-    });
-  }
-
-  // ---------- Goal-gradient cards ----------
-  function goalCard({label, value, unit, of, ofLabel, status, mood, achievement}){
-    // Fill % is value/of, clipped to 100; target marker is always at "of".
-    const pct = Math.min(100, (value / of) * 100);
-    const fillCls = mood === 'exceed' ? 'exceed' : (mood || '');
-    return `
-      <div class="card goal">
-        <div class="goal-label">${label}</div>
-        <div class="goal-row">
-          <span class="goal-value">${value}<span class="goal-unit">${unit||''}</span></span>
-        </div>
-        <div class="goal-bar"><div class="fill ${fillCls}" style="width:${pct}%"></div></div>
-        <div class="goal-foot">
-          <span>${ofLabel}</span>
-          <span class="${achievement ? 'achievement' : ''}">${achievement ? '✓ ' + achievement : ''}</span>
-        </div>
-      </div>`;
-  }
-  function renderStats(){
-    const cleaningsPct = TODAY.cleaningsDone / TODAY.cleaningsExpectedEod * 100;
-    const cards = [
-      goalCard({
-        label: 'Cleanings completed today',
-        value: TODAY.cleaningsDone, unit: '',
-        of: TODAY.cleaningsExpectedEod,
-        ofLabel: `of ~${TODAY.cleaningsExpectedEod} expected by end of day`,
-        achievement: cleaningsPct >= 90 ? 'Almost there' : null
-      }),
-      goalCard({
-        label: 'Productive time',
-        value: TODAY.productivePct, unit: '%',
-        of: TODAY.productiveTarget,
-        ofLabel: `target ${TODAY.productiveTarget}%`,
-        mood: TODAY.productivePct >= TODAY.productiveTarget ? 'exceed' : null,
-        achievement: TODAY.productivePct >= TODAY.productiveTarget
-          ? `+${TODAY.productivePct - TODAY.productiveTarget}% over target`
-          : null
-      }),
-      goalCard({
-        label: 'Sensors healthy',
-        value: TODAY.sensorsHealthy, unit: ` / ${TODAY.sensorsTotal}`,
-        of: TODAY.sensorsTotal,
-        ofLabel: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'All readings in range' : `${TODAY.sensorsTotal - TODAY.sensorsHealthy} to watch`,
-        mood: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'ok' : 'warn',
-        achievement: TODAY.sensorsHealthy === TODAY.sensorsTotal ? 'All clear' : null
-      })
-    ];
-    document.getElementById('statsGrid').innerHTML = cards.join('');
-  }
-
-  // ---------- Right now ----------
-  let detailsOpen = false;
-  window.toggleDetails = () => { detailsOpen = !detailsOpen; renderLive(); };
-  function renderLive(){
-    let elapsedSec = 0;
-    for (let i=0;i<live.stepIdx;i++) elapsedSec += STEPS[i].set * 60;
-    elapsedSec += live.elapsedInStep;
-    const totalSec = TOTAL_SET * 60;
-    const pct = Math.min(100, elapsedSec / totalSec * 100);
-    const remainingSec = Math.max(0, totalSec - elapsedSec);
-    const remainingMin = Math.max(1, Math.ceil(remainingSec / 60));
-    const startedAgo = Math.max(0, Math.round((Date.now() - live.startedAt.getTime()) / 60000));
-    const currentStep = STEPS[live.stepIdx];
-
-    const stepsHtml = STEPS.map((s, i) => {
-      let cls = '', time = `0:00 / ${s.set}:00`;
-      if (i < live.stepIdx)         { cls = 'done';   time = `${s.set}:00 / ${s.set}:00`; }
-      else if (i === live.stepIdx)  { cls = 'active'; time = `${fmtMS(live.elapsedInStep)} / ${s.set}:00`; }
-      return `<div class="sd ${cls}"><span class="sd-idx">${i+1}</span><span class="sd-name">${s.name}</span><span class="sd-time">${time}</span></div>`;
-    }).join('');
-
-    document.getElementById('nowCard').innerHTML = `
-      <div class="now-eyebrow"><span class="dot ok"></span>Right now</div>
-      <div class="now-title">Cleaning in progress</div>
-      <div class="now-sub">Started <b>${ago(startedAgo)}</b> · about <b>${remainingMin} min</b> left.</div>
-      <div class="now-bar"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div>
-      <div class="now-meta"><span>${Math.round(pct)}% done</span><span>${fmtMS(elapsedSec)} of ${TOTAL_SET}:00</span></div>
-      <div class="now-step">
-        <span class="nstep-pill">Step ${live.stepIdx+1} of ${STEPS.length}</span>
-        <span>${currentStep.name}</span>
-      </div>
-      <button class="details-toggle ${detailsOpen ? 'open' : ''}" onclick="toggleDetails()">
-        ${detailsOpen ? 'Hide step details' : 'Show step details'}
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div class="step-list ${detailsOpen ? 'show' : ''}">${stepsHtml}</div>`;
-  }
-
-  // ---------- Alerts ----------
-  function renderAlerts(){
-    const wrap = document.getElementById('alertsSection');
-    if (!ALERTS.length) { wrap.innerHTML = ''; return; }
-    const sev = ALERTS.some(a => a.sev === 'alert') ? 'alert' : ALERTS.some(a => a.sev === 'warn') ? 'warn' : '';
-    const icon = (s) => s === 'alert' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
-                    : s === 'warn'  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
-                                    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>';
-    wrap.innerHTML = `
-      <div class="card alerts ${sev}">
-        <div class="card-head">
-          <h2 class="card-title">Heads-up</h2>
-          <span class="micro">${ALERTS.length} item${ALERTS.length===1?'':'s'} today</span>
-        </div>
-        ${ALERTS.map(a => `
-          <div class="alert-row">
-            <span class="alert-ic ${a.sev}">${icon(a.sev)}</span>
-            <div class="alert-body">
-              <div class="alert-title">${a.title}</div>
-              <div class="alert-desc">${a.desc}</div>
-            </div>
-            <div class="alert-when">${ago(a.ageMin)}</div>
-          </div>`).join('')}
-      </div>`;
-  }
-
-  // ---------- Recent cleanings (top 3) ----------
-  function renderHistory(){
-    const el = document.getElementById('histList');
-    el.innerHTML = HIST.slice(0,3).map(h => {
-      if (h.status === 'skip') return `
-        <div class="hr">
-          <div class="hr-main">
-            <span class="dot idle"></span>
-            <div><div class="name">Cleaning #${h.idx} · missed</div><span class="when">${ago(h.ageMin)}</span></div>
-          </div>
-          <div></div>
-          <span class="hr-tag skip">Missed</span>
-        </div>`;
-      const lbl  = h.status === 'alert' ? 'Off target' : h.status === 'warn' ? 'A bit off' : 'On target';
-      const pctW = Math.min(100, h.total / TOTAL_SET * 100);
-      return `
-        <div class="hr">
-          <div class="hr-main">
-            <span class="dot ${h.status}"></span>
-            <div>
-              <div class="name">Cleaning #${h.idx}</div>
-              <span class="when">${ago(h.ageMin)}</span>
-            </div>
-          </div>
-          <div>
-            <div style="font-family:var(--font-mono); font-size:12.5px; color:var(--ink);">${fmtMin(h.total)}</div>
-            <div class="hr-bar" style="margin-top:6px;"><div class="${h.status}" style="width:${pctW}%"></div></div>
-          </div>
-          <span class="hr-tag ${h.status}">${lbl}</span>
-        </div>`;
-    }).join('');
-  }
-
-  // ---------- Sensors (collapsed) ----------
-  function sparkline(series, status){
-    const w = 200, h = 28, pad = 2;
+  function sparkline(series, status, opts={}){
+    const w = opts.w || 200, h = opts.h || 36, pad = 2;
+    if (!series.length) return `<svg class="spark" viewBox="0 0 ${w} ${h}"></svg>`;
     const min = Math.min(...series), max = Math.max(...series);
     const span = (max - min) || 1;
-    const step = (w - pad*2) / (series.length - 1);
-    const pts = series.map((v, i) => {
-      const x = pad + i * step;
-      const y = h - pad - ((v - min) / span) * (h - pad*2);
-      return x.toFixed(1) + ',' + y.toFixed(1);
-    }).join(' ');
+    const step = (w - pad*2) / Math.max(1, series.length - 1);
+    const pts = series.map((v, i) => (pad + i*step).toFixed(1) + ',' + (h - pad - ((v - min) / span) * (h - pad*2)).toFixed(1)).join(' ');
     const stroke = status === 'warn' ? 'var(--warn-acc)' : status === 'alert' ? 'var(--alert-acc)' : 'var(--accent-600)';
-    return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    return `<svg class="spark ${opts.cls||''}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
       <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
     </svg>`;
   }
-  function renderWatch(){
-    const el = document.getElementById('watchList');
-    el.innerHTML = WATCH.map((w, i) => `
-      <div class="wr" data-i="${i}" onclick="toggleWatch(${i})">
-        <div class="wr-name">
-          <span class="dot ${w.status}"></span>${w.name}
-        </div>
-        <div class="wr-val">${w.value}<span class="u">${w.unit}</span>
-          <svg class="wr-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-        <div class="wr-detail">${w.story}</div>
-        <div class="wr-spark">${sparkline(w.series, w.status)}</div>
-      </div>`).join('');
-  }
-  window.toggleWatch = (i) => {
-    const row = document.querySelector('.wr[data-i="'+i+'"]');
-    if (row) row.classList.toggle('open');
-  };
-  document.getElementById('expandAllWatch').addEventListener('click', (e) => {
-    const rows = document.querySelectorAll('.wr');
-    const allOpen = Array.from(rows).every(r => r.classList.contains('open'));
-    rows.forEach(r => r.classList.toggle('open', !allOpen));
-    e.target.textContent = allOpen ? 'Expand all' : 'Collapse all';
-  });
 
-  // ---------- Peak-end: Next up ----------
-  function renderNextUp(){
-    // Compute time until the current cycle finishes, then add the typical gap to next.
-    let elapsedSec = 0;
-    for (let i=0;i<live.stepIdx;i++) elapsedSec += STEPS[i].set * 60;
-    elapsedSec += live.elapsedInStep;
-    const remainingSec = Math.max(0, TOTAL_SET*60 - elapsedSec);
-    const nextInMin = Math.round(remainingSec/60) + TIME_BETWEEN_CYCLES_MIN;
-    document.getElementById('nextUp').innerHTML = `
-      <div class="next-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-      </div>
-      <div class="next-body">
-        <div class="next-eyebrow">Coming up</div>
-        <div class="next-title">Next cleaning ${inMin(nextInMin)}</div>
-        <div class="next-sub">After this one wraps up, expect about ${TIME_BETWEEN_CYCLES_MIN} min of productive time before the next cleaning kicks off.</div>
+  // ============================================================
+  // SHARED COMPONENTS
+  // ============================================================
+  function rangeBarHTML(){
+    const opts = [['today','Today'],['24h','24 hr'],['3d','3 days'],['7d','7 days'],['30d','30 days'],['3mo','3 months'],['custom','Custom…']];
+    return `
+      <div class="rangebar">
+        <span class="rb-label">Range</span>
+        <div class="seg">
+          ${opts.map(([k,l]) => `<button class="${range===k?'active':''}" onclick="setRange('${k}')">${l}</button>`).join('')}
+        </div>
+        <div class="custom ${range==='custom'?'show':''}" id="customRange">
+          <input type="date" id="customFrom" value="${customFrom ? new Date(customFrom).toISOString().slice(0,10) : ''}" onchange="onCustomFrom(this.value)"/>
+          <span class="micro">to</span>
+          <input type="date" id="customTo"   value="${customTo   ? new Date(customTo).toISOString().slice(0,10)   : ''}" onchange="onCustomTo(this.value)"/>
+        </div>
+        <div class="spacer"></div>
+        <span class="micro" id="rangeSummary"></span>
       </div>`;
   }
+  function updateRangeSummary(){
+    const el = document.getElementById('rangeSummary');
+    if (!el) return;
+    const runsInRange = RUNS.filter(r => inRange(r.startedAt)).length;
+    el.textContent = `${runsInRange} cleaning${runsInRange===1?'':'s'} in ${rangeLabel()}`;
+  }
+  window.setRange = (k) => {
+    range = k;
+    if (k !== 'custom') { customFrom = customTo = null; }
+    render();
+  };
+  window.onCustomFrom = (v) => { customFrom = v ? new Date(v+'T00:00:00').getTime() : null; render(); };
+  window.onCustomTo   = (v) => { customTo   = v ? new Date(v+'T23:59:59').getTime() : null; render(); };
 
-  // ---------- Live tick ----------
-  function tick(){
-    live.elapsedInStep += 1;
-    const setSec = STEPS[live.stepIdx].set * 60;
-    if (live.elapsedInStep >= setSec) {
-      if (live.stepIdx < STEPS.length - 1) { live.stepIdx += 1; live.elapsedInStep = 0; }
-      else { live = { stepIdx: 0, elapsedInStep: 0, startedAt: new Date() }; }
-    }
-    renderLive();
-    renderNextUp();
+  function alertLogHTML(filteredAlerts){
+    if (!filteredAlerts.length) return `<div class="empty">No alerts in ${rangeLabel()}.</div>`;
+    const icon = sev => sev === 'alert'
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
+      : sev === 'warn'
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>';
+    return `<div class="log">${filteredAlerts.map(a => {
+      const cycle = a.cycleId ? cycleById(a.cycleId) : null;
+      const param = a.paramId ? PARAM_DEFS.find(p => p.id === a.paramId) : null;
+      const chips = [];
+      if (a.scope === 'process')   chips.push(`<span class="pill">Whole process</span>`);
+      if (a.scope === 'cycle')     chips.push(`<span class="pill brand">Cycle: ${cycle.name}${a.runId ? ' · #' + a.runId : ''}</span>`);
+      if (a.scope === 'step')      chips.push(`<span class="pill brand">Step: ${a.stepName} (in ${cycle.name}${a.runId ? ' · #' + a.runId : ''})</span>`);
+      if (a.scope === 'parameter') {
+        chips.push(`<span class="pill brand">Parameter: ${param ? param.name : a.paramId}</span>`);
+        if (cycle) chips.push(`<span class="pill">In: ${cycle.name}${a.runId ? ' · #' + a.runId : ''}</span>`);
+      }
+      return `
+        <div class="log-row ${a.sev}">
+          <span class="lr-ic">${icon(a.sev)}</span>
+          <div class="lr-body">
+            <div class="lr-title">${a.title}</div>
+            <div class="lr-desc">${a.desc}</div>
+            <div class="lr-attr">${chips.join('')}</div>
+          </div>
+          <div class="lr-when">${ago(a.t)}</div>
+        </div>`;
+    }).join('')}</div>`;
   }
 
-  renderHero();
-  renderStats();
-  renderLive();
-  renderAlerts();
-  renderHistory();
-  renderWatch();
-  renderNextUp();
+  // ============================================================
+  // VIEW: PLANT
+  // ============================================================
+  function renderPlant(){
+    const status = (() => {
+      const alerts = ALERTS.filter(a => inRange(a.t) && a.sev === 'alert').length;
+      const warns  = ALERTS.filter(a => inRange(a.t) && a.sev === 'warn').length;
+      return alerts ? 'alert' : warns ? 'warn' : 'ok';
+    })();
+    const runsInRange = RUNS.filter(r => inRange(r.startedAt));
+    const cleaningsDone = runsInRange.filter(r => r.status !== 'skip').length;
+    const skips = runsInRange.filter(r => r.status === 'skip').length;
+    const productivePct = 68;
+    const procAlerts = ALERTS.filter(a => inRange(a.t));
+
+    const heroIcon = status === 'alert'
+      ? '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>'
+      : status === 'warn'
+      ? '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'
+      : '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5L20 7"/></svg>';
+    const heroTitle = status === 'alert' ? `${ALERTS.filter(a=>inRange(a.t)&&a.sev==='alert').length} alert${ALERTS.filter(a=>inRange(a.t)&&a.sev==='alert').length===1?'':'s'} to review`
+                   : status === 'warn'  ? 'Smooth — a few things to watch'
+                   :                       'Everything is running well';
+    const heroBody = `<b>${cleaningsDone}</b> cleaning${cleaningsDone===1?'':'s'} in ${rangeLabel()} · <b>${productivePct}%</b> productive time${skips ? ` · <b>${skips}</b> missed` : ''}.`;
+
+    const cycleCards = CYCLES.map(c => {
+      const runs = runsForCycle(c.id).filter(r => inRange(r.startedAt));
+      const total = runs.length;
+      const onTarget = runs.filter(r => r.status === 'ok').length;
+      const avg = total ? (runs.reduce((a,r) => a+r.totalMin, 0) / total) : 0;
+      const isRunning = LIVE.cycleId === c.id;
+      const lastRun = runs.find(r => r.status !== 'skip') || runs[0];
+      const cycleAlertCount = ALERTS.filter(a => inRange(a.t) && a.cycleId === c.id).length;
+      const isCompared = compared.has(c.id);
+      const statusLine = isRunning
+        ? `<span class="dot live"></span><span><b>Running now</b> · step ${LIVE.stepIdx+1} of ${c.steps.length}</span>`
+        : (lastRun ? `<span class="dot idle"></span><span>Idle · last ran ${ago(lastRun.startedAt)}</span>`
+                   : `<span class="dot idle"></span><span>No runs in this range</span>`);
+      const onTargetPct = total ? Math.round(onTarget / total * 100) : 0;
+      const onTargetCls = onTargetPct >= 80 ? '' : onTargetPct >= 60 ? 'warn' : 'alert';
+      const alertCls = cycleAlertCount === 0 ? '' : cycleAlertCount > 3 ? 'alert' : 'warn';
+      return `
+        <div class="cycle-card ${isCompared?'selected':''}" onclick="goCycle('${c.id}')">
+          <div class="cc-top">
+            <div>
+              <div class="cc-name">${c.name}</div>
+              <div class="cc-asset">UF Skid 1 · target ${cycleTotalMin(c)} min</div>
+            </div>
+            <button class="cc-check ${isCompared?'on':''}" onclick="event.stopPropagation(); toggleCompare('${c.id}')" title="Select for comparison">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7"/></svg>
+            </button>
+          </div>
+          <div class="cc-status">${statusLine}</div>
+          <div class="cc-mini">
+            <div><div class="mc-l">Runs</div><div class="mc-v">${total}</div></div>
+            <div><div class="mc-l">Avg time</div><div class="mc-v">${total ? fmtMin(avg).replace(' ',' ').slice(0,7) : '—'}</div></div>
+            <div><div class="mc-l">On target</div><div class="mc-v ${onTargetCls}">${total ? onTargetPct + '%' : '—'}</div></div>
+          </div>
+          ${cycleAlertCount ? `<div class="micro" style="margin-top:6px;"><span class="dot ${alertCls==='alert'?'alert':'warn'}" style="margin-right:5px;"></span>${cycleAlertCount} alert${cycleAlertCount===1?'':'s'} in this range</div>` : ''}
+        </div>`;
+    }).join('');
+
+    const compareHint = compared.size === 0
+      ? `<span class="micro">Tip — tick two or more cards to compare cycles.</span>`
+      : `<span class="micro">${compared.size} selected for comparison. Use the button at the bottom.</span>`;
+
+    return `
+      <section class="hero ${status}">
+        <div class="hero-inner">
+          <div class="hero-orb">${heroIcon}</div>
+          <div class="hero-text">
+            <div class="eyebrow">${rangeLabel()}</div>
+            <h1 class="hero-title">${heroTitle}</h1>
+            <p>${heroBody}</p>
+          </div>
+        </div>
+      </section>
+
+      ${rangeBarHTML()}
+
+      <section>
+        <div style="display:flex; align-items:center; gap:12px; margin: 4px 0 8px;">
+          <h2 class="card-title" style="font-size:13px;">Cycles configured on this asset</h2>
+          <div class="spacer"></div>
+          ${compareHint}
+        </div>
+        <div class="cycles-grid">${cycleCards}</div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Process-wide alert log</h2>
+          <span class="micro">${procAlerts.length} item${procAlerts.length===1?'':'s'} in ${rangeLabel()}</span>
+        </div>
+        ${alertLogHTML(procAlerts.slice(0, 12))}
+        ${procAlerts.length > 12 ? `<div style="text-align:center; margin-top:10px;"><button class="card-link">Show all ${procAlerts.length} alerts</button></div>` : ''}
+      </section>
+
+      <section class="card next-up">
+        <div class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="nb">
+          <div class="e">Coming up</div>
+          <div class="t">Next cleaning ${inLabel((cycleTotalMin(cycleById('bw')) - liveElapsedMin())*60000 + 32*60000)}</div>
+          <div class="s">After the current UF Backwash finishes, the next is expected after about 32 minutes of productive time.</div>
+        </div>
+      </section>`;
+  }
+
+  // ============================================================
+  // VIEW: CYCLE DETAIL
+  // ============================================================
+  function liveElapsedMin(){
+    let sec = 0;
+    const c = cycleById(LIVE.cycleId);
+    for (let i=0;i<LIVE.stepIdx;i++) sec += c.steps[i].set * 60;
+    sec += LIVE.elapsedInStep;
+    return sec / 60;
+  }
+  function renderCycle(){
+    const c = cycleById(currentCycleId);
+    if (!c) return `<p>Cycle not found.</p>`;
+    const runs = runsForCycle(c.id).filter(r => inRange(r.startedAt));
+    const total = runs.length;
+    const onTarget = runs.filter(r => r.status === 'ok').length;
+    const skipped  = runs.filter(r => r.status === 'skip').length;
+    const onTargetPct = total ? Math.round(onTarget / total * 100) : 0;
+    const avg = total ? runs.reduce((a,r) => a+r.totalMin, 0) / total : 0;
+    const cycleAlerts = ALERTS.filter(a => inRange(a.t) && a.cycleId === c.id);
+    const isRunning = LIVE.cycleId === c.id;
+    const totalSec = cycleTotalMin(c) * 60;
+    let elapsedSec = 0;
+    if (isRunning){
+      for (let i=0;i<LIVE.stepIdx;i++) elapsedSec += c.steps[i].set * 60;
+      elapsedSec += LIVE.elapsedInStep;
+    }
+
+    // Interactive progress bar
+    const ipb = c.steps.map((s, i) => {
+      let cls = '', time = `0:00 / ${s.set}:00`;
+      if (isRunning){
+        if (i < LIVE.stepIdx)      { cls = 'done';   time = `${s.set}:00 / ${s.set}:00`; }
+        else if (i === LIVE.stepIdx){ cls = 'active'; time = `${fmtMS(LIVE.elapsedInStep)} / ${s.set}:00`; }
+        else                       { cls = 'upcoming'; }
+      } else { cls = 'upcoming'; }
+      if (selectedStepIdx === i) cls += ' selected';
+      return `
+        <div class="ipb-step ${cls}" style="--w:${s.set};" onclick="inspectStep(${i})">
+          <div class="ipb-i">
+            <span class="ipb-idx">${i+1}</span>
+            <span class="ipb-name">${s.name}</span>
+          </div>
+          <span class="ipb-time">${time}</span>
+        </div>`;
+    }).join('');
+
+    // Step inspect panel
+    let inspect = '';
+    if (selectedStepIdx !== null && selectedStepIdx >= 0 && selectedStepIdx < c.steps.length) {
+      const s = c.steps[selectedStepIdx];
+      const onTargetForStep = runs.length ? Math.round(runs.filter(r => Math.abs(r.steps[selectedStepIdx] - s.set) <= s.set * 0.1).length / runs.length * 100) : 0;
+      const recentVals = runs.slice(0, 12).map(r => +r.steps[selectedStepIdx].toFixed(2));
+      const stepAlerts = ALERTS.filter(a => inRange(a.t) && a.cycleId === c.id && a.stepName === s.name).length;
+      inspect = `
+        <div class="step-inspect show">
+          <h3>Step ${selectedStepIdx+1} · ${s.name}</h3>
+          <div class="si-rows">
+            <div>Target duration: <b>${s.set} min</b></div>
+            <div>Runs in range: <b>${runs.length}</b></div>
+            <div>Avg actual: <b>${runs.length ? (runs.reduce((a,r)=>a+r.steps[selectedStepIdx],0)/runs.length).toFixed(1) + ' min' : '—'}</b></div>
+            <div>Within ±10% of target: <b>${onTargetForStep}%</b></div>
+            <div>Alerts on this step: <b>${stepAlerts}</b></div>
+            <div>Last 12 runs:<br>${sparkline(recentVals, 'ok', { w:240, h:34, cls:'spark-sm' })}</div>
+          </div>
+        </div>`;
+    }
+
+    // Parameters with before/after — only if cycle has reading data
+    const paramDefsForCycle = PARAM_DEFS.filter(p => p.cycleId === c.id);
+    const paramsHTML = paramDefsForCycle.length === 0
+      ? `<div class="empty">No tracked parameters for this cycle.</div>`
+      : paramDefsForCycle.map(def => {
+          const readings = PARAM_READINGS[def.id].filter(r => inRange(r.t));
+          if (!readings.length) return `<div class="param-row"><div class="param-head"><div class="pn"><span class="dot idle"></span>${def.name}</div></div><div class="empty" style="padding:6px 0;">No readings in this range.</div></div>`;
+          const latest = readings[0];
+          const deltaCls = latest.status === 'ok' ? '' : latest.status;
+          const deltaSign = latest.delta >= 0 ? '+' : '';
+          const series = readings.slice(0, 30).reverse().map(r => r.after);
+          const story = def.healthyMax !== undefined && latest.after > def.healthyMax
+            ? `Above the healthy ceiling of ${def.healthyMax} ${def.unit}. Worth a look.`
+            : def.healthyMin !== undefined && latest.after < def.healthyMin
+            ? `Below the healthy floor of ${def.healthyMin} ${def.unit}. Check the upstream supply.`
+            : `Within the healthy range.`;
+          return `
+            <div class="param-row">
+              <div class="param-head">
+                <div class="pn">
+                  <span class="dot ${latest.status}"></span>${def.name}
+                  <span class="pn-scope">· ${def.scope}</span>
+                </div>
+                <div class="micro">Latest: ${fmtDateShort(latest.t)} · #${latest.runId}</div>
+              </div>
+              <div class="ba">
+                <div class="ba-block before">
+                  <span class="ba-l">Before</span>
+                  <span class="ba-v">${latest.before}<span class="ba-u">${def.unit}</span></span>
+                </div>
+                <div class="ba-arrow">→</div>
+                <div class="ba-block after">
+                  <span class="ba-l">After</span>
+                  <span class="ba-v">${latest.after}<span class="ba-u">${def.unit}</span></span>
+                </div>
+                <div class="ba-eq">=</div>
+                <div class="ba-block delta ${deltaCls}">
+                  <span class="ba-l">Change</span>
+                  <span class="ba-v">${deltaSign}${latest.delta}<span class="ba-u">${def.unit}</span></span>
+                </div>
+              </div>
+              <div class="param-spark">${sparkline(series, latest.status, { w: 600, h: 38 })}</div>
+              <div class="param-story">${story} <span class="micro" style="margin-left:6px;">${readings.length} reading${readings.length===1?'':'s'} in ${rangeLabel()}.</span></div>
+            </div>`;
+        }).join('');
+
+    return `
+      <div class="crumb">
+        <button class="link" onclick="goPlant()">← All cycles</button>
+        <span class="sep">·</span>
+        <span class="here">${c.name}</span>
+      </div>
+
+      ${isRunning ? `
+        <div class="now-strip">
+          <span class="dot live"></span>
+          <div class="ns-text"><b>Running now</b> — started ${ago(LIVE.startedAt.getTime())} · ${Math.max(1, Math.ceil((totalSec - elapsedSec)/60))} min left.</div>
+        </div>` : ''}
+
+      ${rangeBarHTML()}
+
+      <section class="card progress-card">
+        <div class="card-head">
+          <h2 class="card-title">Step progression</h2>
+          <span class="micro">Click a step to inspect.</span>
+        </div>
+        <div class="ipb">${ipb}</div>
+        ${inspect}
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-l">Cleanings in range</div><div class="kpi-v">${total}</div><div class="kpi-ctx">${skipped ? skipped + ' missed' : 'None missed'}</div></div>
+        <div class="kpi-card"><div class="kpi-l">Avg duration</div><div class="kpi-v">${total ? avg.toFixed(1) : '—'}<span class="u">min</span></div><div class="kpi-ctx">Target ${cycleTotalMin(c)} min</div></div>
+        <div class="kpi-card ${onTargetPct >= 80 ? 'ok' : onTargetPct >= 60 ? 'warn' : 'alert'}"><div class="kpi-l">On target</div><div class="kpi-v">${total ? onTargetPct : '—'}<span class="u">%</span></div><div class="kpi-ctx">${onTarget} of ${total} runs</div></div>
+        <div class="kpi-card ${cycleAlerts.length === 0 ? 'ok' : cycleAlerts.length > 3 ? 'alert' : 'warn'}"><div class="kpi-l">Alerts</div><div class="kpi-v">${cycleAlerts.length}</div><div class="kpi-ctx">in ${rangeLabel()}</div></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Tracked parameters · before &amp; after</h2>
+          <span class="micro">Reading captured at start &amp; end of each cleaning.</span>
+        </div>
+        ${paramsHTML}
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Alert log for this cycle</h2>
+          <span class="micro">${cycleAlerts.length} item${cycleAlerts.length===1?'':'s'} in ${rangeLabel()}</span>
+        </div>
+        ${alertLogHTML(cycleAlerts.slice(0, 20))}
+      </section>`;
+  }
+
+  // ============================================================
+  // VIEW: COMPARE
+  // ============================================================
+  function renderCompare(){
+    const ids = Array.from(compared);
+    if (ids.length < 2) {
+      return `<div class="crumb"><button class="link" onclick="goPlant()">← All cycles</button><span class="sep">·</span><span class="here">Compare</span></div>
+              <section class="card"><div class="empty">Select two or more cycles on the All cycles page to compare them.</div></section>`;
+    }
+    const cols = ids.map(id => {
+      const c = cycleById(id);
+      const runs = runsForCycle(id).filter(r => inRange(r.startedAt));
+      const total = runs.length;
+      const onTarget = runs.filter(r => r.status === 'ok').length;
+      const skipped  = runs.filter(r => r.status === 'skip').length;
+      const avg = total ? runs.reduce((a,r)=>a+r.totalMin, 0) / total : 0;
+      const onTargetPct = total ? Math.round(onTarget/total*100) : 0;
+      const alerts = ALERTS.filter(a => inRange(a.t) && a.cycleId === id).length;
+      const series = runs.slice(0, 30).reverse().map(r => +r.totalMin.toFixed(2));
+      const status = onTargetPct >= 80 ? 'ok' : onTargetPct >= 60 ? 'warn' : 'alert';
+      return `
+        <div class="cmp-col">
+          <h3>${c.name}</h3>
+          <div class="micro">Target ${cycleTotalMin(c)} min · ${c.steps.length} steps</div>
+          <div class="cmp-stats">
+            <div class="cmp-stat"><span class="cmp-stat-l">Runs</span><span class="cmp-stat-v">${total}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Missed</span><span class="cmp-stat-v">${skipped}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Avg duration</span><span class="cmp-stat-v">${total ? avg.toFixed(1) + ' min' : '—'}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">On target</span><span class="cmp-stat-v" style="color:${status==='ok'?'var(--ok-ink)':status==='warn'?'var(--warn-ink)':'var(--alert-ink)'}">${total ? onTargetPct + '%' : '—'}</span></div>
+            <div class="cmp-stat"><span class="cmp-stat-l">Alerts</span><span class="cmp-stat-v">${alerts}</span></div>
+          </div>
+          <div>
+            <div class="micro" style="margin-bottom:6px;">Duration trend</div>
+            <div class="cmp-chart">${sparkline(series, status, { w: 260, h: 48 })}</div>
+          </div>
+          <button class="card-link" onclick="goCycle('${id}')">Open ${c.name} →</button>
+        </div>`;
+    }).join('');
+    return `
+      <div class="crumb">
+        <button class="link" onclick="goPlant()">← All cycles</button>
+        <span class="sep">·</span>
+        <span class="here">Comparing ${ids.length} cycles</span>
+      </div>
+      ${rangeBarHTML()}
+      <section><div class="compare-grid">${cols}</div></section>
+      <section class="card">
+        <div class="card-head"><h2 class="card-title">Notes</h2></div>
+        <div class="body">Comparison covers the same ${rangeLabel()} window for every cycle, so totals are apples-to-apples. Use the time range bar to widen or narrow the comparison.</div>
+      </section>`;
+  }
+
+  // ============================================================
+  // ROUTING / INTERACTION
+  // ============================================================
+  function render(){
+    const el = document.getElementById('view');
+    if (view === 'plant') el.innerHTML = renderPlant();
+    else if (view === 'cycle') el.innerHTML = renderCycle();
+    else if (view === 'compare') el.innerHTML = renderCompare();
+    updateRangeSummary();
+    updateCompareBar();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function updateCompareBar(){
+    const bar = document.getElementById('compareBar');
+    document.getElementById('cbCount').textContent = compared.size + ' selected';
+    bar.classList.toggle('show', compared.size >= 2 && view === 'plant');
+  }
+  window.goPlant   = () => { view = 'plant'; selectedStepIdx = null; render(); };
+  window.goCycle   = (id) => { view = 'cycle'; currentCycleId = id; selectedStepIdx = null; render(); };
+  window.goCompare = () => { if (compared.size >= 2) { view = 'compare'; render(); } };
+  window.toggleCompare = (id) => {
+    if (compared.has(id)) compared.delete(id); else compared.add(id);
+    if (compared.size > 3) { const first = compared.values().next().value; compared.delete(first); }
+    render();
+  };
+  window.clearCompare = () => { compared.clear(); render(); };
+  window.inspectStep = (i) => { selectedStepIdx = (selectedStepIdx === i) ? null : i; render(); };
+
+  // Live tick — advances current run
+  function tick(){
+    if (view !== 'cycle' || currentCycleId !== LIVE.cycleId) return;
+    const c = cycleById(LIVE.cycleId);
+    LIVE.elapsedInStep += 1;
+    const setSec = c.steps[LIVE.stepIdx].set * 60;
+    if (LIVE.elapsedInStep >= setSec) {
+      if (LIVE.stepIdx < c.steps.length - 1) { LIVE.stepIdx += 1; LIVE.elapsedInStep = 0; }
+      else { LIVE.stepIdx = 0; LIVE.elapsedInStep = 0; LIVE.startedAt = new Date(); }
+    }
+    render();
+  }
   setInterval(tick, 1000);
+
+  render();
 </script>
 </body>
 </html>
