@@ -295,6 +295,16 @@
   .target-row .target-value .u { font-size: 11px; color: var(--color-text-tertiary); }
   .target-row.disabled .target-value input { background: var(--color-background-secondary); color: var(--color-text-tertiary); border-color: var(--color-border-tertiary); }
   .targets-summary { font-size: 11px; color: var(--color-text-secondary); padding: 2px 6px; border-radius: 999px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); }
+  /* Target sources — chips + add */
+  .target-row { flex-wrap: wrap; }
+  .target-sources { flex-basis: 100%; margin-top: 2px; padding: 8px 0 0; border-top: 0.5px dashed var(--color-border-tertiary); display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .target-sources .ts-label { font-size: 10.5px; font-weight: 600; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-right: 4px; }
+  .source-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--brand-50); border: 0.5px solid var(--brand-100); padding: 3px 4px 3px 10px; border-radius: 999px; font-size: 11px; color: var(--brand-800); }
+  .source-chip .src-x { width: 16px; height: 16px; border: 0; background: transparent; color: var(--brand-700); cursor: pointer; padding: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; }
+  .source-chip .src-x:hover { background: var(--brand-100); color: var(--brand-900); }
+  .source-add { height: 26px; border: 0.5px dashed var(--color-border-secondary); border-radius: 999px; padding: 0 28px 0 12px; font-size: 11.5px; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%235c5a52' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 10px center; appearance: none; -webkit-appearance: none; color: var(--color-text-secondary); font-family: var(--font-sans); cursor: pointer; }
+  .source-add:hover { border-color: var(--brand-300); color: var(--brand-800); }
+  .source-empty { font-size: 11.5px; color: var(--color-text-tertiary); font-style: italic; }
 
   /* Template menu — two-section variant */
   .menu-section + .menu-section { margin-top: 4px; padding-top: 4px; border-top: 0.5px solid var(--color-border-tertiary); }
@@ -415,6 +425,13 @@
             </div>
             <div class="alert-row">
               <div>
+                <div class="alert-title">Cycle time &gt; set time</div>
+                <div class="alert-desc">Actual step duration ran longer than its configured target.</div>
+              </div>
+              <div class="switch on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="alert-row">
+              <div>
                 <div class="alert-title">% Uptime below target</div>
                 <div class="alert-desc">Triggers when running-hour uptime drops under the operational target.</div>
               </div>
@@ -492,7 +509,7 @@
 
   const tagSafe = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
 
-  function newPhase(name='New step', trigger='time', minutes=10){
+  function newPhase(name='New step', trigger='sensor', minutes=10){
     return {
       id: 'p_'+Math.random().toString(36).slice(2,7),
       name, trigger,
@@ -549,41 +566,41 @@
       { label: 'UF Backwash', desc: '4 steps · drain → air scour → backwash → rinse',
         build: () => newMain('UF Backwash', [
           Object.assign(newPhase('Top drain','sensor',2), { expanded:false }),
-          newPhase('Air scour','time',3),
+          newPhase('Air scour','sensor',3),
           newPhase('Bottom backwash','sensor',5),
-          newPhase('Forward flush','time',2)
+          newPhase('Forward flush','sensor',2)
         ])},
       { label: 'UF CEB · Acid', desc: '3 steps · dose → soak → rinse',
-        build: () => newMain('UF CEB · Acid', [ newPhase('Dose acid','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ])},
+        build: () => newMain('UF CEB · Acid', [ newPhase('Dose acid','sensor',1), newPhase('Soak','sensor',15), newPhase('Rinse','sensor',5) ])},
       { label: 'UF CEB · Caustic', desc: '3 steps · dose → soak → rinse',
-        build: () => newMain('UF CEB · Caustic', [ newPhase('Dose caustic','time',1), newPhase('Soak','time',15), newPhase('Rinse','sensor',5) ])}
+        build: () => newMain('UF CEB · Caustic', [ newPhase('Dose caustic','sensor',1), newPhase('Soak','sensor',15), newPhase('Rinse','sensor',5) ])}
     ],
     sbr: [
       { label: 'SBR Sequence', desc: 'Fill → React → Settle → Decant → Idle',
         build: () => newMain('SBR Sequence', [
-          newPhase('Fill','sensor',30), newPhase('React','time',120), newPhase('Settle','time',45),
-          newPhase('Decant','sensor',30), newPhase('Idle','time',15)
+          newPhase('Fill','sensor',30), newPhase('React','sensor',120), newPhase('Settle','sensor',45),
+          newPhase('Decant','sensor',30), newPhase('Idle','sensor',15)
         ])}
     ],
     mbr: [
       { label: 'MBR Permeation cycle', desc: 'Permeate → Relax → Backwash',
-        build: () => newMain('MBR Permeation', [ newPhase('Permeate','time',9), newPhase('Relax','time',1), newPhase('Backwash','sensor',1) ])}
+        build: () => newMain('MBR Permeation', [ newPhase('Permeate','sensor',9), newPhase('Relax','sensor',1), newPhase('Backwash','sensor',1) ])}
     ],
     ro: [
       { label: 'RO CIP', desc: 'Low-pressure flush → CIP → Rinse',
-        build: () => newMain('RO CIP', [ newPhase('LP flush','time',10), newPhase('CIP recirculation','time',60), newPhase('Rinse','sensor',15) ])}
+        build: () => newMain('RO CIP', [ newPhase('LP flush','sensor',10), newPhase('CIP recirculation','sensor',60), newPhase('Rinse','sensor',15) ])}
     ],
-    acf: [{ label: 'ACF Backwash', desc: 'Backwash → Rinse', build: () => newMain('ACF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
-    mgf: [{ label: 'MGF Backwash', desc: 'Backwash → Rinse', build: () => newMain('MGF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
-    dmf: [{ label: 'DMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('DMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}],
-    gmf: [{ label: 'GMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('GMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','time',4) ])}]
+    acf: [{ label: 'ACF Backwash', desc: 'Backwash → Rinse', build: () => newMain('ACF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','sensor',4) ])}],
+    mgf: [{ label: 'MGF Backwash', desc: 'Backwash → Rinse', build: () => newMain('MGF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','sensor',4) ])}],
+    dmf: [{ label: 'DMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('DMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','sensor',4) ])}],
+    gmf: [{ label: 'GMF Backwash', desc: 'Backwash → Rinse', build: () => newMain('GMF Backwash', [ newPhase('Backwash','sensor',8), newPhase('Rinse','sensor',4) ])}]
   };
 
   const DEFAULT_TARGETS = [
-    { id:'uptime',  label:'% Uptime',     desc:'How much of the running hours the asset should be productive.', unit:'%', value:60, enabled:false },
-    { id:'clean',   label:'% Cleaning',   desc:'Share of time the asset should spend in cleaning cycles.',       unit:'%', value:20, enabled:false },
-    { id:'standby', label:'% Standby',    desc:'Acceptable share of idle time before flagging under-utilization.', unit:'%', value:20, enabled:false },
-    { id:'prod',    label:'Production efficiency', desc:'Production output vs design capacity.',                  unit:'%', value:85, enabled:false }
+    { id:'uptime',  label:'% Uptime',     desc:'How much of the running hours the asset should be productive.', unit:'%', value:60, enabled:false, sources:[] },
+    { id:'clean',   label:'% Cleaning',   desc:'Share of time the asset should spend in cleaning cycles.',       unit:'%', value:20, enabled:false, sources:[] },
+    { id:'standby', label:'% Standby',    desc:'Acceptable share of idle time before flagging under-utilization.', unit:'%', value:20, enabled:false, sources:[] },
+    { id:'prod',    label:'Production efficiency', desc:'Production output vs design capacity.',                  unit:'%', value:85, enabled:false, sources:[] }
   ];
 
   let activeAsset = 'uf';
@@ -696,8 +713,8 @@
     const wrap = document.createElement('div');
     wrap.className = 'phase-card' + (p.expanded ? ' expanded' : '');
     const tag = `${activeAsset}_${tagSafe(p.name)}_phase_duration`;
-    const pillClass = p.trigger === 'time' ? 'cond' : p.trigger === 'manual' ? 'manual' : 'auto';
-    const pillLabel = p.trigger === 'time' ? 'Timed' : p.trigger === 'manual' ? 'Manual' : 'Sensor';
+    const pillClass = p.trigger === 'manual' ? 'manual' : 'auto';
+    const pillLabel = p.trigger === 'manual' ? 'Manual' : 'Sensor';
     const durationLabel = p.trigger === 'manual' ? 'Expected duration (optional)' : 'Target duration <span class="req">*</span>';
     wrap.innerHTML = `
       <div class="phase-head" onclick="togglePhase('${mainId}','${p.id}')">
@@ -715,7 +732,6 @@
             <input class="input" value="${p.name}" onchange="renamePhase('${mainId}','${p.id}',this.value)"/></div>
           <div class="field"><label>Starts by</label>
             <div class="seg">
-              <button class="${p.trigger==='time'?'active':''}"   onclick="setTrigger('${mainId}','${p.id}','time')">Time based</button>
               <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor based</button>
               <button class="${p.trigger==='manual'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','manual')">Manual</button>
             </div></div>
@@ -730,9 +746,7 @@
             </div></div>
         </div>
 
-        ${p.trigger==='time' ? `
-          <div class="note">This step runs for the target duration. Actual time is compared to it and written to <span style="font-family:var(--font-mono);">${tag}</span>.</div>
-        ` : p.trigger==='manual' ? `
+        ${p.trigger==='manual' ? `
           <div class="manual-block">
             <div class="note">An operator starts and stops this step manually from the visualization screen. Actual duration is still recorded against <span style="font-family:var(--font-mono);">${tag}</span>. Expected duration is optional and used only as a soft reference.</div>
             <div class="manual-preview">
@@ -788,15 +802,24 @@
     const s = state[activeAsset];
     list.innerHTML = '';
     s.mains.forEach(m => {
-      const mt = `${activeAsset}_${tagSafe(m.name)}_duration`;
-      const startT = `${activeAsset}_${tagSafe(m.name)}_start_time`;
-      const endT = `${activeAsset}_${tagSafe(m.name)}_end_time`;
-      [['MAIN',mt],['MAIN',startT],['MAIN',endT]].forEach(([t,name]) => {
+      const base = `${activeAsset}_${tagSafe(m.name)}`;
+      // Per-cycle tags: duration, start/end times, and a live 0/1 active-state tag.
+      [
+        ['MAIN',   base + '_duration'],
+        ['MAIN',   base + '_start_time'],
+        ['MAIN',   base + '_end_time'],
+        ['ACTIVE', base + '_active']
+      ].forEach(([t,name]) => {
         list.insertAdjacentHTML('beforeend', `<div class="tag-item"><span>${name}</span><span class="tag-type">${t}</span></div>`);
       });
       m.phases.forEach(p => {
-        const pt = `${activeAsset}_${tagSafe(p.name)}_phase_duration`;
-        list.insertAdjacentHTML('beforeend', `<div class="tag-item"><span>${pt}</span><span class="tag-type">PHASE</span></div>`);
+        const pBase = `${activeAsset}_${tagSafe(p.name)}`;
+        [
+          ['PHASE',  pBase + '_phase_duration'],
+          ['ACTIVE', pBase + '_phase_active']
+        ].forEach(([t,name]) => {
+          list.insertAdjacentHTML('beforeend', `<div class="tag-item"><span>${name}</span><span class="tag-type">${t}</span></div>`);
+        });
       });
     });
   }
@@ -886,27 +909,82 @@
     menu.innerHTML = html;
   }
 
+  // Sources picker — list cycles & steps only (no 'process' for targets).
+  function sourceOptions(){
+    const s = state[activeAsset];
+    const opts = [];
+    s.mains.forEach(m => {
+      opts.push({ value:'cycle:'+m.id, label:'Cycle · ' + m.name });
+      m.phases.forEach(p => {
+        opts.push({ value:'step:'+m.id+':'+p.id, label:'Step · ' + p.name + ' (in ' + m.name + ')' });
+      });
+    });
+    return opts;
+  }
+  function sourceLabel(key){
+    const s = state[activeAsset];
+    if (key.startsWith('cycle:')) {
+      const m = s.mains.find(x => x.id === key.slice(6));
+      return m ? m.name : null;
+    }
+    if (key.startsWith('step:')) {
+      const [, mid, pid] = key.split(':');
+      const m = s.mains.find(x => x.id === mid);
+      const p = m && m.phases.find(x => x.id === pid);
+      return (m && p) ? (p.name + ' · ' + m.name) : null;
+    }
+    return null;
+  }
+  // Drop sources that no longer exist (cycle/step deleted).
+  function cleanSources(t){
+    const all = new Set(sourceOptions().map(o => o.value));
+    t.sources = t.sources.filter(k => all.has(k));
+  }
+
   function renderTargets(){
     const list = document.getElementById('targetList');
     const sum  = document.getElementById('targetsSummary');
     const s = state[activeAsset];
     const enabled = s.targets.filter(t => t.enabled).length;
     if (sum) sum.textContent = enabled + ' of ' + s.targets.length + ' set';
-    list.innerHTML = s.targets.map(t => `
-      <div class="target-row ${t.enabled ? '' : 'disabled'}">
-        <div class="switch ${t.enabled ? 'on' : ''}" onclick="toggleTarget('${t.id}')"></div>
-        <div class="target-name">
-          <div class="tn-title">${t.label}</div>
-          <div class="tn-desc">${t.desc}</div>
-        </div>
-        <div class="target-value">
-          <input class="input" type="number" value="${t.value}" ${t.enabled ? '' : 'disabled'} onchange="updateTarget('${t.id}', this.value)"/>
-          <span class="u">${t.unit}</span>
-        </div>
-      </div>`).join('');
+    const allOpts = sourceOptions();
+    list.innerHTML = s.targets.map(t => {
+      cleanSources(t);
+      const available = allOpts.filter(o => !t.sources.includes(o.value));
+      const sourcesHtml = !t.enabled ? '' : `
+        <div class="target-sources">
+          <span class="ts-label">Counts these cycles/steps</span>
+          ${t.sources.length === 0 && allOpts.length === 0
+            ? `<span class="source-empty">No cycles or steps yet — build some on the Cycles tab.</span>`
+            : t.sources.map(k => {
+                const label = sourceLabel(k) || k;
+                return `<span class="source-chip">${label}<button class="src-x" onclick="removeTargetSource('${t.id}','${k}')" title="Remove" aria-label="Remove">×</button></span>`;
+              }).join('')}
+          ${available.length > 0 ? `
+            <select class="source-add" onchange="addTargetSource('${t.id}', this.value); this.value='';">
+              <option value="" disabled selected>${t.sources.length === 0 ? '+ Add cycle/step' : '+ Add another'}</option>
+              ${available.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+            </select>` : ''}
+        </div>`;
+      return `
+        <div class="target-row ${t.enabled ? '' : 'disabled'}">
+          <div class="switch ${t.enabled ? 'on' : ''}" onclick="toggleTarget('${t.id}')"></div>
+          <div class="target-name">
+            <div class="tn-title">${t.label}</div>
+            <div class="tn-desc">${t.desc}</div>
+          </div>
+          <div class="target-value">
+            <input class="input" type="number" value="${t.value}" ${t.enabled ? '' : 'disabled'} onchange="updateTarget('${t.id}', this.value)"/>
+            <span class="u">${t.unit}</span>
+          </div>
+          ${sourcesHtml}
+        </div>`;
+    }).join('');
   }
   window.toggleTarget = (id) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t) return; t.enabled = !t.enabled; renderTargets(); };
   window.updateTarget = (id, v) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t) return; t.value = +v; };
+  window.addTargetSource = (id, key) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t || !key) return; if (!t.sources.includes(key)) t.sources.push(key); renderTargets(); };
+  window.removeTargetSource = (id, key) => { const t = state[activeAsset].targets.find(x => x.id === id); if (!t) return; t.sources = t.sources.filter(k => k !== key); renderTargets(); };
 
   // Save the current cycle as a reusable template (without sensor conditions, per requirement).
   window.saveAsTemplate = (mid) => {
@@ -938,6 +1016,7 @@
     document.getElementById('tplMenu').classList.remove('open');
     renderTree();
     renderTrackers(); // scope options changed
+    renderTargets(); // source options changed
     toast('Added "' + tpl.name + '" from your templates.');
   };
   window.deleteUserTemplate = (e, tid) => {
@@ -1047,9 +1126,9 @@
   window.togglePhase = (mid, pid) => { const [,p]=findPhase(mid,pid); p.expanded=!p.expanded; renderTree(); };
   window.setTrigger = (mid, pid, t) => { const [,p]=findPhase(mid,pid); p.trigger=t; renderTree(); };
   window.updatePhase = (mid, pid, k, v) => { const [,p]=findPhase(mid,pid); p[k]=v; renderTree(); };
-  window.renamePhase = (mid, pid, n) => { const [,p]=findPhase(mid,pid); p.name=n||'Untitled step'; renderTree(); renderTrackers(); };
+  window.renamePhase = (mid, pid, n) => { const [,p]=findPhase(mid,pid); p.name=n||'Untitled step'; renderTree(); renderTrackers(); renderTargets(); };
   window.updateCond = (mid, pid, key, k, v) => { const [,p]=findPhase(mid,pid); p[key][k]=v; };
-  window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); renderTrackers(); };
+  window.removePhase = (mid, pid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.phases = m.phases.filter(p=>p.id!==pid); renderTree(); renderTrackers(); renderTargets(); };
   window.addPhase = (mid) => {
     const m = state[activeAsset].mains.find(x=>x.id===mid);
     // Collapse other steps in this cycle so focus lands on the new one.
@@ -1063,9 +1142,9 @@
       if (el && el.scrollIntoView) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
     }, 0);
   };
-  window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled cycle'; renderTree(); renderTrackers(); };
-  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); renderTree(); renderTrackers(); };
-  window.addMain = () => { const np = newPhase('Step 1','time',10); np.expanded=true; const m = newMain('Cycle '+(state[activeAsset].mains.length+1), [np]); m.collapsed=false; state[activeAsset].mains.push(m); renderTree(); renderTrackers(); };
+  window.renameMain = (mid, n) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.name=n||'Untitled cycle'; renderTree(); renderTrackers(); renderTargets(); };
+  window.removeMain = (mid) => { state[activeAsset].mains = state[activeAsset].mains.filter(x=>x.id!==mid); renderTree(); renderTrackers(); renderTargets(); };
+  window.addMain = () => { const np = newPhase('Step 1','sensor',10); np.expanded=true; const m = newMain('Cycle '+(state[activeAsset].mains.length+1), [np]); m.collapsed=false; state[activeAsset].mains.push(m); renderTree(); renderTrackers(); renderTargets(); };
   window.toggleMain = (mid) => { const m = state[activeAsset].mains.find(x=>x.id===mid); m.collapsed=!m.collapsed; renderTree(); };
 
   // Template menu
@@ -1085,6 +1164,7 @@
     document.getElementById('tplMenu').classList.remove('open');
     renderTree();
     renderTrackers();
+    renderTargets();
     toast('Added "'+tpl.label+'" — edit anything you like.');
   };
 
