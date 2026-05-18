@@ -76,8 +76,7 @@
   .btn-danger:hover { background: #f6dccd; }
 
   /* Layout */
-  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
-  @media (max-width: 1180px) { .layout { grid-template-columns: 240px minmax(0, 1fr); } .preview-col { grid-column: 1 / -1; } }
+  .layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px; align-items: start; }
   @media (max-width: 820px)  { .layout { grid-template-columns: 1fr; } }
 
   /* Sidebar (asset list) */
@@ -226,6 +225,36 @@
   .tracker-empty { font-size: 11.5px; color: var(--color-text-tertiary); padding: 12px; text-align: center; border: 1px dashed var(--color-border-tertiary); border-radius: var(--border-radius-md); }
   .icon-btn { width: 32px; height: 32px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: #fff; color: var(--color-text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
   .icon-btn:hover { background: var(--sev-alert-bg); color: var(--sev-alert-ink); border-color: var(--sev-alert-line); }
+
+  /* Tabs — top-level navigation in main column */
+  .tabs { display: flex; gap: 2px; padding: 4px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 16px; width: fit-content; }
+  .tab-btn { background: transparent; border: 0; padding: 7px 14px; font-size: 12.5px; font-weight: 500; color: var(--color-text-secondary); border-radius: 5px; cursor: pointer; font-family: var(--font-sans); transition: all .15s var(--ease-out); }
+  .tab-btn:hover:not(.active) { color: var(--brand-800); }
+  .tab-btn.active { background: #fff; color: var(--brand-900); box-shadow: var(--elev-1); }
+  .tab-panel { display: flex; flex-direction: column; gap: 16px; animation: fadeUp .2s var(--ease-out); }
+  .tab-panel.hidden { display: none; }
+
+  /* Sensor condition summary on phase card */
+  .cond-summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--color-background-secondary); border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); }
+  .cond-summary.configured { background: var(--brand-25); border: 0.5px solid var(--brand-100); border-style: solid; }
+  .cond-summary .cs-icon { width: 26px; height: 26px; border-radius: 6px; background: #fff; border: 0.5px solid var(--color-border-secondary); display: inline-flex; align-items: center; justify-content: center; color: var(--brand-700); flex-shrink: 0; }
+  .cond-summary.configured .cs-icon { background: var(--brand-50); border-color: var(--brand-200); }
+  .cond-summary .cs-body { flex: 1; min-width: 0; }
+  .cond-summary .cs-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .cond-summary .cs-desc  { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cond-summary .cs-desc.empty { font-family: var(--font-sans); }
+
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(14,31,54,.36); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 200; animation: fadeIn .18s var(--ease-out); padding: 20px; }
+  .modal-backdrop.open { display: flex; }
+  .modal-card { background: #fff; border-radius: 12px; border: 0.5px solid var(--color-border-secondary); box-shadow: var(--elev-3); width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; animation: fadeUp .22s var(--ease-out); }
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .modal-head h3 { font-size: 15px; font-weight: 600; color: var(--brand-900); letter-spacing: -.005em; }
+  .modal-head .sub { font-size: 11.5px; color: var(--color-text-secondary); margin-top: 4px; line-height: 1.45; }
+  .modal-close { width: 28px; height: 28px; border-radius: 6px; border: 0; background: transparent; color: var(--color-text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .modal-close:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px 16px; border-top: 0.5px solid var(--color-border-tertiary); background: var(--brand-25); border-radius: 0 0 12px 12px; }
 </style>
 </head>
 <body>
@@ -234,7 +263,7 @@
     <div class="header">
       <div class="header-left">
         <h1>UF Cycles · Configuration <span class="badge-internal">Internal</span></h1>
-        <div class="subtitle">Define main cycles, phases, triggers, tags &amp; operational efficiency parameters per asset.</div>
+        <div class="subtitle">Build cycles, decide what to track, choose where it appears.</div>
       </div>
       <div class="header-actions">
         <button class="btn btn-ghost" onclick="loadDemo()">Load demo</button>
@@ -251,16 +280,16 @@
         <div class="divider" style="margin: 12px 0;"></div>
         <div class="panel-title">Tracking</div>
         <div style="font-size:11.5px; color:var(--color-text-secondary); line-height:1.5;">
-          Cycles are tracked <b>live</b> as they run. Each phase opens and closes against its trigger and writes to its tag in real time.
+          Cycles are tracked <b>live</b> as they run. Each step opens and closes against its trigger and writes to its tag in real time.
         </div>
       </aside>
 
-      <!-- MIDDLE: Main config -->
+      <!-- MAIN: tabbed config -->
       <div class="main-col">
-        <!-- Asset summary -->
+        <!-- Asset summary (persistent across tabs) -->
         <div class="section" id="assetSummary">
           <div class="row">
-            <div>
+            <div style="min-width:0;">
               <h2 id="assetTitle">UF · Ultrafiltration</h2>
               <div class="hint" id="assetHint" style="margin-bottom:0;">Always automated. Configure backwash, forward flush and CEB cycles below.</div>
             </div>
@@ -269,120 +298,140 @@
           </div>
         </div>
 
-        <!-- Main cycle + phases -->
-        <div class="section">
-          <div class="row" style="margin-bottom:14px;">
-            <div>
-              <h2>Cycles</h2>
-              <div class="hint" style="margin-bottom:0;">A cycle is made up of steps that run in order. Each cycle and each step gets its own time tag automatically.</div>
-            </div>
-            <div class="spacer"></div>
-            <div class="menu-wrap" id="tplWrap">
-              <button class="btn btn-sm" onclick="toggleTpl(event)">Start from template ▾</button>
-              <div class="menu" id="tplMenu"></div>
-            </div>
-            <button class="btn btn-sm btn-primary" onclick="addMain()">+ New cycle</button>
-          </div>
-          <div class="cycle-tree" id="cycleTree"></div>
+        <!-- Tabs -->
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" data-tab="cycles" role="tab">Cycles</button>
+          <button class="tab-btn" data-tab="tracking" role="tab">Tracking &amp; Alerts</button>
+          <button class="tab-btn" data-tab="display" role="tab">Display</button>
         </div>
 
-        <!-- Operational efficiency parameters -->
-        <div class="section">
-          <h2>Operational efficiency parameters</h2>
-          <div class="hint">Targets used to evaluate cycles and trigger alerts when actual values fall below thresholds.</div>
-          <div class="grid-4">
-            <div class="field">
-              <label>% Uptime target</label>
-              <div class="input-suffix"><input class="input" type="number" value="60" id="kpiUptime" /><span class="suffix">%</span></div>
+        <!-- Cycles tab -->
+        <div class="tab-panel" data-panel="cycles">
+          <div class="section">
+            <div class="row" style="margin-bottom:14px;">
+              <div>
+                <h2>Cycles</h2>
+                <div class="hint" style="margin-bottom:0;">A cycle is made up of steps that run in order. Each cycle and each step gets its own time tag automatically.</div>
+              </div>
+              <div class="spacer"></div>
+              <div class="menu-wrap" id="tplWrap">
+                <button class="btn btn-sm" onclick="toggleTpl(event)">Start from template ▾</button>
+                <div class="menu" id="tplMenu"></div>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="addMain()">+ New cycle</button>
             </div>
-            <div class="field">
-              <label>% Cleaning time</label>
-              <div class="input-suffix"><input class="input" type="number" value="20" id="kpiClean" /><span class="suffix">%</span></div>
-            </div>
-            <div class="field">
-              <label>% Standby</label>
-              <div class="input-suffix"><input class="input" type="number" value="20" id="kpiStandby" /><span class="suffix">%</span></div>
-            </div>
-            <div class="field">
-              <label>Production efficiency</label>
-              <div class="input-suffix"><input class="input" type="number" value="85" id="kpiProd" /><span class="suffix">%</span></div>
-            </div>
+            <div class="cycle-tree" id="cycleTree"></div>
           </div>
         </div>
 
-        <!-- What to track -->
-        <div class="section">
-          <div class="row" style="margin-bottom:6px;">
-            <div>
-              <h2>What to track</h2>
-              <div class="hint" style="margin-bottom:0;">Pick any sensor, tag, or efficiency parameter. Set how it should be measured against the cycle &amp; what triggers an alert.</div>
+        <!-- Tracking & Alerts tab -->
+        <div class="tab-panel hidden" data-panel="tracking">
+          <div class="section">
+            <div class="row" style="margin-bottom:6px;">
+              <div>
+                <h2>What to track</h2>
+                <div class="hint" style="margin-bottom:0;">Pick any sensor, tag, or efficiency parameter. Set how it should be measured against the cycle &amp; what triggers an alert.</div>
+              </div>
+              <div class="spacer"></div>
+              <button class="btn btn-sm" onclick="addTracker()">+ Add parameter</button>
             </div>
-            <div class="spacer"></div>
-            <button class="btn btn-sm" onclick="addTracker()">+ Add parameter</button>
+            <div id="trackerList" style="margin-top:8px;"></div>
           </div>
-          <div id="trackerList" style="margin-top:8px;"></div>
+
+          <div class="section">
+            <h2>Targets</h2>
+            <div class="hint">Targets used to evaluate cycles and trigger alerts when actual values fall below thresholds.</div>
+            <div class="grid-4">
+              <div class="field">
+                <label>% Uptime target</label>
+                <div class="input-suffix"><input class="input" type="number" value="60" id="kpiUptime" /><span class="suffix">%</span></div>
+              </div>
+              <div class="field">
+                <label>% Cleaning time</label>
+                <div class="input-suffix"><input class="input" type="number" value="20" id="kpiClean" /><span class="suffix">%</span></div>
+              </div>
+              <div class="field">
+                <label>% Standby</label>
+                <div class="input-suffix"><input class="input" type="number" value="20" id="kpiStandby" /><span class="suffix">%</span></div>
+              </div>
+              <div class="field">
+                <label>Production efficiency</label>
+                <div class="input-suffix"><input class="input" type="number" value="85" id="kpiProd" /><span class="suffix">%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Alerts</h2>
+            <div class="hint">Drives notifications based on the auto-generated cycle tags &amp; tracked parameters.</div>
+            <div class="alert-row">
+              <div>
+                <div class="alert-title">Cycle skip detected</div>
+                <div class="alert-desc">A scheduled main cycle did not start within its window.</div>
+              </div>
+              <div class="switch on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="alert-row">
+              <div>
+                <div class="alert-title">Cycle time &lt; set time</div>
+                <div class="alert-desc">Actual step duration ended earlier than its configured target.</div>
+              </div>
+              <div class="switch on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="alert-row">
+              <div>
+                <div class="alert-title">% Uptime below target</div>
+                <div class="alert-desc">Triggers when running-hour uptime drops under the operational target.</div>
+              </div>
+              <div class="switch on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="alert-row">
+              <div>
+                <div class="alert-title">Tracked parameter out of band</div>
+                <div class="alert-desc">Any parameter in <i>What to track</i> breaches its tolerance or threshold.</div>
+              </div>
+              <div class="switch" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Alerts -->
-        <div class="section">
-          <h2>Alerts</h2>
-          <div class="hint">Drives notifications based on the auto-generated cycle tags &amp; efficiency targets.</div>
-          <div class="alert-row">
-            <div>
-              <div class="alert-title">Cycle skip detected</div>
-              <div class="alert-desc">A scheduled main cycle did not start within its window.</div>
-            </div>
-            <div class="switch on" onclick="this.classList.toggle('on')"></div>
+        <!-- Display tab -->
+        <div class="tab-panel hidden" data-panel="display">
+          <div class="section">
+            <h2>Where this appears</h2>
+            <div class="hint">Control how cycle tracking surfaces on the client visualization screens.</div>
+            <label class="check" style="margin-bottom:10px; display:flex;"><input type="checkbox" checked /> Show as "Filter Cycle" tab on visualization screen</label>
+            <label class="check" style="margin-bottom:10px; display:flex;"><input type="checkbox" checked /> Show label on equipment (double-click → cycle logs)</label>
+            <label class="check" style="display:flex;"><input type="checkbox" /> Add to plant-level page list dropdown</label>
           </div>
-          <div class="alert-row">
-            <div>
-              <div class="alert-title">Cycle time &lt; set time</div>
-              <div class="alert-desc">Actual phase duration ended earlier than its configured set time.</div>
-            </div>
-            <div class="switch on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="alert-row">
-            <div>
-              <div class="alert-title">% Uptime below target</div>
-              <div class="alert-desc">Triggers when running-hour uptime drops under the operational target.</div>
-            </div>
-            <div class="switch on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="alert-row">
-            <div>
-              <div class="alert-title">Tracked parameter out of band</div>
-              <div class="alert-desc">Any parameter in <i>What to track</i> breaches its tolerance or threshold.</div>
-            </div>
-            <div class="switch" onclick="this.classList.toggle('on')"></div>
+
+          <div class="section">
+            <h2>Auto-generated tags</h2>
+            <div class="hint">These tags are created automatically from your cycles &amp; steps. Reference them anywhere in Insights+.</div>
+            <div class="tag-list" id="tagList" style="max-height:none;"></div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- RIGHT: Live preview -->
-      <aside class="preview-col">
-        <div class="panel">
-          <div class="panel-title">Cycle KPIs (computed)</div>
-          <div class="kpi-row">
-            <div class="kpi"><div class="kpi-label">% Uptime</div><div class="kpi-value">68.4</div></div>
-            <div class="kpi"><div class="kpi-label">% Cleaning</div><div class="kpi-value">19.1</div></div>
-            <div class="kpi"><div class="kpi-label">% Standby</div><div class="kpi-value">12.5</div></div>
-            <div class="kpi"><div class="kpi-label">Prod. eff.</div><div class="kpi-value">87.2</div></div>
-          </div>
-          <div class="note" style="margin-top:10px;">Formula: <span style="font-family:var(--font-mono);">total_cycle_duration / total_running_hours × 100</span> — recalculated per tracking window.</div>
+  <!-- Sensor condition modal -->
+  <div class="modal-backdrop" id="sensorModal" onclick="if(event.target===this) closeSensorModal()">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div style="min-width:0;">
+          <h3>Sensor condition</h3>
+          <div class="sub" id="modalSubtitle">Set the start &amp; end conditions for this step. The next step begins automatically when the end condition is met.</div>
         </div>
-
-        <div class="panel">
-          <div class="panel-title">Auto-generated tags</div>
-          <div class="tag-list" id="tagList"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">Visualization placement</div>
-          <label class="check" style="margin-bottom:8px;"><input type="checkbox" checked /> Show as "Filter Cycle" tab on viz screen</label>
-          <label class="check" style="margin-bottom:8px;"><input type="checkbox" checked /> Show label on equipment (double-click → cycle logs)</label>
-          <label class="check"><input type="checkbox" /> Add to plant-level page list dropdown</label>
-        </div>
-      </aside>
+        <button class="modal-close" onclick="closeSensorModal()" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot">
+        <button class="btn btn-sm" onclick="closeSensorModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="saveSensorModal()">Save condition</button>
+      </div>
     </div>
   </div>
 
@@ -413,12 +462,26 @@
       id: 'p_'+Math.random().toString(36).slice(2,7),
       name, trigger,
       setTime: minutes, setUnit: 'min',
-      startCond: { tag:'Valve1_ONOFF', op:'=', val:'1' },
-      startCond2:{ tag:'Valve2_ONOFF', op:'=', val:'0' },
-      endCond:   { tag:'Valve1_ONOFF', op:'=', val:'0' },
-      endCond2:  { tag:'Valve2_ONOFF', op:'=', val:'1' },
+      // Sensor conditions — empty by default until user configures them via modal.
+      startCond: { tag:'', op:'=', val:'' },
+      startCond2:{ tag:'', op:'=', val:'' },
+      endCond:   { tag:'', op:'=', val:'' },
+      endCond2:  { tag:'', op:'=', val:'' },
+      condConfigured: false,
       expanded: false
     };
+  }
+  function isCondConfigured(p){ return !!p.condConfigured; }
+  function condText(c){ return c && c.tag ? `${c.tag} ${c.op} ${c.val}` : null; }
+  function condSummaryText(p){
+    const parts = [];
+    const s1 = condText(p.startCond), s2 = condText(p.startCond2);
+    const e1 = condText(p.endCond),   e2 = condText(p.endCond2);
+    const start = [s1, s2].filter(Boolean).join(' & ');
+    const end   = [e1, e2].filter(Boolean).join(' & ');
+    if (start) parts.push('start: ' + start);
+    if (end)   parts.push('end: ' + end);
+    return parts.join('  ·  ') || 'No conditions yet';
   }
   function newMain(name='New cycle', phases=null){
     return {
@@ -573,7 +636,7 @@
         <span class="phase-idx">${idx+1}</span>
         <div class="phase-name">${p.name}</div>
         <div class="phase-meta">
-          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Timed':'On signal'}</span>
+          <span class="auto-pill ${p.trigger==='time'?'cond':'auto'}">${p.trigger==='time'?'Timed':'Sensor'}</span>
           <span class="phase-tag" title="${tag}">${p.setTime}${p.setUnit}</span>
           <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
@@ -584,8 +647,8 @@
             <input class="input" value="${p.name}" onchange="renamePhase('${mainId}','${p.id}',this.value)"/></div>
           <div class="field"><label>Starts by</label>
             <div class="seg">
-              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time</button>
-              <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor / valve</button>
+              <button class="${p.trigger==='time'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','time')">Time based</button>
+              <button class="${p.trigger==='sensor'?'active':''}" onclick="setTrigger('${mainId}','${p.id}','sensor')">Sensor based</button>
             </div></div>
           <div class="field"><label>Target duration <span class="req">*</span></label>
             <div class="duration-group">
@@ -601,19 +664,16 @@
         ${p.trigger==='time' ? `
           <div class="note">This step runs for the target duration. Actual time is compared to it and written to <span style="font-family:var(--font-mono);">${tag}</span>.</div>
         ` : `
-          <div class="cond-group">
-            <div class="cond-group-title">Starts when <span class="pill">all true</span></div>
-            ${condRow('Start', p.startCond, mainId, p.id, 'startCond')}
-            <div style="height:8px;"></div>
-            ${condRow('Start', p.startCond2, mainId, p.id, 'startCond2')}
+          <div class="cond-summary ${isCondConfigured(p) ? 'configured' : ''}">
+            <span class="cs-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </span>
+            <div class="cs-body">
+              <div class="cs-title">${isCondConfigured(p) ? 'Sensor condition set' : 'No sensor condition yet'}</div>
+              <div class="cs-desc ${isCondConfigured(p) ? '' : 'empty'}">${isCondConfigured(p) ? condSummaryText(p) : 'Tell us when this step should start and end.'}</div>
+            </div>
+            <button class="btn btn-sm" onclick="openSensorModal('${mainId}','${p.id}')">${isCondConfigured(p) ? 'Edit' : 'Configure'}</button>
           </div>
-          <div class="cond-group">
-            <div class="cond-group-title">Ends when <span class="pill">all true</span></div>
-            ${condRow('End', p.endCond, mainId, p.id, 'endCond')}
-            <div style="height:8px;"></div>
-            ${condRow('End', p.endCond2, mainId, p.id, 'endCond2')}
-          </div>
-          <div class="note">e.g. <span style="font-family:var(--font-mono);">Valve1_ONOFF=1 &amp; Valve2_ONOFF=0</span> opens the step; the inverse closes it and the next step begins.</div>
         `}
 
         <div class="row">
@@ -691,6 +751,96 @@
   }
 
   function renderAll(){ renderAssetList(); renderAssetSummary(); renderTree(); renderTrackers(); renderTemplateMenu(); }
+
+  // ---------- Tabs ----------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== target));
+    });
+  });
+
+  // ---------- Sensor condition modal ----------
+  // Holds a working copy of the conditions while the modal is open so user can cancel.
+  let modalCtx = null; // { mainId, phaseId, draft: { startCond, startCond2, endCond, endCond2 } }
+
+  function defaultIfEmpty(c, fallback){
+    return (c && c.tag) ? { tag: c.tag, op: c.op||'=', val: c.val||'' } : { ...fallback };
+  }
+
+  function openSensorModal(mainId, phaseId){
+    const [, p] = findPhase(mainId, phaseId);
+    if (!p) return;
+    // Seed sensible defaults for first-time configuration to reduce blank-page friction.
+    modalCtx = {
+      mainId, phaseId,
+      draft: {
+        startCond:  defaultIfEmpty(p.startCond,  { tag:'Valve1_ONOFF', op:'=', val:'1' }),
+        startCond2: defaultIfEmpty(p.startCond2, { tag:'Valve2_ONOFF', op:'=', val:'0' }),
+        endCond:    defaultIfEmpty(p.endCond,    { tag:'Valve1_ONOFF', op:'=', val:'0' }),
+        endCond2:   defaultIfEmpty(p.endCond2,   { tag:'Valve2_ONOFF', op:'=', val:'1' })
+      }
+    };
+    document.getElementById('modalSubtitle').innerHTML = `For step <b>${p.name}</b> · the next step begins automatically when the end condition is met.`;
+    renderModalBody();
+    document.getElementById('sensorModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function renderModalBody(){
+    const d = modalCtx.draft;
+    const row = (key, c) => `
+      <div class="cond-row">
+        <div class="field"><label>Tag</label>
+          <input class="input mono" value="${c.tag}" placeholder="e.g. Valve1_ONOFF" data-key="${key}" data-prop="tag" oninput="onModalEdit(event)"/></div>
+        <div class="field"><label>Is</label>
+          <select class="select" data-key="${key}" data-prop="op" onchange="onModalEdit(event)">
+            ${['=','!=','>','<','>=','<='].map(o=>`<option ${o===c.op?'selected':''}>${o}</option>`).join('')}
+          </select></div>
+        <div class="field"><label>Value</label>
+          <input class="input mono" value="${c.val}" placeholder="0 / 1 / number" data-key="${key}" data-prop="val" oninput="onModalEdit(event)"/></div>
+      </div>`;
+    document.getElementById('modalBody').innerHTML = `
+      <div class="cond-group">
+        <div class="cond-group-title">Starts when <span class="pill">all true</span></div>
+        ${row('startCond',  d.startCond)}
+        <div style="height:8px;"></div>
+        ${row('startCond2', d.startCond2)}
+      </div>
+      <div class="cond-group">
+        <div class="cond-group-title">Ends when <span class="pill">all true</span></div>
+        ${row('endCond',    d.endCond)}
+        <div style="height:8px;"></div>
+        ${row('endCond2',   d.endCond2)}
+      </div>
+      <div class="note">Example: <span style="font-family:var(--font-mono);">Valve1_ONOFF = 1 &amp; Valve2_ONOFF = 0</span> opens this step; the inverse closes it and the next step begins.</div>`;
+  }
+  window.onModalEdit = (e) => {
+    const k = e.target.dataset.key, prop = e.target.dataset.prop;
+    if (!k || !prop) return;
+    modalCtx.draft[k][prop] = e.target.value;
+  };
+  function closeSensorModal(){
+    document.getElementById('sensorModal').classList.remove('open');
+    document.body.style.overflow = '';
+    modalCtx = null;
+  }
+  function saveSensorModal(){
+    if (!modalCtx) return;
+    const [, p] = findPhase(modalCtx.mainId, modalCtx.phaseId);
+    if (!p) { closeSensorModal(); return; }
+    Object.assign(p, modalCtx.draft);
+    // Configured only if at least one condition has a tag.
+    p.condConfigured = !!(p.startCond.tag || p.startCond2.tag || p.endCond.tag || p.endCond2.tag);
+    closeSensorModal();
+    renderTree();
+    toast('Sensor condition saved');
+  }
+  window.openSensorModal = openSensorModal;
+  window.closeSensorModal = closeSensorModal;
+  window.saveSensorModal  = saveSensorModal;
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = document.getElementById('sensorModal'); if (m && m.classList.contains('open')) closeSensorModal(); } });
 
   // ---------- Mutations ----------
   function findPhase(mainId, phaseId){
